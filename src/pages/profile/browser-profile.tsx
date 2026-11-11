@@ -35,7 +35,7 @@ const BrowserProfile = ({ profile }: { profile: Profile }) => {
             <div className="pf-id">
               <div className="pf-name">
                 <h1 className="h1">{profile.displayName}</h1>
-                {status ? <span className={`badge ${statusClass(profile.careerStatus)}`}>{status}</span> : null}
+                {status ? <span className={`badge ${careerStatusTone(profile.careerStatus)}`}>{status}</span> : null}
               </div>
               <span className="b1 t2">{profile.headline}</span>
               {meta ? <span className="c1 t3">{meta}</span> : null}

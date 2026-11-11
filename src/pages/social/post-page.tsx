@@ -1,4 +1,4 @@
-import { ApiError, POST_CATEGORIES, type Comment } from '@push/api-client'
+import { ApiError, type Comment } from '@push/api-client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
