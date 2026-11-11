@@ -7,7 +7,7 @@ import {
   type PostingDetail,
 } from '@push/api-client'
 import { brandColor } from '@push/shared'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 
@@ -19,7 +19,7 @@ import BulletField from './bullet-field'
 import { CAREER_RANGES, CLOSE_POSTING, CLOSED_STATE, COMPANY_NAME_NOTE, DRAFT_CONFIRM_BODY, DRAFT_CONFIRM_TITLE, EDITOR_LOADING, EDITOR_TITLE, LABEL_CAREER, LABEL_COMPANY, LABEL_DEADLINE, LABEL_DESCRIPTION, LABEL_EMPLOYMENT_TYPE, LABEL_IMAGE, LABEL_JOB_CATEGORY, LABEL_LOCATION, LABEL_PREFERRED, LABEL_REQUIREMENTS, LABEL_SKILLS, LABEL_TITLE, AI_POLISH, IMAGE_CHANGE, IMAGE_FAILED, NEW_POSTING, POSTING_CLOSE, POSTING_CLOSE_BODY, POSTING_CLOSE_TITLE, POSTINGS_FAILED, PREVIEW_POSTING, SAVE_DRAFT, SAVE_POSTING } from './constants'
 import { careerRangeOf, stripBullets, withBullets } from './editor-form'
 import SkillEditor from './skill-editor'
-import { editorFailure, postingsClose, postingsCreate, postingsUpdate, uploadsImage } from '../../features/edit-posting'
+import { afterPostingClose, afterPostingSave, editorFailure, postingsClose, postingsCreate, postingsUpdate, uploadsImage } from '../../features/edit-posting'
 import { useMyCompany } from '../../entities/company'
 import { conditionsFromText, draftFields, useEmployerPosting } from '../../entities/posting'
 
@@ -119,6 +119,7 @@ const PostingEditorPage = () => {
   const revisionRef = useRef(0)
   const formRef = useRef(form)
   formRef.current = form
+  const queryClient = useQueryClient()
   const company = useMyCompany({ enabled: Boolean(session?.user.companyId) })
   const detail = useEmployerPosting(id)
   useEffect(() => {
@@ -135,15 +136,19 @@ const PostingEditorPage = () => {
       const withStatus = closedAt ? body : { ...body, status }
       return id ? postingsUpdate(id, { ...withStatus, expectedRevision: revisionRef.current }) : postingsCreate(withStatus)
     },
-    onSuccess: () => navigate('/employer/postings'),
+    onSuccess: async () => {
+      await afterPostingSave(queryClient, id)
+      navigate('/employer/postings')
+    },
     onError: (error) => setError(editorFailure(error)),
   })
   const close = useMutation({
     mutationFn: () => postingsClose(id ?? '', revisionRef.current),
-    onSuccess: (posting) => {
+    onSuccess: async (posting) => {
       revisionRef.current = posting.revision ?? revisionRef.current + 1
       setClosedAt(posting.closedAt ?? new Date().toISOString())
       setError(null)
+      if (id) await afterPostingClose(queryClient, id, posting)
     },
     onError: (error) => setError(editorFailure(error)),
     onSettled: () => setConfirm(null),
