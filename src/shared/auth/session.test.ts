@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { createSessionStore, storageForSession, type StorageLike } from './session'
+import { createSessionStore, documentUsesMockSession, storageForSession, type StorageLike } from './session'
 
 const memory = (): StorageLike => {
   const items = new Map<string, string>()
@@ -32,6 +32,19 @@ const employer = {
   ...sample,
   user: { ...sample.user, displayName: '모아페이', accountType: 'EMPLOYER' as const, companyId: 'co-1' },
 }
+
+describe('documentUsesMockSession', () => {
+  it('keeps production ?mock on localStorage even when mock is injected', () => {
+    expect(documentUsesMockSession(false, '?mock', false)).toBe(false)
+    expect(documentUsesMockSession(false, '', true)).toBe(false)
+  })
+
+  it('uses sessionStorage only when mock build and mock is requested', () => {
+    expect(documentUsesMockSession(true, '?mock', false)).toBe(true)
+    expect(documentUsesMockSession(true, '', true)).toBe(true)
+    expect(documentUsesMockSession(true, '', false)).toBe(false)
+  })
+})
 
 describe('storageForSession', () => {
   it('keeps each mock tab persona out of the shared local store', () => {
