@@ -19,7 +19,6 @@ export const OFFER_MENU = '제안 메뉴'
 
 export const OFFER_ARCHIVED_TITLE = '보관한 제안'
 export const OFFER_ARCHIVED_NOTE = '보관한 제안은 받은 제안 목록과 알림에서 빠져요. 열어서 보관을 풀 수 있어요.'
-export const OFFER_ARCHIVED_BADGE = '보관함'
 export const offerArchiveRow = (count: number) => `${OFFER_ARCHIVED_TITLE} · ${count}개`
 
 export const OFFER_ACCEPTED = '제안을 수락했어요'

@@ -1,7 +1,7 @@
-import { POST_CATEGORIES, type Post } from '@push/api-client'
+import type { Post } from '@push/api-client'
 import { Link } from 'react-router-dom'
 
-import { authorLabel } from '../../entities/post'
+import { authorLabel, postCategoryLabel } from '../../entities/post'
 import { assetUrl } from '../../shared/api/client'
 import { relativeTime } from '../../shared/lib/format'
 import { Icon } from '../../shared/ui/icon'
@@ -10,7 +10,7 @@ import EmployerBadge from './employer-badge'
 import { POST_THUMBS } from './constants'
 
 const PostCard = ({ post }: { post: Post }) => {
-  const category = POST_CATEGORIES.find((item) => item.key === post.category)?.label ?? post.category
+  const category = postCategoryLabel(post.category)
   return (
     <Link to={`/posts/${post.id}`} className="post-card">
       <span className="post-head">

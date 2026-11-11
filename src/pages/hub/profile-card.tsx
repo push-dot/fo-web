@@ -2,11 +2,12 @@ import { CAREER_STATUSES, JOB_CATEGORIES, type Profile } from '@push/api-client'
 import { brandColor } from '@push/shared'
 import { Link } from 'react-router-dom'
 import { assetUrl } from '../../shared/api/client'
+import { careerStatusTone } from '../../entities/profile'
 import { initials } from '../../shared/lib/format'
 
 const ProfileCard = ({ profile }: { profile: Profile }) => {
   const status = CAREER_STATUSES.find((item) => item.key === profile.careerStatus)?.label
-  const tone = profile.careerStatus === 'seeking' ? 'green' : profile.careerStatus === 'feedback' ? 'orange' : 'grey'
+  const tone = careerStatusTone(profile.careerStatus)
   const category = JOB_CATEGORIES.find((item) => item.key === profile.jobCategory)?.label
   const meta = [category, profile.tenureYears != null ? `${profile.tenureYears}년` : null].filter(Boolean).join(' · ')
   return (

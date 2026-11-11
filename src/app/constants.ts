@@ -34,21 +34,3 @@ export const FOOTER_LINKS = [
   { label: '기업 서비스' },
 ] as const
 export const FOOTER_MARK = '© 2026 Push'
-
-export const SOON_TITLE = {
-  home: '홈',
-  jobs: '채용공고',
-  search: '검색',
-  hub: '허브',
-  social: '소셜',
-  my: '마이',
-  offers: '제안함',
-  notifications: '알림함',
-  settings: '설정',
-  verify: '사업자 확인',
-  postings: '내 공고',
-  chat: '에이전트',
-  members: '담당자',
-  plans: '기업 요금제',
-  invite: '초대 수락',
-} as const

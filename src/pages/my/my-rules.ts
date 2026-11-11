@@ -1,7 +1,6 @@
 import {
   ApiError,
   type Career,
-  type CareerStatus,
   type LinkKind,
   type SourceItem,
 } from '@push/api-client'
@@ -85,20 +84,16 @@ export const normalizeUrl = (value: string) => {
 
 export const linkHost = (url: string) => url.replace(/^https?:\/\//, '').replace(/\/$/, '')
 
-export const guessLinkKind = (url: string): LinkKind =>
-  /github\.com/.test(url)
-    ? 'github'
-    : /velog|tistory|medium|brunch|blog/.test(url)
-      ? 'blog'
-      : /notion|portfolio|behance/.test(url)
-        ? 'portfolio'
-        : /career|jobs|recruit|wanted|saramin|jobkorea|greeting/.test(url)
-          ? 'job'
-          : 'other'
+export const guessLinkKind = (url: string): LinkKind => {
+  if (/github\.com/.test(url)) return 'github'
+  if (/velog|tistory|medium|brunch|blog/.test(url)) return 'blog'
+  if (/notion|portfolio|behance/.test(url)) return 'portfolio'
+  if (/career|jobs|recruit|wanted|saramin|jobkorea|greeting/.test(url)) return 'job'
+  return 'other'
+}
 
 export const linkCompany = (title: string) => title.split(' · ')[0] ?? title
 
-export const statusTone = (status: CareerStatus | null) =>
-  status === 'seeking' ? 'green' : status === 'feedback' ? 'orange' : 'grey'
+export { careerStatusTone as statusTone } from '../../entities/profile/career-status'
 
 export const countLabel = (value: string, max: number) => `${[...value].length} / ${max}`

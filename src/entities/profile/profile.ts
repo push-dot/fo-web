@@ -36,5 +36,3 @@ export const useProfilePages = (queryKey: unknown[], query: Parameters<typeof pr
     getNextPageParam: (last) => (last.page.hasMore ? (last.page.nextCursor ?? undefined) : undefined),
   })
 
-export const useProfileCount = (queryKey: unknown[], query: Parameters<typeof profilesList>[0], enabled: boolean) =>
-  useQuery({ queryKey, queryFn: () => profilesList(query), enabled })

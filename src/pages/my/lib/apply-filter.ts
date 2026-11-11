@@ -14,13 +14,7 @@ export const applyCounts = (items: Pick<Application, 'stage'>[]): Record<ApplyFi
 export const filterApplications = <T extends Pick<Application, 'stage'>>(items: T[], filter: ApplyFilter) =>
   filter === 'all' ? items : items.filter((item) => phase(item.stage) === filter)
 
-export const stageTone = (stage: ApplicationStage) => {
-  if (stage === 'SCREENING') return 'ac'
-  if (stage === 'INTERVIEW') return 'orange'
-  if (stage === 'OFFER' || stage === 'ACCEPTED') return 'green'
-  if (stage === 'REJECTED' || stage === 'WITHDRAWN') return 'red'
-  return 'grey'
-}
+export { applicationStageTone as stageTone } from '../../../entities/application/stage-label'
 
 export const appliedLine = (item: Pick<Application, 'company' | 'appliedAt' | 'createdAt'>) => {
   const date = new Date(item.appliedAt ?? item.createdAt)

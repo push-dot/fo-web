@@ -2,7 +2,7 @@ import { POST_CATEGORIES, type PostCategory } from '@push/api-client'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
-import { usePostPages, authorLabel } from '../../entities/post'
+import { authorLabel, postCategoryLabel, usePostPages } from '../../entities/post'
 import { composerPrompt } from '../../features/compose-post'
 import { compactCount } from '../../shared/lib/format'
 import Skeleton from '../../shared/ui/skeleton'
@@ -13,8 +13,6 @@ import { COMPOSER_ACTION, POPULAR_TITLE, POST_PAGE_SIZE, SOCIAL_EMPTY, SOCIAL_ER
 import PostCard from './post-card'
 import { usePopularPosts } from './popular-posts'
 import { useViewerAuthor } from './use-viewer-author'
-
-const categoryLabel = (key: PostCategory) => POST_CATEGORIES.find((item) => item.key === key)?.label ?? key
 
 const SocialPage = () => {
   const [category, setCategory] = useState<PostCategory | null>(null)
@@ -74,7 +72,7 @@ const SocialPage = () => {
           {popular.map((post) => (
             <Link key={post.id} to={`/posts/${post.id}`} className="popular-row">
               <span className="b2 cap">{post.title}</span>
-              <span className="c1 t3">{`${categoryLabel(post.category)} · 조회 ${compactCount(post.viewCount)}`}</span>
+              <span className="c1 t3">{`${postCategoryLabel(post.category)} · 조회 ${compactCount(post.viewCount)}`}</span>
             </Link>
           ))}
         </aside>
