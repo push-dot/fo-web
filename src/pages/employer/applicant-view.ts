@@ -11,20 +11,7 @@ export const DOC_BADGE: Record<ApplicantDocumentKind, { label: string; tone: Ton
   FILE: { label: DOC_FILE, tone: 'grey' },
 }
 
-const STAGE_TONE: Record<ApplicationStage, string> = {
-  DISCOVERED: 'grey',
-  PREPARING: 'grey',
-  READY: 'grey',
-  APPLIED: 'grey',
-  SCREENING: 'ac',
-  INTERVIEW: 'orange',
-  OFFER: 'green',
-  ACCEPTED: 'green',
-  REJECTED: 'red',
-  WITHDRAWN: 'red',
-}
-
-export const stageTone = (stage: ApplicationStage) => STAGE_TONE[stage]
+export { applicationStageTone as stageTone } from '../../entities/application/stage-label'
 
 // 개발 · 5년 · <headline>
 export const applicantSub = (applicant: ApplicantSummary['applicant']) =>

@@ -3,7 +3,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 
-import { authorLabel, usePost, usePostComments } from '../../entities/post'
+import { authorLabel, postCategoryLabel, usePost, usePostComments } from '../../entities/post'
 import { postsComment } from '../../features/comment-on-post'
 import { assetUrl } from '../../shared/api/client'
 import { compactCount, relativeTime } from '../../shared/lib/format'
@@ -88,7 +88,7 @@ const PostPage = () => {
         <Skeleton rows={5} />
       </main>
     )
-  const category = POST_CATEGORIES.find((item) => item.key === post.category)?.label ?? post.category
+  const category = postCategoryLabel(post.category)
   const items: MenuItem[] = [
     { label: '공유하기', icon: 'share', onSelect: () => void share() },
     { label: '링크 복사', icon: 'link', onSelect: () => void copyLink() },
