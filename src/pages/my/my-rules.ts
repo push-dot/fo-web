@@ -98,7 +98,6 @@ export const guessLinkKind = (url: string): LinkKind =>
 
 export const linkCompany = (title: string) => title.split(' · ')[0] ?? title
 
-export const statusTone = (status: CareerStatus | null) =>
-  status === 'seeking' ? 'green' : status === 'feedback' ? 'orange' : 'grey'
+export { careerStatusTone as statusTone } from '../../entities/profile/career-status'
 
 export const countLabel = (value: string, max: number) => `${[...value].length} / ${max}`

@@ -2,6 +2,7 @@ import { CAREER_STATUSES, type Post, type Posting, type Profile } from '@push/ap
 import { brandColor, careerLabel, matchHangul } from '@push/shared'
 import { Link } from 'react-router-dom'
 
+import { careerStatusTone } from '../../entities/profile'
 import { initials } from '../../shared/lib/format'
 import { Icon } from '../../shared/ui/icon'
 
@@ -41,7 +42,7 @@ export const PostingRow = ({ posting, q }: { posting: Posting; q: string }) => (
 
 export const PersonRow = ({ person, q }: { person: Profile; q: string }) => {
   const status = CAREER_STATUSES.find((item) => item.key === person.careerStatus)?.label
-  const tone = person.careerStatus === 'seeking' ? 'green' : person.careerStatus === 'feedback' ? 'orange' : 'grey'
+  const tone = careerStatusTone(person.careerStatus)
   return (
     <Link to={`/profiles/${person.userId}`} className="search-row person">
       <span className="ph" style={{ background: brandColor(person.displayName) }}>

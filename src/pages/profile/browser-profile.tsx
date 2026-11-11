@@ -5,11 +5,11 @@ import { assetUrl } from '../../shared/api/client'
 import { NAV } from '../../app/constants'
 import { initials } from '../../shared/lib/format'
 import { Icon } from '../../shared/ui/icon'
+import { careerStatusTone } from '../../entities/profile'
 import { careerPeriod } from './career-period'
 import { profileStats } from './profile-stats'
 import ProfileTools from './profile-tools'
 
-const statusClass = (status: Profile['careerStatus']) => (status === 'seeking' ? 'green' : status === 'feedback' ? 'orange' : 'grey')
 
 const BrowserProfile = ({ profile }: { profile: Profile }) => {
   const status = CAREER_STATUSES.find((item) => item.key === profile.careerStatus)?.label
