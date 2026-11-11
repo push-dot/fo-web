@@ -1,7 +1,6 @@
 import {
   ApiError,
   type Career,
-  type CareerStatus,
   type LinkKind,
   type SourceItem,
 } from '@push/api-client'

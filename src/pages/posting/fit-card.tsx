@@ -21,7 +21,7 @@ const C = 2 * Math.PI * 27
 
 const fitCardSubtitle = (
   status: ReturnType<typeof fitStatus>,
-  fit: FitCardModel | undefined,
+  fit: FitCardModel | null | undefined,
 ): string | null => {
   if (status === 'comparing') return FIT_COMPARING
   if (status === 'soon') return FIT_SOON
