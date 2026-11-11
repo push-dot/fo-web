@@ -22,7 +22,7 @@ import {
   STATUS_OPEN,
 } from './constants'
 import { useMyPostings } from '../../entities/posting'
-import { postingsClose } from '../../features/edit-posting'
+import { afterListPostingClose, postingsClose } from '../../features/edit-posting'
 import { ConfirmDialog } from '../../shared/ui/dialog'
 import { Icon } from '../../shared/ui/icon'
 import StateBlock, { ErrorState } from '../../shared/ui/state-block'
@@ -40,9 +40,9 @@ const PostingsPage = () => {
   const postings = useMyPostings()
   const close = useMutation({
     mutationFn: (posting: CompanyPosting) => postingsClose(posting.id, posting.revision ?? 0),
-    onSuccess: async () => {
+    onSuccess: async (_data, posting) => {
       toast.show(POSTING_CLOSED)
-      await queryClient.invalidateQueries({ queryKey: ['company-postings'] })
+      await afterListPostingClose(queryClient, posting.id)
     },
     onError: () => toast.show(POSTING_CLOSE_FAILED, { tone: 'err' }),
     onSettled: () => setClosing(null),

@@ -1,6 +1,8 @@
 import type { Session } from '@push/api-client'
+import { mockBuild } from '../lib/bridge'
 import { browserLocalStorage, browserSessionStorage } from '../lib/storage'
 import { SESSION_STORAGE_KEY } from './constants'
+import { usesMockSessionStorage } from './mock-session-storage'
 import { forgetSignupReturnTo } from './return-path'
 
 export type StorageLike = {
@@ -26,18 +28,18 @@ const defaultStorage = (): StorageLike => {
   const local = browserLocalStorage()
   const session = browserSessionStorage()
   if (!local || !session) return memoryStorage()
-  return storageForSession(mockDocument(), { local, session })
+  return storageForSession(documentUsesMockSession(), { local, session })
 }
 
 export const storageForSession = (mock: boolean, available: { local: StorageLike; session: StorageLike }) =>
   mock ? available.session : available.local
 
-const mockDocument = () => {
-  if (typeof window === 'undefined') return false
-  const env = (window as Window & { __PUSH__?: { mock?: boolean } }).__PUSH__
-  if (env?.mock) return true
-  return new URLSearchParams(window.location.search).has('mock')
-}
+export const documentUsesMockSession = (
+  build = mockBuild,
+  search = typeof window === 'undefined' ? '' : window.location.search,
+  injected = typeof window === 'undefined' ? false : !!(window as Window & { __PUSH__?: { mock?: boolean } }).__PUSH__?.mock,
+) =>
+  usesMockSessionStorage(build, new URLSearchParams(search).has('mock'), injected)
 
 export const createSessionStore = (storage: StorageLike) => {
   const listeners = new Set<() => void>()
