@@ -82,7 +82,6 @@ export const CALENDAR_COPY = {
 
 export const CALENDAR_WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'] as const
 export const COMPANY_UNVERIFIED = '사업자 인증이 필요해요'
-export const PLAN_NONE = '없음'
 export const PROFILE_SAVED = '프로필을 저장했어요'
 export const DOCUMENT_AI_LABEL = '앱의 에이전트에서 만듦'
 export const DROP_TITLE = '파일을 여기에 끌어다 놓으세요'

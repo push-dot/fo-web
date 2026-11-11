@@ -1,4 +1,4 @@
-import { ApiError, QueueBusyError, type AccessMode, type EmployerStage, type LedgerEntry, type ToolRunState } from '@push/api-client'
+import { ApiError, QueueBusyError, type AccessMode, type EmployerStage, type LedgerEntry } from '@push/api-client'
 import type { ApprovalFailure } from '../../features/employer-chat'
 import { creditText } from '../../entities/billing'
 import { PLAN_NAME, seatLimit, type EmployerPlanId } from '../../shared/model/employer-plan'

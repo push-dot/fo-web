@@ -79,8 +79,6 @@ export const conversationsMessages = (...args: Parameters<Api['conversations']['
 
 export const conversationsTurns = (...args: Parameters<Api['conversations']['turns']>) => api.conversations.turns(...args)
 
-export const conversationsSend = (...args: Parameters<Api['conversations']['send']>) => api.conversations.send(...args)
-
 export const conversationsStream = (...args: Parameters<Api['conversations']['stream']>) => api.conversations.stream(...args)
 
 export const conversationsFollow = (...args: Parameters<Api['conversations']['follow']>) => api.conversations.follow(...args)
@@ -133,8 +131,6 @@ export const meSendOfferMessage = (...args: Parameters<Api['me']['sendOfferMessa
 export const meSettings = (...args: Parameters<Api['me']['settings']>) => api.me.settings(...args)
 
 export const meUnarchiveOffer = (...args: Parameters<Api['me']['unarchiveOffer']>) => api.me.unarchiveOffer(...args)
-
-export const meUpdateConsents = (...args: Parameters<Api['me']['updateConsents']>) => api.me.updateConsents(...args)
 
 export const meUpdateTerms = (...args: Parameters<Api['me']['updateTerms']>) => api.me.updateTerms(...args)
 
@@ -195,8 +191,6 @@ export const profilesList = (...args: Parameters<Api['profiles']['list']>) => ap
 export const profilesOffer = (...args: Parameters<Api['profiles']['offer']>) => api.profiles.offer(...args)
 
 export const profilesUnfollow = (...args: Parameters<Api['profiles']['unfollow']>) => api.profiles.unfollow(...args)
-
-export const sourcesGet = (...args: Parameters<Api['sources']['get']>) => api.sources.get(...args)
 
 export const sourcesList = (...args: Parameters<Api['sources']['list']>) => api.sources.list(...args)
 
