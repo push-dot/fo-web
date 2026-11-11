@@ -7,11 +7,15 @@ import PostPage from './post-page'
 
 const state = vi.hoisted(() => ({ post: {} as Record<string, unknown>, comments: {} as Record<string, unknown> }))
 
-vi.mock('../../entities/post', () => ({
-  authorLabel: () => '김서준',
-  usePost: () => state.post,
-  usePostComments: () => state.comments,
-}))
+vi.mock('../../entities/post', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../../entities/post')>()
+  return {
+    ...actual,
+    authorLabel: () => '김서준',
+    usePost: () => state.post,
+    usePostComments: () => state.comments,
+  }
+})
 vi.mock('./use-viewer-author', () => ({ useViewerAuthor: () => null }))
 
 const post = {
