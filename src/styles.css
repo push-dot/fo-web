@@ -1462,6 +1462,7 @@ button.shortcut{border:0;cursor:pointer;font:inherit}
 .browser .inbox.is-thread{min-height:calc(100vh - 64px)}
 .browser:not(.auth-shell) .shell-main,.browser .hd .wrap,.browser .ft .wrap{padding-left:16px;padding-right:16px}
 .browser .h-scroll,.browser .job-grid,.browser .shortcuts{grid-template-columns:repeat(2,minmax(0,1fr))}
+.browser .shortcuts>:first-child{grid-column:1/-1}
 .browser .hub-grid,.browser .plan-grid{grid-template-columns:minmax(0,1fr)}
 .browser .chat-top{padding:0 12px 0 8px}
 .browser .chat-col{padding:32px 16px 24px}
