@@ -1461,8 +1461,11 @@ button.shortcut{border:0;cursor:pointer;font:inherit}
 .browser .bubble p{max-width:85%;word-break:keep-all}
 .browser .inbox.is-thread{min-height:calc(100vh - 64px)}
 .browser:not(.auth-shell) .shell-main,.browser .hd .wrap,.browser .ft .wrap{padding-left:16px;padding-right:16px}
-.browser .h-scroll,.browser .job-grid,.browser .shortcuts{grid-template-columns:repeat(2,minmax(0,1fr))}
+.browser .job-grid,.browser .shortcuts{grid-template-columns:repeat(2,minmax(0,1fr))}
 .browser .shortcuts>:first-child{grid-column:1/-1}
+.browser .h-scroll{display:grid;grid-auto-flow:column;grid-auto-columns:160px;grid-template-columns:none;gap:12px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x proximity;scroll-padding-inline:16px;scrollbar-width:none;-ms-overflow-style:none;margin-left:-16px;margin-right:-16px;padding:0 16px 8px}
+.browser .h-scroll::-webkit-scrollbar{display:none}
+.browser .h-scroll .jc{scroll-snap-align:start}
 .browser .hub-grid,.browser .plan-grid{grid-template-columns:minmax(0,1fr)}
 .browser .chat-top{padding:0 12px 0 8px}
 .browser .chat-col{padding:32px 16px 24px}
