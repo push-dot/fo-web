@@ -1,12 +1,13 @@
-import { POST_CATEGORIES, type Post } from '@push/api-client'
+import type { Post } from '@push/api-client'
 import { Link } from 'react-router-dom'
 
+import { postCategoryLabel } from '../../entities/post'
 import { compactCount } from '../../shared/lib/format'
 import { Icon } from '../../shared/ui/icon'
 import { postAge } from './lib'
 
 const MyPostRow = ({ post }: { post: Post }) => {
-  const category = POST_CATEGORIES.find((item) => item.key === post.category)?.label ?? post.category
+  const category = postCategoryLabel(post.category)
   return (
     <li>
       <Link to={`/posts/${post.id}`} className="my-post">

@@ -1,5 +1,13 @@
 import type { ApplicationStage } from '@push/api-client'
 
+export const applicationStageTone = (stage: ApplicationStage) => {
+  if (stage === 'SCREENING') return 'ac'
+  if (stage === 'INTERVIEW') return 'orange'
+  if (stage === 'OFFER' || stage === 'ACCEPTED') return 'green'
+  if (stage === 'REJECTED' || stage === 'WITHDRAWN') return 'red'
+  return 'grey'
+}
+
 export const employerStageLabel = (stage: ApplicationStage) => {
   if (stage === 'APPLIED') return '지원함'
   if (stage === 'SCREENING') return '서류 통과'

@@ -33,17 +33,17 @@ const Chip = ({
   </span>
 )
 
+const postingChipKicker = (mine: { closedAt?: string | null } | undefined, company: string) => {
+  if (mine) return mine.closedAt ? POSTING_CLOSED_KICKER : POSTING_OPEN_KICKER
+  if (company) return referenceKicker(company)
+  return POSTING_OPEN_KICKER
+}
+
 const PostingChip = ({ id, title }: { id: string; title?: string }) => {
   const mine = useMyPostings().data?.data.find((item) => item.id === id)
   const posting = useEmployerPosting(mine ? undefined : id).data
   const company = mine?.company ?? posting?.company ?? ''
-  const kicker = mine
-    ? mine.closedAt
-      ? POSTING_CLOSED_KICKER
-      : POSTING_OPEN_KICKER
-    : company
-      ? referenceKicker(company)
-      : POSTING_OPEN_KICKER
+  const kicker = postingChipKicker(mine, company)
   return (
     <Chip
       company

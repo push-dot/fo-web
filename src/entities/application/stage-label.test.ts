@@ -1,14 +1,35 @@
+import type { ApplicationStage } from '@push/api-client'
 import { describe, expect, it } from 'vitest'
-import { employerStageLabel } from './stage-label'
 
-describe('employerStageLabel', () => {
-  it('uses the employer stage names', () => {
-    expect(employerStageLabel('APPLIED')).toBe('지원함')
-    expect(employerStageLabel('SCREENING')).toBe('서류 통과')
-    expect(employerStageLabel('INTERVIEW')).toBe('면접')
-    expect(employerStageLabel('OFFER')).toBe('합격')
-    expect(employerStageLabel('ACCEPTED')).toBe('합격')
-    expect(employerStageLabel('REJECTED')).toBe('불합격')
-    expect(employerStageLabel('WITHDRAWN')).toBe('불합격')
+import { applicationStageTone } from './stage-label'
+
+const stages: ApplicationStage[] = [
+  'DISCOVERED',
+  'PREPARING',
+  'READY',
+  'APPLIED',
+  'SCREENING',
+  'INTERVIEW',
+  'OFFER',
+  'ACCEPTED',
+  'REJECTED',
+  'WITHDRAWN',
+]
+
+describe('applicationStageTone', () => {
+  it('maps each application stage to a badge tone', () => {
+    const tones = Object.fromEntries(stages.map((stage) => [stage, applicationStageTone(stage)]))
+    expect(tones).toEqual({
+      DISCOVERED: 'grey',
+      PREPARING: 'grey',
+      READY: 'grey',
+      APPLIED: 'grey',
+      SCREENING: 'ac',
+      INTERVIEW: 'orange',
+      OFFER: 'green',
+      ACCEPTED: 'green',
+      REJECTED: 'red',
+      WITHDRAWN: 'red',
+    })
   })
 })

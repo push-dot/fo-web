@@ -19,6 +19,16 @@ import {
 
 const C = 2 * Math.PI * 27
 
+const fitCardSubtitle = (
+  status: ReturnType<typeof fitStatus>,
+  fit: FitCardModel | null | undefined,
+): string | null => {
+  if (status === 'comparing') return FIT_COMPARING
+  if (status === 'soon') return FIT_SOON
+  if (status === 'ready' && fit?.reachable != null) return `조금만 고치면 ${fit.reachable}점대예요`
+  return null
+}
+
 const loadMockFit = async (): Promise<FitCardModel> => {
   const [{ mockFit }] = await Promise.all([loadMock(), new Promise((resolve) => setTimeout(resolve, MOCK_FIT_DELAY_MS))])
   return {
@@ -69,14 +79,7 @@ const FitCard = ({ postingId }: { postingId: string }) => {
   const fit = fitQuery.data
   const paymentsOpen = usePaymentsOpen()
   const status = fitStatus({ documentPending: documentQuery.isPending, document: doc, fitPending: fitQuery.isPending, fit })
-  const subtitle =
-    status === 'comparing'
-      ? FIT_COMPARING
-      : status === 'soon'
-        ? FIT_SOON
-        : status === 'ready' && fit?.reachable != null
-          ? `조금만 고치면 ${fit.reachable}점대예요`
-          : null
+  const subtitle = fitCardSubtitle(status, fit)
   const document = fit?.document ?? doc?.title
   return (
     <button

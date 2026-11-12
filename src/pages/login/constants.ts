@@ -51,7 +51,6 @@ export const CODE_WRONG = '인증번호가 맞지 않아요. 다시 확인해 �
 export const CODE_EXPIRED = '인증번호가 만료됐어요. 새 번호를 받아 주세요.'
 export const CODE_SEND_LATER = '잠시 후에 다시 받을 수 있어요.'
 export const CODE_LIMIT_DETAIL = '새 인증번호를 받아 다시 입력해 주세요.'
-export const CODE_MAX_ATTEMPTS = 5
 export const codeLimitTitle = (attempts: number) => `인증번호를 ${attempts}번 잘못 입력했어요`
 
 export const CONSENT_TITLE = '서비스 이용에 동의해 주세요'

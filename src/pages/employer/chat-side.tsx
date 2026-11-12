@@ -9,12 +9,11 @@ import { CHAT_EMPTY, CHAT_FAILED, CHAT_LOADING, CHAT_NEW, CHAT_SHARED } from './
 /** Board marks: a running job is accent, a pending approval is orange, a finished chat has none. */
 export const chatListMark = (
   status: ConversationStatus,
-): { label: string; tone: 'ac' | 'orange' } | null =>
-  status === 'RUNNING'
-    ? { label: '작업 중', tone: 'ac' }
-    : status === 'NEEDS_APPROVAL'
-      ? { label: '확인 필요', tone: 'orange' }
-      : null
+): { label: string; tone: 'ac' | 'orange' } | null => {
+  if (status === 'RUNNING') return { label: '작업 중', tone: 'ac' }
+  if (status === 'NEEDS_APPROVAL') return { label: '확인 필요', tone: 'orange' }
+  return null
+}
 
 export const UsageMeter = ({ usage, className }: { usage: ChatUsage; className: string }) => (
   <span className={usage.full ? `${className} full` : className} aria-hidden="true">
