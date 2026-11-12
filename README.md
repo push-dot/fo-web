@@ -128,7 +128,15 @@ pnpm --filter @push/fo-web build
 
 `.github/workflows/ci.yml`은 PR과 `develop`·`main` push, `workflow_dispatch`에서 돌아갑니다. 워크플로는 [push-fe](https://github.com/push-dot/push-fe)를 받고(기본 `develop`), `apps/fo-mobile` 서브모듈을 초기화한 뒤, 검사 대상 커밋을 `apps/fo-web`에 둡니다. 이어서 push-fe 루트에서 `pnpm install --frozen-lockfile`, `pnpm exec turbo run typecheck lint test --filter=@push/fo-web...`, `pnpm --filter @push/fo-web build`를 실행하고 `apps/fo-web/dist/index.html`이 생겼는지 확인합니다.
 
-의존성이 바뀌었는데 잠금 파일이 없으면 frozen install이 실패합니다. 그때는 위의 `push-fe-ref` 줄을 사용합니다. 이 저장소에는 웹 호스팅 배포 워크플로가 없습니다.
+의존성이 바뀌었는데 잠금 파일이 없으면 frozen install이 실패합니다. 그때는 위의 `push-fe-ref` 줄을 사용합니다.
+
+### Cloudflare 배포
+
+`.github/workflows/deploy.yml`은 `main`에 push되거나 `workflow_dispatch`로 실행될 때 Cloudflare Workers Static Assets로 올립니다. 체크아웃과 설치는 CI와 같습니다. 프로덕션 빌드는 `VITE_API_BASE_URL=https://push-be.youngjoon568.workers.dev/api/v1`로 하고, `VITE_PUSH_MOCK`은 넣지 않습니다. 이어서 앱 디렉터리에서 `npx wrangler@4.158.0 deploy`를 실행합니다.
+
+Worker 이름은 `push-fo-web`이고, 공개 주소는 `workers.dev`입니다. 커스텀 도메인은 없습니다.
+
+필요한 GitHub Actions 시크릿은 `CLOUDFLARE_API_TOKEN`과 `CLOUDFLARE_ACCOUNT_ID`입니다.
 
 ## 브랜치 규칙
 
