@@ -1552,13 +1552,14 @@ button.shortcut{border:0;cursor:pointer;font:inherit}
 .browser .sk-card{display:flex;flex-direction:column;gap:8px}
 .browser .sk-ph{display:block;aspect-ratio:1.47;border-radius:16px;margin-bottom:4px;background:var(--fill)}
 .browser .sk-bar{display:block;border-radius:6px;background:var(--fill)}
-.browser .legal article{display:flex;flex-direction:column;width:100%;max-width:760px;margin:0 auto}
+.browser .legal article{display:flex;flex-direction:column;width:100%;max-width:760px;min-width:0;margin:0 auto}
 .browser .legal .tabs{margin-bottom:32px}
 .browser .legal-date{margin-top:8px}
-.browser .legal-body{display:flex;flex-direction:column;gap:14px;margin-top:40px;word-break:keep-all;overflow-wrap:break-word}
-.browser .legal-section{display:flex;flex-direction:column;gap:14px;margin-top:22px}
+.browser .legal-body{display:flex;flex-direction:column;gap:14px;margin-top:40px;min-width:0;word-break:keep-all;overflow-wrap:anywhere}
+.browser .legal-section{display:flex;flex-direction:column;gap:14px;margin-top:22px;min-width:0}
 .browser .legal-list{margin:0;padding-left:1.6em;display:flex;flex-direction:column;gap:8px}
-.browser .legal-table th,.browser .legal-table td{vertical-align:top}
+.browser .biz-table-wrap{max-width:100%;min-width:0;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.browser .legal-table th,.browser .legal-table td{vertical-align:top;overflow-wrap:break-word}
 .browser .legal-table td:first-child{font-weight:700;min-width:6em}
 .browser .mtab{display:none}
 
