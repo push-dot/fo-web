@@ -13,6 +13,9 @@ export const FIT_PART_LABELS = FIT_PARTS.map((part) => part[1])
 const WAITING_FIT_LABELS: readonly string[] = ['기술 스택', '경험 연관성', '키워드']
 export const WAITING_FIT_PARTS = FIT_PART_LABELS.filter((label) => WAITING_FIT_LABELS.includes(label)).map((label) => ({ label, value: null }))
 
+// MyBookmarkJob draws the three waiting-card parts with the score; JobDetail draws all five.
+export const bookmarkFitParts = <T extends { label: string }>(parts: T[]) => parts.filter((part) => WAITING_FIT_LABELS.includes(part.label))
+
 export const FIT_LOCK = '🔒 PRO로 올리면 항목별 점수와 약점을 볼 수 있어요'
 export const FIT_LOCK_CLOSED = '🔒 항목별 점수와 약점은 PRO에서 볼 수 있어요'
 export const FIT_SOON = '적합도는 곧 볼 수 있어요'

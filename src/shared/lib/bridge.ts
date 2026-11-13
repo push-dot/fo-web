@@ -26,6 +26,14 @@ export const pushEnv = (): PushEnv => {
   return (window.__PUSH__ ??= {})
 }
 
+/** Which app list opened the page; the app boards for one route differ by it. */
+export type WebViewFrom = 'following' | 'bookmark'
+
+export const webViewFrom = (search = typeof location === 'undefined' ? '' : location.search): WebViewFrom | undefined => {
+  const from = new URLSearchParams(search).get('from')
+  return from === 'following' || from === 'bookmark' ? from : undefined
+}
+
 export const isWebView = () => typeof window !== 'undefined' && !!window.ReactNativeWebView
 
 export const mockBuild = import.meta.env.DEV || import.meta.env.VITE_PUSH_MOCK === '1'

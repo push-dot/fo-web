@@ -2,11 +2,12 @@ import { useQuery } from '@tanstack/react-query'
 import { usePaymentsOpen } from '../../entities/billing'
 import { api } from '../../shared/api/client'
 import { loadMock } from '../../shared/api/mock-loader'
-import { isMock, isWebView, send } from '../../shared/lib/bridge'
+import { isMock, isWebView, send, webViewFrom } from '../../shared/lib/bridge'
 import { MOCK_FIT_DELAY_MS } from './constants'
 import {
   FIT_COMPARING,
   FIT_PART_LABELS,
+  bookmarkFitParts,
   WAITING_FIT_PARTS,
   FIT_SOON,
   firstDocument,
@@ -128,7 +129,7 @@ const FitCard = ({ postingId }: { postingId: string }) => {
         </div>
       ) : (
         <>
-          {(fit?.parts ?? WAITING_FIT_PARTS).map(({ label, value }, i) => (
+          {(fit ? (webViewFrom() === 'bookmark' ? bookmarkFitParts(fit.parts) : fit.parts) : WAITING_FIT_PARTS).map(({ label, value }, i) => (
             <FitRow key={label} label={label} value={value} index={i} />
           ))}
           {fit?.weakness ? (

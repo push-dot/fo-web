@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { FIT_LOCK, FIT_LOCK_CLOSED, FIT_PART_LABELS, firstDocument, fitCardModel, fitLockText, fitStatus, runPostingFit, WAITING_FIT_PARTS, type FitPayload } from './fit-view'
+import { bookmarkFitParts, FIT_LOCK, FIT_LOCK_CLOSED, FIT_PART_LABELS, firstDocument, fitCardModel, fitLockText, fitStatus, runPostingFit, WAITING_FIT_PARTS, type FitPayload } from './fit-view'
 
 const payload = (plan: string): FitPayload => ({
   fitScore: 6.9,
@@ -74,6 +74,14 @@ describe('fit card', () => {
     const polled = await runPostingFit('p1', doc, client('PRO', ['RUNNING', 'DONE']), noSleep)
     expect(polled?.locked).toBe(false)
     expect(polled?.document).toBe('김서준_백엔드_이력서_2026')
+  })
+})
+
+describe('bookmarkFitParts', () => {
+  it('keeps the three parts MyBookmarkJob draws and drops career level and domain', () => {
+    const parts = fitCardModel(payload('PRO'), '이력서').parts
+    expect(bookmarkFitParts(parts).map((part) => part.label)).toEqual(['기술 스택', '경험 연관성', '키워드'])
+    expect(bookmarkFitParts(parts).map((part) => part.value)).toEqual([8.2, 7.4, 4.5])
   })
 })
 
