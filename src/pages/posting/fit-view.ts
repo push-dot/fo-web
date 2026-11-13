@@ -9,6 +9,10 @@ const FIT_PARTS = [
 ] as const
 
 export const FIT_PART_LABELS = FIT_PARTS.map((part) => part[1])
+// The app board draws three of the five parts; the server still scores all five.
+const APP_FIT_LABELS: readonly string[] = ['기술 스택', '경험 연관성', '키워드']
+export const appFitParts = <T extends { label: string }>(parts: T[]): T[] => parts.filter((part) => APP_FIT_LABELS.includes(part.label))
+
 export const FIT_LOCK = '🔒 PRO로 올리면 항목별 점수와 약점을 볼 수 있어요'
 export const FIT_LOCK_CLOSED = '🔒 항목별 점수와 약점은 PRO에서 볼 수 있어요'
 export const FIT_SOON = '적합도는 곧 볼 수 있어요'

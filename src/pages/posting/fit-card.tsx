@@ -7,6 +7,7 @@ import { MOCK_FIT_DELAY_MS } from './constants'
 import {
   FIT_COMPARING,
   FIT_PART_LABELS,
+  appFitParts,
   FIT_SOON,
   firstDocument,
   fitLockText,
@@ -111,7 +112,7 @@ const FitCard = ({ postingId }: { postingId: string }) => {
       {status === 'locked' ? (
         <div className="fit-lock">
           <div className="fit-lock-rows" aria-hidden="true">
-            {FIT_PART_LABELS.map((label, i) => (
+            {appFitParts(FIT_PART_LABELS.map((label) => ({ label }))).map(({ label }, i) => (
               <FitRow key={label} label={label} value={null} index={i} />
             ))}
           </div>
@@ -126,7 +127,7 @@ const FitCard = ({ postingId }: { postingId: string }) => {
         </div>
       ) : (
         <>
-          {(fit?.parts ?? FIT_PART_LABELS.map((label) => ({ label, value: null }))).map(({ label, value }, i) => (
+          {appFitParts(fit?.parts ?? FIT_PART_LABELS.map((label) => ({ label, value: null }))).map(({ label, value }, i) => (
             <FitRow key={label} label={label} value={value} index={i} />
           ))}
           {fit?.weakness ? (
