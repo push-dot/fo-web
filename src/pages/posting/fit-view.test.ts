@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { FIT_LOCK, FIT_LOCK_CLOSED, FIT_PART_LABELS, firstDocument, fitCardModel, fitLockText, fitStatus, runPostingFit, type FitPayload } from './fit-view'
+import { appFitParts, FIT_LOCK, FIT_LOCK_CLOSED, FIT_PART_LABELS, firstDocument, fitCardModel, fitLockText, fitStatus, runPostingFit, type FitPayload } from './fit-view'
 
 const payload = (plan: string): FitPayload => ({
   fitScore: 6.9,
@@ -41,6 +41,12 @@ describe('fit card', () => {
       expect(model.weakness).toBe('도메인')
       expect(JSON.stringify(model)).not.toContain('%')
     }
+  })
+
+  it('keeps the three parts the app board draws, in order', () => {
+    const parts = fitCardModel(payload('PRO'), '이력서').parts
+    expect(appFitParts(parts).map((part) => part.label)).toEqual(['기술 스택', '경험 연관성', '키워드'])
+    expect(appFitParts(parts.map((part) => ({ label: part.label }))).length).toBe(3)
   })
 
   it('turns reachable into the next score band on PRO and ULTRA', () => {
