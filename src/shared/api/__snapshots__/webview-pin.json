@@ -547,6 +547,48 @@
         "updatedAt": "2026-10-18T09:00:00.000Z"
       }
     },
+    "/profiles/dev": {
+      "status": 200,
+      "data": {
+        "userId": "u1",
+        "displayName": "김서준",
+        "avatarUrl": null,
+        "headline": "결제 시스템을 만드는 백엔드 개발자",
+        "jobCategory": "dev",
+        "tenureYears": 4,
+        "careerStatus": "seeking",
+        "openToOffers": true,
+        "intro": "4년 동안 결제·정산 시스템을 설계하고 운영했어요. 트래픽이 몰리는 기간에도 장애 없는 결제를 만드는 데 집중해 왔어요.",
+        "careers": [
+          {
+            "company": "모아페이",
+            "role": "백엔드 엔지니어",
+            "startedOn": "2022-03-01",
+            "endedOn": null,
+            "description": "결제 승인 API와 정산 배치를 맡고 있어요."
+          },
+          {
+            "company": "하루랩스",
+            "role": "서버 개발자",
+            "startedOn": "2021-01-01",
+            "endedOn": "2022-02-28",
+            "description": ""
+          }
+        ],
+        "skills": [
+          "Kotlin",
+          "Spring Boot",
+          "JPA",
+          "MySQL",
+          "Kafka"
+        ],
+        "followerCount": 12,
+        "followingCount": 18,
+        "postCount": 8,
+        "resumeSourceId": "src-resume",
+        "updatedAt": "2026-10-18T09:00:00.000Z"
+      }
+    },
     "/profiles/u1": {
       "status": 200,
       "data": {
@@ -1378,6 +1420,48 @@
       }
     },
     "/profiles/me": {
+      "status": 200,
+      "data": {
+        "userId": "u1",
+        "displayName": "김서준",
+        "avatarUrl": null,
+        "headline": "결제 시스템을 만드는 백엔드 개발자",
+        "jobCategory": "dev",
+        "tenureYears": 4,
+        "careerStatus": "seeking",
+        "openToOffers": true,
+        "intro": "4년 동안 결제·정산 시스템을 설계하고 운영했어요. 트래픽이 몰리는 기간에도 장애 없는 결제를 만드는 데 집중해 왔어요.",
+        "careers": [
+          {
+            "company": "모아페이",
+            "role": "백엔드 엔지니어",
+            "startedOn": "2022-03-01",
+            "endedOn": null,
+            "description": "결제 승인 API와 정산 배치를 맡고 있어요."
+          },
+          {
+            "company": "하루랩스",
+            "role": "서버 개발자",
+            "startedOn": "2021-01-01",
+            "endedOn": "2022-02-28",
+            "description": ""
+          }
+        ],
+        "skills": [
+          "Kotlin",
+          "Spring Boot",
+          "JPA",
+          "MySQL",
+          "Kafka"
+        ],
+        "followerCount": 12,
+        "followingCount": 18,
+        "postCount": 8,
+        "resumeSourceId": "src-resume",
+        "updatedAt": "2026-10-18T09:00:00.000Z"
+      }
+    },
+    "/profiles/dev": {
       "status": 200,
       "data": {
         "userId": "u1",

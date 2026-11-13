@@ -871,6 +871,9 @@ let inviteSeq = 0
 
 const personaKey = () => mockPersona() ?? 'default'
 
+// fo-mobile's mock viewer id: the app opens its own hub profile as /profiles/dev, which is 김서준 here.
+const APP_VIEWER_ID = 'dev'
+
 const currentUserId = () => sessionStore.load()?.user.id ?? 'u1'
 
 // push-be sends every member's displayName; the boards' admin is 이민아.
@@ -2464,7 +2467,7 @@ export const mockFetch: typeof fetch = async (input, init) => {
   }
   if (method === 'GET' && /\/profiles\/[^/]+$/.test(pathname)) {
     const id = pathname.match(/\/profiles\/([^/]+)$/)?.[1] ?? HUB_PROFILES[0]!.userId
-    const app = isWebView() ? APP_PROFILES[id] : undefined
+    const app = isWebView() ? APP_PROFILES[id === APP_VIEWER_ID ? 'me' : id] : undefined
     const profile = app ? withFlags(app) : profileById(id)
     return json(200, { data: mockSwitch('offer-blocked') ? { ...profile, blockedMe: true } : profile })
   }

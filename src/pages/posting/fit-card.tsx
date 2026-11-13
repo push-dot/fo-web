@@ -2,12 +2,12 @@ import { useQuery } from '@tanstack/react-query'
 import { usePaymentsOpen } from '../../entities/billing'
 import { api } from '../../shared/api/client'
 import { loadMock } from '../../shared/api/mock-loader'
-import { isMock, send } from '../../shared/lib/bridge'
+import { isMock, isWebView, send } from '../../shared/lib/bridge'
 import { MOCK_FIT_DELAY_MS } from './constants'
 import {
   FIT_COMPARING,
   FIT_PART_LABELS,
-  appFitParts,
+  WAITING_FIT_PARTS,
   FIT_SOON,
   firstDocument,
   fitLockText,
@@ -31,7 +31,8 @@ const fitCardSubtitle = (
 }
 
 const loadMockFit = async (): Promise<FitCardModel> => {
-  const [{ mockFit }] = await Promise.all([loadMock(), new Promise((resolve) => setTimeout(resolve, MOCK_FIT_DELAY_MS))])
+  // The app boards draw the finished fit card, so the WebView mock skips the waiting delay.
+  const [{ mockFit }] = await Promise.all([loadMock(), new Promise((resolve) => setTimeout(resolve, isWebView() ? 0 : MOCK_FIT_DELAY_MS))])
   return {
     document: mockFit.document,
     score: mockFit.score,
@@ -112,7 +113,7 @@ const FitCard = ({ postingId }: { postingId: string }) => {
       {status === 'locked' ? (
         <div className="fit-lock">
           <div className="fit-lock-rows" aria-hidden="true">
-            {appFitParts(FIT_PART_LABELS.map((label) => ({ label }))).map(({ label }, i) => (
+            {FIT_PART_LABELS.map((label, i) => (
               <FitRow key={label} label={label} value={null} index={i} />
             ))}
           </div>
@@ -127,7 +128,7 @@ const FitCard = ({ postingId }: { postingId: string }) => {
         </div>
       ) : (
         <>
-          {appFitParts(fit?.parts ?? FIT_PART_LABELS.map((label) => ({ label, value: null }))).map(({ label, value }, i) => (
+          {(fit?.parts ?? WAITING_FIT_PARTS).map(({ label, value }, i) => (
             <FitRow key={label} label={label} value={value} index={i} />
           ))}
           {fit?.weakness ? (
