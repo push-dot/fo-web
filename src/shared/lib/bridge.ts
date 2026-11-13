@@ -13,7 +13,6 @@ export type BridgeMessage =
   | { type: 'open'; path: string }
   | { type: 'error'; status: number }
   | { type: 'external'; url: string }
-  | { type: 'export-profile'; userId: string }
 
 declare global {
   interface Window {
