@@ -67,6 +67,10 @@ a{color:inherit;text-decoration:none}
 .shim{background-image:linear-gradient(90deg,var(--t3) 0%,var(--t3) 38%,var(--t1) 50%,var(--t3) 62%,var(--t3) 100%);background-size:240% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shimmer 2s linear infinite}
 .shim-ac{background-image:linear-gradient(90deg,var(--acText) 0%,var(--acText) 38%,var(--t1) 50%,var(--acText) 62%,var(--acText) 100%)}
 
+/* app WebView pages: the owner's rules for the app boards (black avatar, Korean words stay whole) */
+.wv{word-break:keep-all;overflow-wrap:anywhere}
+.wv .av{background:var(--t1);color:var(--bg)}
+
 /* profile */
 .profile{gap:24px}
 .profile-head{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;padding:0 20px}

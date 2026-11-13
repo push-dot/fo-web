@@ -1,5 +1,4 @@
 import { CAREER_STATUSES } from '@push/api-client'
-import { brandColor } from '@push/shared'
 import { useParams } from 'react-router-dom'
 import { useAuthMe } from '../../entities/session'
 import { assetUrl } from '../../shared/api/client'
@@ -22,12 +21,12 @@ const ProfilePage = () => {
   const stats = profileStats(p, webViewFrom())
   return (
     <>
-      <main className="page profile">
+      <main className="page profile wv">
       <header className="profile-head">
         {p.avatarUrl ? (
           <img className="av" src={assetUrl(p.avatarUrl)} alt="" />
         ) : (
-          <div className="av" style={{ background: brandColor(p.displayName) }} aria-hidden="true">
+          <div className="av" aria-hidden="true">
             {initials(p.displayName)}
           </div>
         )}
@@ -35,7 +34,7 @@ const ProfilePage = () => {
         <span className="b2 t2">{p.headline}</span>
         <span className="badges">
           {p.jobCategory || p.tenureYears != null ? <span className="badge grey">{roleLabel(p.jobCategory, p.tenureYears)}</span> : null}
-          {status ? <span className={`badge ${p.careerStatus === 'seeking' ? 'ac' : 'grey'}`}>{status}</span> : null}
+          {status ? <span className="badge grey">{status}</span> : null}
         </span>
         {stats.length ? (
           <span className="stats">
