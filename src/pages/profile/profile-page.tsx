@@ -3,7 +3,7 @@ import { brandColor } from '@push/shared'
 import { useParams } from 'react-router-dom'
 import { useAuthMe } from '../../entities/session'
 import { assetUrl } from '../../shared/api/client'
-import { isWebView, send } from '../../shared/lib/bridge'
+import { isWebView, send, webViewFrom } from '../../shared/lib/bridge'
 import { initials, periodLabel, roleLabel } from '../../shared/lib/format'
 import { useDetail } from '../../shared/lib/use-detail'
 import BrowserProfile from './browser-profile'
@@ -19,7 +19,7 @@ const ProfilePage = () => {
   if (!isWebView()) return <BrowserProfile profile={p} />
   const mine = me.data?.id === p.userId
   const status = CAREER_STATUSES.find((s) => s.key === p.careerStatus)?.label
-  const stats = profileStats(p)
+  const stats = profileStats(p, webViewFrom())
   return (
     <>
       <main className="page profile">
