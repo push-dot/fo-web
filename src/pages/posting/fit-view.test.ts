@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { appFitParts, FIT_LOCK, FIT_LOCK_CLOSED, FIT_PART_LABELS, firstDocument, fitCardModel, fitLockText, fitStatus, runPostingFit, type FitPayload } from './fit-view'
+import { FIT_LOCK, FIT_LOCK_CLOSED, FIT_PART_LABELS, firstDocument, fitCardModel, fitLockText, fitStatus, runPostingFit, WAITING_FIT_PARTS, type FitPayload } from './fit-view'
 
 const payload = (plan: string): FitPayload => ({
   fitScore: 6.9,
@@ -43,10 +43,13 @@ describe('fit card', () => {
     }
   })
 
-  it('keeps the three parts the app board draws, in order', () => {
-    const parts = fitCardModel(payload('PRO'), '이력서').parts
-    expect(appFitParts(parts).map((part) => part.label)).toEqual(['기술 스택', '경험 연관성', '키워드'])
-    expect(appFitParts(parts.map((part) => ({ label: part.label }))).length).toBe(3)
+  it('draws five parts when scored and three dashes while waiting', () => {
+    expect(fitCardModel(payload('PRO'), '이력서').parts.map((part) => part.label)).toEqual([...FIT_PART_LABELS])
+    expect(WAITING_FIT_PARTS).toEqual([
+      { label: '기술 스택', value: null },
+      { label: '경험 연관성', value: null },
+      { label: '키워드', value: null },
+    ])
   })
 
   it('turns reachable into the next score band on PRO and ULTRA', () => {
