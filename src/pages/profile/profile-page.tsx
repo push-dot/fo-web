@@ -10,14 +10,7 @@ import BrowserProfile from './browser-profile'
 import Status from '../../shared/ui/status'
 import { profilesGet } from '../../entities/profile'
 import { profileStats } from './profile-stats'
-
-const PROFILE_EDITS = [
-  { section: 'basic', label: '기본 정보 편집' },
-  { section: 'intro', label: '소개 편집' },
-  { section: 'career', label: '경력 편집' },
-  { section: 'skills', label: '기술 스택 편집' },
-] as const
-
+import { PROFILE_ACTIONS, profileActionMessage } from './profile-actions'
 
 const ProfilePage = () => {
   const { id = '' } = useParams()
@@ -56,8 +49,8 @@ const ProfilePage = () => {
         ) : null}
         {mine ? (
           <span className="badges">
-            {PROFILE_EDITS.map((item) => (
-              <button key={item.section} type="button" className="btn sec sm" onClick={() => send({ type: 'open', path: `/(tabs)/(my)/edit-profile/${item.section}` })}>
+            {PROFILE_ACTIONS.map((item) => (
+              <button key={item.key} type="button" className="btn sec sm" onClick={() => send(profileActionMessage(item.key, p.userId))}>
                 {item.label}
               </button>
             ))}
