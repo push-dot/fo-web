@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { bookmarkFitParts, FIT_LOCK, FIT_LOCK_CLOSED, FIT_PART_LABELS, firstDocument, fitCardModel, fitLockText, fitStatus, FIT_LOCK_PREVIEW, mockFitModel, runPostingFit, WAITING_FIT_PARTS, type FitPayload } from './fit-view'
+import { bookmarkFitParts, FIT_LOCK, FIT_LOCK_CLOSED, FIT_PART_LABELS, firstDocument, fitCardModel, fitLockText, fitStatus, isLowFit, FIT_LOCK_PREVIEW, mockFitModel, runPostingFit, WAITING_FIT_PARTS, type FitPayload } from './fit-view'
 
 const payload = (plan: string): FitPayload => ({
   fitScore: 6.9,
@@ -151,5 +151,11 @@ describe('mockFitModel', () => {
 
   it('blurs the same five rows the boards draw behind the lock', () => {
     expect(FIT_LOCK_PREVIEW.parts).toEqual(mock.parts.map((part) => part.value))
+  })
+})
+
+describe('fit bar tone', () => {
+  it('draws 4.5 and 5.0 low and 5.1 normal, as the JobDetail boards do', () => {
+    expect([4.5, 5, 5.1, 7.5].map(isLowFit)).toEqual([true, true, false, false])
   })
 })

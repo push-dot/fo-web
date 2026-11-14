@@ -8,6 +8,9 @@ const FIT_PARTS = [
   ['domain', '도메인'],
 ] as const
 
+// The app boards draw the bar orange from 5.0 down (4.5 and 5.0 in JobDetail, ChatPh1Fit); a part scored 5.0 counts as low.
+export const isLowFit = (value: number) => value <= 5
+
 export const FIT_PART_LABELS = FIT_PARTS.map((part) => part[1])
 // JobDetail draws all five parts; only the JobFit waiting card draws these three dashes.
 const WAITING_FIT_LABELS: readonly string[] = ['기술 스택', '경험 연관성', '키워드']
