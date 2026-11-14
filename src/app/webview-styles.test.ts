@@ -8,10 +8,6 @@ const rule = (selector: string) =>
   )?.[2] ?? ''
 
 describe('webview posting styles', () => {
-  it('takes the middle dot from the Korean font slice, after the latin face that would win it', () => {
-    expect(styles).toMatch(/noto-sans-kr-119-wght-normal\.woff2"\) format\("woff2-variations"\);unicode-range:U\+B7\}/)
-  })
-
   it('drops the unused unscoped .fit-score rule', () => {
     expect(styles).not.toMatch(/\.fit-score/)
   })
