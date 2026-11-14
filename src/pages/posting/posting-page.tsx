@@ -12,10 +12,11 @@ import { useDetail } from '../../shared/lib/use-detail'
 import FitCard from './fit-card'
 import BrowserPosting from './browser-posting'
 import PostingActions from './posting-actions'
+import MidDotText from '../../shared/ui/mid-dot-text'
 import Section from '../../shared/ui/section'
 import Status from '../../shared/ui/status'
 import { postingsGet } from '../../entities/posting'
-import { postingTitleLines, splitMiddleDot } from './posting-title'
+import { postingTitleLines } from './posting-title'
 
 
 const PostingPage = () => {
@@ -46,15 +47,7 @@ const PostingPage = () => {
           {postingTitleLines(p.title).map((line, i) => (
             <Fragment key={line}>
               {i > 0 ? <br /> : null}
-              {splitMiddleDot(line).map((part, j) =>
-                part === '·' ? (
-                  <span key={j} className="mid-dot">
-                    {part}
-                  </span>
-                ) : (
-                  part
-                ),
-              )}
+              <MidDotText text={line} />
             </Fragment>
           ))}
         </h1>

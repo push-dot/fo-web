@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { postingTitleLines, splitMiddleDot } from './posting-title'
+import { postingTitleLines } from './posting-title'
 
 describe('postingTitleLines', () => {
   it('moves a parenthetical to its own line', () => {
@@ -16,15 +16,5 @@ describe('postingTitleLines', () => {
 
   it('does not split a title that starts with a parenthesis', () => {
     expect(postingTitleLines('(주)모아페이 개발자')).toEqual(['(주)모아페이 개발자'])
-  })
-})
-
-describe('splitMiddleDot', () => {
-  it('puts the middle dot in a part of its own', () => {
-    expect(splitMiddleDot('(Kotlin·Spring)')).toEqual(['(Kotlin', '·', 'Spring)'])
-  })
-
-  it('leaves a line without a dot whole', () => {
-    expect(splitMiddleDot('(Kotlin)')).toEqual(['(Kotlin)'])
   })
 })
