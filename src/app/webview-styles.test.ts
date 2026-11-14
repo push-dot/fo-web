@@ -32,4 +32,9 @@ describe('webview posting styles', () => {
     expect(rule('.page')).toContain('gap:22px')
     expect(rule('.head')).toContain('gap:10px')
   })
+
+  it('spaces badges 8 apart and keeps a dot word on one line', () => {
+    expect(rule('.badges')).toContain('gap:8px')
+    expect(rule('.dot-word')).toContain('white-space:nowrap')
+  })
 })
