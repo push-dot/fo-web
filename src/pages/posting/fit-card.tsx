@@ -2,17 +2,19 @@ import { useQuery } from '@tanstack/react-query'
 import { usePaymentsOpen } from '../../entities/billing'
 import { api } from '../../shared/api/client'
 import { loadMock } from '../../shared/api/mock-loader'
-import { isMock, isWebView, send, webViewFrom } from '../../shared/lib/bridge'
+import { isMock, isWebView, pushEnv, send, webViewFrom } from '../../shared/lib/bridge'
 import { MOCK_FIT_DELAY_MS } from './constants'
 import {
   FIT_COMPARING,
   FIT_PART_LABELS,
   bookmarkFitParts,
   WAITING_FIT_PARTS,
+  FIT_LOCK_PREVIEW,
   FIT_SOON,
   firstDocument,
   fitLockText,
   fitStatus,
+  mockFitModel,
   runPostingFit,
   type FitCardModel,
   type FitDocument,
@@ -34,14 +36,7 @@ const fitCardSubtitle = (
 const loadMockFit = async (): Promise<FitCardModel> => {
   // The app boards draw the finished fit card, so the WebView mock skips the waiting delay.
   const [{ mockFit }] = await Promise.all([loadMock(), new Promise((resolve) => setTimeout(resolve, isWebView() ? 0 : MOCK_FIT_DELAY_MS))])
-  return {
-    document: mockFit.document,
-    score: mockFit.score,
-    parts: mockFit.parts,
-    weakness: mockFit.weakness,
-    locked: false,
-    reachable: mockFit.reachable,
-  }
+  return mockFitModel(mockFit, pushEnv().plan)
 }
 
 const loadDocument = () =>
@@ -84,12 +79,16 @@ const FitCard = ({ postingId }: { postingId: string }) => {
   const status = fitStatus({ documentPending: documentQuery.isPending, document: doc, fitPending: fitQuery.isPending, fit })
   const subtitle = fitCardSubtitle(status, fit)
   const document = fit?.document ?? doc?.title
+  // JobFit and JobDetailStates draw the waiting cards without a chevron and without a tap target.
+  const tappable = status === 'ready' || status === 'locked'
+  const Root = tappable ? 'button' : 'div'
   return (
-    <button
-      type="button"
+    <Root
+      {...(tappable
+        ? { type: 'button' as const, onClick: () => send({ type: 'open', path: `/chat?postingId=${encodeURIComponent(postingId)}` }) }
+        : {})}
       className="fit"
       aria-busy={status === 'comparing'}
-      onClick={() => send({ type: 'open', path: `/chat?postingId=${encodeURIComponent(postingId)}` })}
     >
       <div className="fit-head">
         {fit ? (
@@ -101,22 +100,28 @@ const FitCard = ({ postingId }: { postingId: string }) => {
             <span className="num">{fit.score.toFixed(1)}</span>
           </div>
         ) : (
-          <span className="ring ring-empty">{status === 'comparing' ? <span className="glyph" /> : null}</span>
+          <span className="ring ring-empty">{status === 'comparing' ? <span className="glyph" /> : <span className="num t4">–</span>}</span>
         )}
         <span className="fit-title">
           <span className="c1 t3 w7">내 적합도{document ? ` · ${document}` : ''}</span>
-          {subtitle ? <span className={status === 'comparing' ? 'h3 shim shim-ac' : status === 'soon' ? 'h3 t3' : 'h3'}>{subtitle}</span> : null}
+          {subtitle ? <span className={status === 'comparing' ? 'h3 shim shim-ac' : 'h3'}>{subtitle}</span> : null}
         </span>
-        <svg className="ic fit-chev" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="m9.5 5.5 6.5 6.5-6.5 6.5" />
-        </svg>
+        {tappable ? (
+          <svg className="ic fit-chev" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="m9.5 5.5 6.5 6.5-6.5 6.5" />
+          </svg>
+        ) : null}
       </div>
       {status === 'locked' ? (
         <div className="fit-lock">
           <div className="fit-lock-rows" aria-hidden="true">
             {FIT_PART_LABELS.map((label, i) => (
-              <FitRow key={label} label={label} value={null} index={i} />
+              <FitRow key={label} label={label} value={FIT_LOCK_PREVIEW.parts[i] ?? null} index={i} />
             ))}
+            <span className="c1 t2 weak">
+              <span className="bang">!</span>
+              {FIT_LOCK_PREVIEW.weakness}
+            </span>
           </div>
           <span className="fit-lock-pill">
             <span className="c1 w7">
@@ -138,9 +143,17 @@ const FitCard = ({ postingId }: { postingId: string }) => {
               {fit.weakness}
             </span>
           ) : null}
+          {fit?.ultra && fit.reachable != null ? (
+            <div className="fit-fix">
+              <span className="b2 w7">이렇게 고치면 {fit.reachable}점대</span>
+              <svg className="ic" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="m9.5 5.5 6.5 6.5-6.5 6.5" />
+              </svg>
+            </div>
+          ) : null}
         </>
       )}
-    </button>
+    </Root>
   )
 }
 

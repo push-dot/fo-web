@@ -1,5 +1,6 @@
 import { EMPLOYMENT_TYPES, workConditionLines } from '@push/api-client'
 import { brandColor, careerLabel } from '@push/shared'
+import { Fragment } from 'react'
 import { useParams } from 'react-router-dom'
 import { assetUrl } from '../../shared/api/client'
 import { isWebView, send } from '../../shared/lib/bridge'
@@ -14,6 +15,7 @@ import PostingActions from './posting-actions'
 import Section from '../../shared/ui/section'
 import Status from '../../shared/ui/status'
 import { postingsGet } from '../../entities/posting'
+import { postingTitleLines } from './posting-title'
 
 
 const PostingPage = () => {
@@ -40,7 +42,14 @@ const PostingPage = () => {
           <span className="b2 w7">{p.company}</span>
           {p.industry ? <span className="c1 t3">{p.industry}</span> : null}
         </div>
-        <h1 className="h1">{p.title}</h1>
+        <h1 className="h1">
+          {postingTitleLines(p.title).map((line, i) => (
+            <Fragment key={line}>
+              {i > 0 ? <br /> : null}
+              {line}
+            </Fragment>
+          ))}
+        </h1>
         <div className="badges">
           {dday ? <span className="badge grey">{dday}</span> : null}
           <span className="badge grey">{p.location}</span>

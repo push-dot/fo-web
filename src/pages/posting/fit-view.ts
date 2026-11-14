@@ -16,8 +16,8 @@ export const WAITING_FIT_PARTS = FIT_PART_LABELS.filter((label) => WAITING_FIT_L
 // MyBookmarkJob draws the three waiting-card parts with the score; JobDetail draws all five.
 export const bookmarkFitParts = <T extends { label: string }>(parts: T[]) => parts.filter((part) => WAITING_FIT_LABELS.includes(part.label))
 
-export const FIT_LOCK = '🔒 PRO로 올리면 항목별 점수와 약점을 볼 수 있어요'
-export const FIT_LOCK_CLOSED = '🔒 항목별 점수와 약점은 PRO에서 볼 수 있어요'
+export const FIT_LOCK = 'PRO로 올리면 항목별 점수와 약점을 볼 수 있어요'
+export const FIT_LOCK_CLOSED = '항목별 점수와 약점은 PRO에서 볼 수 있어요'
 export const FIT_SOON = '적합도는 곧 볼 수 있어요'
 export const FIT_COMPARING = '공고와 서류를 비교하는 중…'
 
@@ -32,6 +32,12 @@ export type FitPayload = {
   reachable?: number
 }
 
+// The blurred rows behind the FREE lock pill (JobDetail FREE boards): decoration only, the server sends no part scores to a FREE account.
+export const FIT_LOCK_PREVIEW = {
+  parts: [7.5, 7, 8, 4.5, 5],
+  weakness: 'Kafka 운영 경험과 부하 테스트 근거가 부족해요',
+} as const
+
 export type FitCardModel = {
   document: string
   score: number
@@ -39,6 +45,8 @@ export type FitCardModel = {
   weakness: string | null
   locked: boolean
   reachable?: number
+  /** ULTRA draws the `이렇게 고치면 N점대` row under the card (JobDetail ULTRA boards). */
+  ultra?: boolean
 }
 
 type FitClient = {
@@ -47,7 +55,7 @@ type FitClient = {
   readJob: (id: string) => Promise<{ status: string; result: FitPayload | null }>
 }
 
-const planOf = (plan: string) => (plan === 'PRO' || plan === 'ULTRA' ? plan : 'FREE')
+export const planOf = (plan: string | undefined) => (plan === 'PRO' || plan === 'ULTRA' ? plan : 'FREE')
 
 const reachableBand = ({ fitScore, reachable }: FitPayload) =>
   reachable != null && Math.floor(reachable) > Math.floor(fitScore) ? Math.floor(reachable) : undefined
@@ -60,12 +68,28 @@ export const fitCardModel = (payload: FitPayload, document: string): FitCardMode
     locked,
     weakness: locked ? null : payload.topGap || null,
     reachable: locked ? undefined : reachableBand(payload),
+    ultra: planOf(payload.plan) === 'ULTRA',
     parts: FIT_PARTS.map(([key, label]) => ({
       label,
       value: locked ? null : payload.parts[key],
     })),
   }
 }
+
+type MockFit = { document: string; score: number; parts: { label: string; value: number }[]; weakness: string; reachable: number }
+
+/** The WebView mock answers like the server for the plan the app tells it (`window.__PUSH__.plan`, PRO when absent). */
+export const mockFitModel = (fit: MockFit, plan: string | undefined): FitCardModel =>
+  fitCardModel(
+    {
+      fitScore: fit.score,
+      parts: Object.fromEntries(FIT_PARTS.map(([key, label]) => [key, fit.parts.find((part) => part.label === label)?.value ?? 0])) as FitPayload['parts'],
+      topGap: fit.weakness,
+      plan: plan ?? 'PRO',
+      reachable: fit.reachable,
+    },
+    fit.document,
+  )
 
 const settled = new Set(['DONE', 'FAILED', 'DEAD', 'CANCELLED'])
 
