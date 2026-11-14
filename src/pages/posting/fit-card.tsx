@@ -37,7 +37,9 @@ const fitCardSubtitle = (
 const loadMockFit = async (): Promise<FitCardModel> => {
   // The app boards draw the finished fit card, so the WebView mock skips the waiting delay.
   const [{ mockFit }] = await Promise.all([loadMock(), new Promise((resolve) => setTimeout(resolve, isWebView() ? 0 : MOCK_FIT_DELAY_MS))])
-  return mockFitModel(mockFit, pushEnv().plan)
+  const model = mockFitModel(mockFit, pushEnv().plan)
+  // Mock tours (`mock=fit-three`): the Applied and ApplySheet boards draw the three-part card of the waiting rows.
+  return pushEnv().fitParts === 3 ? { ...model, parts: bookmarkFitParts(model.parts) } : model
 }
 
 const loadDocument = () =>

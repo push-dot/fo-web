@@ -1,4 +1,4 @@
-type PushEnv = { token?: string | null; apiBaseUrl?: string; mock?: boolean; plan?: string; theme?: 'light' | 'dark' }
+type PushEnv = { token?: string | null; apiBaseUrl?: string; mock?: boolean; plan?: string; fitParts?: number; theme?: 'light' | 'dark' }
 
 export const themeOf = (value: unknown): 'light' | 'dark' | undefined => (value === 'light' || value === 'dark' ? value : undefined)
 
