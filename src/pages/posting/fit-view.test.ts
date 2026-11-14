@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { bookmarkFitParts, FIT_LOCK, FIT_LOCK_CLOSED, FIT_PART_LABELS, firstDocument, fitCardModel, fitLockText, fitStatus, runPostingFit, WAITING_FIT_PARTS, type FitPayload } from './fit-view'
+import { bookmarkFitParts, FIT_LOCK, FIT_LOCK_CLOSED, FIT_PART_LABELS, firstDocument, fitCardModel, fitLockText, fitStatus, FIT_LOCK_PREVIEW, mockFitModel, runPostingFit, WAITING_FIT_PARTS, type FitPayload } from './fit-view'
 
 const payload = (plan: string): FitPayload => ({
   fitScore: 6.9,
@@ -30,7 +30,7 @@ describe('fit card', () => {
     expect(model?.parts.map((part) => part.label)).toEqual([...FIT_PART_LABELS])
     expect(model?.parts.every((part) => part.value === null)).toBe(true)
     expect(JSON.stringify(model)).not.toContain('%')
-    expect(FIT_LOCK).toBe('🔒 PRO로 올리면 항목별 점수와 약점을 볼 수 있어요')
+    expect(FIT_LOCK).toBe('PRO로 올리면 항목별 점수와 약점을 볼 수 있어요')
   })
 
   it('shows every part score on PRO and ULTRA', () => {
@@ -89,7 +89,7 @@ describe('fitLockText', () => {
   it('invites the upgrade only while payments are open', () => {
     expect(fitLockText(true)).toBe(FIT_LOCK)
     expect(fitLockText(false)).toBe(FIT_LOCK_CLOSED)
-    expect(FIT_LOCK_CLOSED).toBe('🔒 항목별 점수와 약점은 PRO에서 볼 수 있어요')
+    expect(FIT_LOCK_CLOSED).toBe('항목별 점수와 약점은 PRO에서 볼 수 있어요')
     expect(FIT_LOCK_CLOSED).not.toContain('올리면')
   })
 })
@@ -111,5 +111,45 @@ describe('fitStatus', () => {
   it('locks on FREE and shows the result otherwise', () => {
     expect(fitStatus({ documentPending: false, document: doc, fitPending: false, fit: locked })).toBe('locked')
     expect(fitStatus({ documentPending: false, document: doc, fitPending: false, fit: ready })).toBe('ready')
+  })
+})
+
+describe('mockFitModel', () => {
+  const mock = {
+    document: '김서준_백엔드_이력서_2026',
+    score: 6.9,
+    parts: [
+      { label: '기술 스택', value: 7.5 },
+      { label: '경험 연관성', value: 7 },
+      { label: '경력 수준', value: 8 },
+      { label: '키워드', value: 4.5 },
+      { label: '도메인', value: 5 },
+    ],
+    weakness: 'Kafka 운영 경험과 부하 테스트 근거가 부족해요',
+    reachable: 8,
+  }
+
+  it('is the PRO card when the app names no plan', () => {
+    const model = mockFitModel(mock, undefined)
+    expect(model.locked).toBe(false)
+    expect(model.ultra).toBe(false)
+    expect(model.parts.map((part) => part.value)).toEqual([7.5, 7, 8, 4.5, 5])
+    expect(model.reachable).toBe(8)
+  })
+
+  it('locks the card for FREE and keeps the score', () => {
+    const model = mockFitModel(mock, 'FREE')
+    expect(model.locked).toBe(true)
+    expect(model.score).toBe(6.9)
+    expect(model.weakness).toBeNull()
+    expect(model.ultra).toBe(false)
+  })
+
+  it('adds the fix row for ULTRA only', () => {
+    expect(mockFitModel(mock, 'ULTRA')).toMatchObject({ locked: false, ultra: true, reachable: 8 })
+  })
+
+  it('blurs the same five rows the boards draw behind the lock', () => {
+    expect(FIT_LOCK_PREVIEW.parts).toEqual(mock.parts.map((part) => part.value))
   })
 })

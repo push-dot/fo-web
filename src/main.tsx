@@ -1,3 +1,4 @@
+import '@fontsource-variable/noto-sans-kr'
 import '@push/design-system/tokens.css'
 import './styles.css'
 import { StrictMode } from 'react'

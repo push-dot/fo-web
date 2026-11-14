@@ -12,6 +12,7 @@
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
+    "@fontsource-variable/noto-sans-kr": "^5.3.1",
     "@push/api-client": "workspace:*",
     "@push/design-system": "workspace:*",
     "@push/shared": "workspace:*",
