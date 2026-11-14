@@ -74,6 +74,7 @@ button.fit .fit-title .c1{white-space:nowrap;overflow:hidden;text-overflow:ellip
 
 /* app WebView pages: the owner's rules for the app boards (black avatar, Korean words stay whole) */
 .wv{word-break:keep-all;overflow-wrap:anywhere}
+.mid-dot{display:inline-block;width:.55em;text-align:center}
 .wv .av{background:var(--t1);color:var(--bg)}
 
 /* profile */
