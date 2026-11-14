@@ -77,6 +77,9 @@ button.fit .fit-title .c1{white-space:nowrap;overflow:hidden;text-overflow:ellip
 .wv .av{background:var(--t1);color:var(--bg)}
 
 /* profile */
+/* WebView detail boards (JobDetail, ProfileDetail): the page gap is 24 and the header gap 12, the browser pages keep 22 and 10 */
+.page.wv{gap:24px}
+.wv .head{gap:12px}
 .profile{gap:24px}
 .profile-head{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;padding:0 20px}
 .profile-head .h1{margin-top:6px}
@@ -90,6 +93,7 @@ button.fit .fit-title .c1{white-space:nowrap;overflow:hidden;text-overflow:ellip
 .tl-dot.now{background:var(--ac)}
 .tl-line{flex:1;width:2px;background:var(--line);margin-top:4px}
 .tl-body{display:flex;flex-direction:column;padding-bottom:12px}
+.wv .tl-row:last-child .tl-body{padding-bottom:0}
 .tl-desc{margin-top:4px}
 .profile .section:not(.timeline) .badges{margin-top:4px}
 

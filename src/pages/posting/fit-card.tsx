@@ -14,6 +14,7 @@ import {
   firstDocument,
   fitLockText,
   fitStatus,
+  isLowFit,
   mockFitModel,
   runPostingFit,
   type FitCardModel,
@@ -57,7 +58,7 @@ const FitRow = ({ label, value, index }: { label: string; value: number | null; 
     <span>{label}</span>
     <span className="bar">
       {value !== null ? (
-        <i className={value < 5 ? 'lo' : undefined} style={{ width: `${value * 10}%`, animationDelay: `${0.15 + index * 0.08}s` }} />
+        <i className={isLowFit(value) ? 'lo' : undefined} style={{ width: `${value * 10}%`, animationDelay: `${0.15 + index * 0.08}s` }} />
       ) : null}
     </span>
     <b className={value !== null ? 'num' : 'num t4'}>{value !== null ? value.toFixed(1) : '–'}</b>
