@@ -44,9 +44,6 @@ button.fit .fit-title .c1{white-space:nowrap;overflow:hidden;text-overflow:ellip
 .fit-lock-pill{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:0 8px}
 .fit-lock-pill>span{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;background:var(--bg);box-shadow:0 4px 14px rgba(0,0,0,.08);color:var(--t1);text-align:center}
 .fit-lock-pill .ic{width:14px;height:14px;stroke-width:2.2}
-.fit-fix{flex:none;display:flex;align-items:center;gap:8px;height:44px;padding:0 16px;border-radius:var(--r-card);background:var(--bg)}
-.fit-fix span{flex:1}
-.fit-fix .ic{width:16px;height:16px;stroke-width:2.2;color:var(--t3);flex:none}
 .weak-ghost{flex:1;max-width:70%;height:12px;margin-top:3px;border-radius:6px;background:var(--fill2)}
 .ring{position:relative;width:64px;height:64px;flex:none}
 .ring svg{width:64px;height:64px;transform:rotate(-90deg)}

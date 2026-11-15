@@ -35,7 +35,7 @@ describe('fit card', () => {
 
   it('shows every part score on PRO and ULTRA', () => {
     for (const plan of ['PRO', 'ULTRA']) {
-      const model = fitCardModel(payload(plan), '이력서')
+      const model = fitCardModel(payload(plan))
       expect(model.locked).toBe(false)
       expect(model.parts.map((part) => part.value)).toEqual([8.2, 7.4, 6, 4.5, 5])
       expect(model.weakness).toBe('도메인')
@@ -44,7 +44,7 @@ describe('fit card', () => {
   })
 
   it('draws five parts when scored and three dashes while waiting', () => {
-    expect(fitCardModel(payload('PRO'), '이력서').parts.map((part) => part.label)).toEqual([...FIT_PART_LABELS])
+    expect(fitCardModel(payload('PRO')).parts.map((part) => part.label)).toEqual([...FIT_PART_LABELS])
     expect(WAITING_FIT_PARTS).toEqual([
       { label: '기술 스택', value: null },
       { label: '경험 연관성', value: null },
@@ -53,14 +53,14 @@ describe('fit card', () => {
   })
 
   it('turns reachable into the next score band on PRO and ULTRA', () => {
-    expect(fitCardModel({ ...payload('PRO'), reachable: 8.2 }, '이력서').reachable).toBe(8)
-    expect(fitCardModel({ ...payload('ULTRA'), reachable: 7 }, '이력서').reachable).toBe(7)
+    expect(fitCardModel({ ...payload('PRO'), reachable: 8.2 }).reachable).toBe(8)
+    expect(fitCardModel({ ...payload('ULTRA'), reachable: 7 }).reachable).toBe(7)
   })
 
   it('hides reachable on FREE, in the same band, or when the server leaves it out', () => {
-    expect(fitCardModel({ ...payload('FREE'), reachable: 8.2 }, '이력서').reachable).toBeUndefined()
-    expect(fitCardModel({ ...payload('PRO'), reachable: 6.95 }, '이력서').reachable).toBeUndefined()
-    expect(fitCardModel(payload('PRO'), '이력서').reachable).toBeUndefined()
+    expect(fitCardModel({ ...payload('FREE'), reachable: 8.2 }).reachable).toBeUndefined()
+    expect(fitCardModel({ ...payload('PRO'), reachable: 6.95 }).reachable).toBeUndefined()
+    expect(fitCardModel(payload('PRO')).reachable).toBeUndefined()
   })
 
   it('finds the newest document or none', async () => {
@@ -73,13 +73,12 @@ describe('fit card', () => {
     expect(await runPostingFit('p1', doc, client('PRO', ['FAILED']), noSleep)).toBeNull()
     const polled = await runPostingFit('p1', doc, client('PRO', ['RUNNING', 'DONE']), noSleep)
     expect(polled?.locked).toBe(false)
-    expect(polled?.document).toBe('김서준_백엔드_이력서_2026')
   })
 })
 
 describe('bookmarkFitParts', () => {
   it('keeps the three parts MyBookmarkJob draws and drops career level and domain', () => {
-    const parts = fitCardModel(payload('PRO'), '이력서').parts
+    const parts = fitCardModel(payload('PRO')).parts
     expect(bookmarkFitParts(parts).map((part) => part.label)).toEqual(['기술 스택', '경험 연관성', '키워드'])
     expect(bookmarkFitParts(parts).map((part) => part.value)).toEqual([8.2, 7.4, 4.5])
   })
@@ -95,8 +94,8 @@ describe('fitLockText', () => {
 })
 
 describe('fitStatus', () => {
-  const ready = fitCardModel(payload('PRO'), doc.title)
-  const locked = fitCardModel(payload('FREE'), doc.title)
+  const ready = fitCardModel(payload('PRO'))
+  const locked = fitCardModel(payload('FREE'))
 
   it('compares while the document or the job is still loading', () => {
     expect(fitStatus({ documentPending: true, document: undefined, fitPending: true, fit: undefined })).toBe('comparing')
@@ -132,7 +131,6 @@ describe('mockFitModel', () => {
   it('is the PRO card when the app names no plan', () => {
     const model = mockFitModel(mock, undefined)
     expect(model.locked).toBe(false)
-    expect(model.ultra).toBe(false)
     expect(model.parts.map((part) => part.value)).toEqual([7.5, 7, 8, 4.5, 5])
     expect(model.reachable).toBe(8)
   })
@@ -142,11 +140,10 @@ describe('mockFitModel', () => {
     expect(model.locked).toBe(true)
     expect(model.score).toBe(6.9)
     expect(model.weakness).toBeNull()
-    expect(model.ultra).toBe(false)
   })
 
   it('adds the fix row for ULTRA only', () => {
-    expect(mockFitModel(mock, 'ULTRA')).toMatchObject({ locked: false, ultra: true, reachable: 8 })
+    expect(mockFitModel(mock, 'ULTRA')).toMatchObject({ locked: false, reachable: 8 })
   })
 
   it('blurs the same five rows the boards draw behind the lock', () => {

@@ -6,6 +6,7 @@ import { isMock, isWebView, pushEnv, send, webViewFrom } from '../../shared/lib/
 import { MOCK_FIT_DELAY_MS } from './constants'
 import {
   FIT_COMPARING,
+  FIT_TITLE,
   FIT_PART_LABELS,
   bookmarkFitParts,
   WAITING_FIT_PARTS,
@@ -45,7 +46,7 @@ const loadMockFit = async (): Promise<FitCardModel> => {
 const loadDocument = () =>
   isMock()
     ? loadMock().then(({ mockFit }) => ({ id: mockFit.document, title: mockFit.document }))
-    : firstDocument({ listDocuments: () => api.documents.list({ limit: 1 }) })
+    : firstDocument({ listDocuments: () => api.documents.list({ kind: 'HUB_PROFILE', limit: 1 }) })
 
 const loadFit = (postingId: string, doc: FitDocument) =>
   isMock()
@@ -81,7 +82,6 @@ const FitCard = ({ postingId }: { postingId: string }) => {
   const paymentsOpen = usePaymentsOpen()
   const status = fitStatus({ documentPending: documentQuery.isPending, document: doc, fitPending: fitQuery.isPending, fit })
   const subtitle = fitCardSubtitle(status, fit)
-  const document = fit?.document ?? doc?.title
   // JobFit and JobDetailStates draw the waiting cards without a chevron and without a tap target.
   const tappable = status === 'ready' || status === 'locked'
   const Root = tappable ? 'button' : 'div'
@@ -106,7 +106,7 @@ const FitCard = ({ postingId }: { postingId: string }) => {
           <span className="ring ring-empty">{status === 'comparing' ? <span className="glyph" /> : <span className="num t4">–</span>}</span>
         )}
         <span className="fit-title">
-          <span className="c1 t3 w7">내 적합도{document ? ` · ${document}` : ''}</span>
+          <span className="c1 t3 w7">{FIT_TITLE}</span>
           {subtitle ? <span className={status === 'comparing' ? 'h3 shim shim-ac' : 'h3'}>{subtitle}</span> : null}
         </span>
         {tappable ? (
@@ -145,14 +145,6 @@ const FitCard = ({ postingId }: { postingId: string }) => {
               <span className="bang">!</span>
               {fit.weakness}
             </span>
-          ) : null}
-          {fit?.ultra && fit.reachable != null ? (
-            <div className="fit-fix">
-              <span className="b2 w7">이렇게 고치면 {fit.reachable}점대</span>
-              <svg className="ic" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="m9.5 5.5 6.5 6.5-6.5 6.5" />
-              </svg>
-            </div>
           ) : null}
         </>
       )}
