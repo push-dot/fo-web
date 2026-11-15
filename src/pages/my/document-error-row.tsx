@@ -1,3 +1,4 @@
+import { displayName } from '../../shared/lib/format'
 import { Icon } from '../../shared/ui/icon'
 import { CLOSE_LABEL } from './constants'
 
@@ -15,7 +16,7 @@ const DocumentErrorRow = ({
       <Icon name="warn" size={22} />
     </span>
     <span className="doc-copy">
-      <span className="b1 w7 cap">{name}</span>
+      <span className="b1 w7 cap">{displayName(name)}</span>
       <span className="c1 w6 doc-err-text">{text}</span>
     </span>
     <button type="button" className="hbtn" aria-label={CLOSE_LABEL} onClick={onClose}>

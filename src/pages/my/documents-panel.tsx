@@ -286,7 +286,7 @@ const DocumentsPanel = () => {
         <DocumentRenameDialog
           name={displayName(renaming.fileName)}
           busy={rename.isPending}
-          onSave={(name) => rename.mutate({ id: renaming.id, name: `${name}${extensionOf(renaming.fileName)}` })}
+          onSave={(name) => rename.mutate({ id: renaming.id, name: `${displayName(name)}${extensionOf(renaming.fileName)}` })}
           onClose={() => setRenaming(null)}
         />
       ) : null}

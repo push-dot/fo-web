@@ -28,6 +28,8 @@ describe('document rows', () => {
       />,
     )
     expect(html).toContain('role="alert"')
+    expect(html).toContain('포트폴리오_전체')
+    expect(html).not.toContain('전체.pdf')
     expect(html).toContain('이 파일은 34.2MB예요')
   })
 
