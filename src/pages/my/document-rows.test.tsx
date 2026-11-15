@@ -12,7 +12,8 @@ describe('document rows', () => {
     const html = renderToStaticMarkup(
       <DocumentUploadingRow file={file} onCancel={() => undefined} />,
     )
-    expect(html).toContain('김서준_이력서_2026_11.pdf')
+    expect(html).toContain('김서준_이력서_2026_11')
+    expect(html).not.toContain('2026_11.pdf')
     expect(html).toContain('올리는 중 · 1.8MB')
     expect(html).toContain('doc-bar')
     expect(html).toContain('aria-label="올리기 취소"')

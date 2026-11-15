@@ -1,6 +1,7 @@
 import { JOB_CATEGORIES, type ApplicantCounts, type ApplicantDetail, type ApplicantDocumentKind, type ApplicantSummary, type ApplicationStage } from '@push/api-client'
 
 import { DOC_FILE, DOC_PDF, DOC_PROFILE, FILTER_ALL, PROFILE_NOW, STAGE_APPLIED, submittedAsIs } from './constants'
+import { displayName } from '../../shared/lib/format'
 import { EMPLOYER_STAGE_ACTIONS } from '../../shared/model/applicant-stage'
 
 type Tone = 'ac' | 'red' | 'grey'
@@ -71,7 +72,7 @@ export const docChips = (detail: Pick<ApplicantDetail, 'documents' | 'files'>): 
   ...detail.documents.map((doc) => ({ key: doc.id, label: doc.title, badge: DOC_BADGE.PROFILE, content: doc.content, file: null })),
   ...(detail.files ?? []).map((file) => ({
     key: file.id,
-    label: file.pageCount ? `${file.fileName} · ${file.pageCount}쪽` : file.fileName,
+    label: file.pageCount ? `${displayName(file.fileName)} · ${file.pageCount}쪽` : displayName(file.fileName),
     badge: file.mimeType === 'application/pdf' ? DOC_BADGE.PDF : DOC_BADGE.FILE,
     content: '',
     file: { id: file.id, name: file.fileName },

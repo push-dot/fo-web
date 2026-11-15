@@ -11,6 +11,7 @@ import {
   renameDocument,
 } from '../../features/manage-documents'
 import { uploadResume } from '../../features/upload-resume'
+import { displayName, extensionOf } from '../../shared/lib/format'
 import { ConfirmDialog } from '../../shared/ui/dialog'
 import { Icon } from '../../shared/ui/icon'
 import type { MenuItem } from '../../shared/ui/popover'
@@ -283,16 +284,16 @@ const DocumentsPanel = () => {
       ) : null}
       {renaming ? (
         <DocumentRenameDialog
-          name={renaming.fileName}
+          name={displayName(renaming.fileName)}
           busy={rename.isPending}
-          onSave={(name) => rename.mutate({ id: renaming.id, name })}
+          onSave={(name) => rename.mutate({ id: renaming.id, name: `${name}${extensionOf(renaming.fileName)}` })}
           onClose={() => setRenaming(null)}
         />
       ) : null}
       {deleting ? (
         <ConfirmDialog
           title={DOCUMENT_DELETE.title}
-          body={deleting.fileName}
+          body={displayName(deleting.fileName)}
           confirmLabel={DELETE_LABEL}
           danger
           onConfirm={() => remove(deleting)}

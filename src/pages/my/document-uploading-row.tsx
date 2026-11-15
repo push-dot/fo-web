@@ -1,3 +1,4 @@
+import { displayName } from '../../shared/lib/format'
 import { Icon } from '../../shared/ui/icon'
 import { DOCUMENT_UPLOAD_CANCEL } from './constants'
 import { fileBadgeClass, fileExt, uploadingMeta } from './my-rules'
@@ -6,7 +7,7 @@ const DocumentUploadingRow = ({ file, onCancel }: { file: File; onCancel: () => 
   <div className="doc-line" aria-busy="true">
     <span className={fileBadgeClass(file.name)}>{fileExt(file.name)}</span>
     <span className="doc-copy loading">
-      <span className="b1 w7 cap">{file.name}</span>
+      <span className="b1 w7 cap">{displayName(file.name)}</span>
       <span className="doc-bar">
         <i />
       </span>

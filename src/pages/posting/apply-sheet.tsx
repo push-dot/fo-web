@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 import { useMyProfile, useSources } from '../../entities/profile'
 import { applySourceIds, postingsApply } from '../../features/apply-to-posting'
 import { brandColor } from '@push/shared'
-import { initials, roleLabel } from '../../shared/lib/format'
+import { displayName, initials, roleLabel } from '../../shared/lib/format'
 import { Dialog } from '../../shared/ui/dialog'
 import { Icon } from '../../shared/ui/icon'
 import type { ListedSource } from '../../shared/api/sources'
@@ -147,7 +147,7 @@ const ApplySheet = ({
             on={rowOn(source.id)}
             onToggle={() => toggle(source.id)}
             lead={<span className="badge ac">{PUSH_BADGE}</span>}
-            title={source.fileName}
+            title={displayName(source.fileName)}
             sub={pushDocSub(source)}
             badge={<span className="badge ac">{SOURCE_AI}</span>}
           />
@@ -159,7 +159,7 @@ const ApplySheet = ({
             on={rowOn(source.id)}
             onToggle={() => toggle(source.id)}
             lead={<span className="badge red">{fileBadge(source.fileName)}</span>}
-            title={source.fileName}
+            title={displayName(source.fileName)}
             sub={uploadSub(source)}
             badge={<span className="badge grey">{source.kind || ORIGINAL_BADGE}</span>}
           />
