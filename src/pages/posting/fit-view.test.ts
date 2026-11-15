@@ -52,17 +52,6 @@ describe('fit card', () => {
     ])
   })
 
-  it('turns reachable into the next score band on PRO and ULTRA', () => {
-    expect(fitCardModel({ ...payload('PRO'), reachable: 8.2 }).reachable).toBe(8)
-    expect(fitCardModel({ ...payload('ULTRA'), reachable: 7 }).reachable).toBe(7)
-  })
-
-  it('hides reachable on FREE, in the same band, or when the server leaves it out', () => {
-    expect(fitCardModel({ ...payload('FREE'), reachable: 8.2 }).reachable).toBeUndefined()
-    expect(fitCardModel({ ...payload('PRO'), reachable: 6.95 }).reachable).toBeUndefined()
-    expect(fitCardModel(payload('PRO')).reachable).toBeUndefined()
-  })
-
   it('finds the newest document or none', async () => {
     expect(await firstDocument(client('PRO'))).toEqual(doc)
     expect(await firstDocument({ ...client('PRO'), listDocuments: async () => ({ data: [] }) })).toBeNull()
@@ -125,14 +114,12 @@ describe('mockFitModel', () => {
       { label: '도메인', value: 5 },
     ],
     weakness: 'Kafka 운영 경험과 부하 테스트 근거가 부족해요',
-    reachable: 8,
   }
 
   it('is the PRO card when the app names no plan', () => {
     const model = mockFitModel(mock, undefined)
     expect(model.locked).toBe(false)
     expect(model.parts.map((part) => part.value)).toEqual([7.5, 7, 8, 4.5, 5])
-    expect(model.reachable).toBe(8)
   })
 
   it('locks the card for FREE and keeps the score', () => {
@@ -140,10 +127,6 @@ describe('mockFitModel', () => {
     expect(model.locked).toBe(true)
     expect(model.score).toBe(6.9)
     expect(model.weakness).toBeNull()
-  })
-
-  it('adds the fix row for ULTRA only', () => {
-    expect(mockFitModel(mock, 'ULTRA')).toMatchObject({ locked: false, reachable: 8 })
   })
 
   it('blurs the same five rows the boards draw behind the lock', () => {

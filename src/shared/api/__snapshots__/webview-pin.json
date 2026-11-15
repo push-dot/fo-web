@@ -1852,7 +1852,6 @@
         "value": 5
       }
     ],
-    "weakness": "Kafka 운영 경험과 부하 테스트 근거가 부족해요",
-    "reachable": 8
+    "weakness": "Kafka 운영 경험과 부하 테스트 근거가 부족해요"
   }
 }

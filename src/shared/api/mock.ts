@@ -71,7 +71,6 @@ export type Fit = {
   score: number
   parts: { label: string; value: number }[]
   weakness: string
-  reachable: number
 }
 
 export const mockFit: Fit = {
@@ -85,7 +84,6 @@ export const mockFit: Fit = {
     { label: '도메인', value: 5 },
   ],
   weakness: 'Kafka 운영 경험과 부하 테스트 근거가 부족해요',
-  reachable: 8,
 }
 
 const json = (status: number, body: unknown) =>

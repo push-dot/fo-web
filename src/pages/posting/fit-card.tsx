@@ -31,7 +31,6 @@ const fitCardSubtitle = (
 ): string | null => {
   if (status === 'comparing') return FIT_COMPARING
   if (status === 'soon') return FIT_SOON
-  if (status === 'ready' && fit?.reachable != null) return `조금만 고치면 ${fit.reachable}점대예요`
   return null
 }
 
