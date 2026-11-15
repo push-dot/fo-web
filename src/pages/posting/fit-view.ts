@@ -34,7 +34,6 @@ export type FitPayload = {
   parts: Record<(typeof FIT_PARTS)[number][0], number>
   topGap: string
   plan: string
-  reachable?: number
 }
 
 // The blurred rows behind the FREE lock pill (JobDetail FREE boards): decoration only, the server sends no part scores to a FREE account.
@@ -48,7 +47,6 @@ export type FitCardModel = {
   parts: { label: string; value: number | null }[]
   weakness: string | null
   locked: boolean
-  reachable?: number
 }
 
 type FitClient = {
@@ -59,16 +57,12 @@ type FitClient = {
 
 export const planOf = (plan: string | undefined) => (plan === 'PRO' || plan === 'ULTRA' ? plan : 'FREE')
 
-const reachableBand = ({ fitScore, reachable }: FitPayload) =>
-  reachable != null && Math.floor(reachable) > Math.floor(fitScore) ? Math.floor(reachable) : undefined
-
 export const fitCardModel = (payload: FitPayload): FitCardModel => {
   const locked = planOf(payload.plan) === 'FREE'
   return {
     score: payload.fitScore,
     locked,
     weakness: locked ? null : payload.topGap || null,
-    reachable: locked ? undefined : reachableBand(payload),
     parts: FIT_PARTS.map(([key, label]) => ({
       label,
       value: locked ? null : payload.parts[key],
@@ -76,7 +70,7 @@ export const fitCardModel = (payload: FitPayload): FitCardModel => {
   }
 }
 
-type MockFit = { score: number; parts: { label: string; value: number }[]; weakness: string; reachable: number }
+type MockFit = { score: number; parts: { label: string; value: number }[]; weakness: string }
 
 /** The WebView mock answers like the server for the plan the app tells it (`window.__PUSH__.plan`, PRO when absent). */
 export const mockFitModel = (fit: MockFit, plan: string | undefined): FitCardModel =>
@@ -86,7 +80,6 @@ export const mockFitModel = (fit: MockFit, plan: string | undefined): FitCardMod
       parts: Object.fromEntries(FIT_PARTS.map(([key, label]) => [key, fit.parts.find((part) => part.label === label)?.value ?? 0])) as FitPayload['parts'],
       topGap: fit.weakness,
       plan: plan ?? 'PRO',
-      reachable: fit.reachable,
     })
 
 const settled = new Set(['DONE', 'FAILED', 'DEAD', 'CANCELLED'])
