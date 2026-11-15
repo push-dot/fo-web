@@ -29,7 +29,7 @@ const PostingPage = () => {
   const career = careerLabel(p)
   const duties = p.description.split('\n').map((s) => s.trim()).filter(Boolean)
   return (
-    <main className="page wv">
+    <main className="page wv posting-wv">
       <PostingActions posting={p} onToast={toast.show} />
       <header className="head">
         <div className="company">

@@ -164,7 +164,7 @@ button.fit .fit-title .c1{white-space:nowrap;overflow:hidden;text-overflow:ellip
 .bottom-bar{position:fixed;left:0;right:0;bottom:0;z-index:30;display:flex;padding:12px 20px calc(12px + env(safe-area-inset-bottom));background:var(--bg);border-top:1px solid var(--line)}
 .bottom-bar .pill{flex:1;height:52px;border:0;font-size:16px}
 .bottom-bar .pill:disabled{background:var(--fill2);color:var(--t3);cursor:default}
-.browser-posting{padding-bottom:calc(112px + env(safe-area-inset-bottom))}
+.browser-posting,.page.posting-wv{padding-bottom:calc(112px + env(safe-area-inset-bottom))}
 .posting-tools{display:flex;justify-content:flex-end;gap:8px;padding:0 20px}
 .posting-tools button{height:36px;padding:0 14px;border-radius:999px;background:var(--fill);font-weight:700}
 .posting-tools button[aria-pressed="true"]{background:var(--acSoft);color:var(--acText)}
