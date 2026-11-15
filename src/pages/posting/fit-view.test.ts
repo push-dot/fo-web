@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { bookmarkFitParts, FIT_LOCK, FIT_LOCK_CLOSED, FIT_PART_LABELS, firstDocument, fitCardModel, fitLockText, fitStatus, isLowFit, FIT_LOCK_PREVIEW, mockFitModel, runPostingFit, WAITING_FIT_PARTS, type FitPayload } from './fit-view'
+import { bookmarkFitParts, FIT_LOCK, FIT_TITLE, FIT_LOCK_CLOSED, FIT_PART_LABELS, firstDocument, fitCardModel, fitLockText, fitStatus, isLowFit, FIT_LOCK_PREVIEW, mockFitModel, runPostingFit, WAITING_FIT_PARTS, type FitPayload } from './fit-view'
 
 const payload = (plan: string): FitPayload => ({
   fitScore: 6.9,
@@ -22,6 +22,10 @@ const client = (plan: string, statuses: string[] = ['DONE']) => {
 const noSleep = async () => {}
 
 describe('fit card', () => {
+  it('names the default hub profile in its title, as every JobDetail board does', () => {
+    expect(FIT_TITLE).toBe('내 적합도 · 허브 프로필 기준')
+  })
+
   it('locks the five parts on FREE and keeps the total', async () => {
     const model = await runPostingFit('p1', doc, client('FREE'), noSleep)
     expect(model?.score).toBe(6.9)

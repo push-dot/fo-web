@@ -21,8 +21,8 @@ export const bookmarkFitParts = <T extends { label: string }>(parts: T[]) => par
 
 export const FIT_LOCK = 'PRO로 올리면 항목별 점수와 약점을 볼 수 있어요'
 export const FIT_LOCK_CLOSED = '항목별 점수와 약점은 PRO에서 볼 수 있어요'
-// The job fit always reads the default hub profile (마이 프로필), so the card names it instead of a file.
-export const FIT_TITLE = '내 적합도 · 내 프로필'
+// The job fit always reads the default hub profile, so the card names it instead of a file (JobDetail boards).
+export const FIT_TITLE = '내 적합도 · 허브 프로필 기준'
 export const FIT_SOON = '적합도는 곧 볼 수 있어요'
 export const FIT_COMPARING = '공고와 서류를 비교하는 중…'
 
