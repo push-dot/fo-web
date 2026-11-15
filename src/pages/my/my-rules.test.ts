@@ -33,7 +33,7 @@ describe('documents', () => {
     ).toBe('서류를 삭제하지 못했어요')
   })
 
-  it('puts AI-made documents under Push 서류 and the rest under 올린 파일', () => {
+  it('puts AI-made documents under Push 프로필 and the rest under 올린 파일', () => {
     const items = [
       { id: 'a', origin: 'AI' },
       { id: 'u', origin: 'UPLOAD' },
