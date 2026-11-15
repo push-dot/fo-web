@@ -1,6 +1,7 @@
 import { brandColor } from '@push/shared'
 import type { Attachment } from '../../features/employer-chat'
 import { useEmployerPosting, useMyPostings } from '../../entities/posting'
+import { displayName } from '../../shared/lib/format'
 import { useChatActions } from './chat-actions'
 import {
   applicantKicker,
@@ -56,7 +57,7 @@ const PostingChip = ({ id, title }: { id: string; title?: string }) => {
 }
 
 const applicantChipTitle = (name: string, documentTitles: string[] | undefined) => {
-  const titles = (documentTitles ?? []).map((item) => item.trim()).filter(Boolean)
+  const titles = (documentTitles ?? []).map((item) => displayName(item.trim())).filter(Boolean)
   return titles.length ? [name, ...titles].join(' · ') : name
 }
 

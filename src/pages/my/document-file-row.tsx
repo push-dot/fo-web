@@ -2,6 +2,7 @@ import { ingestState } from '../../features/upload-resume'
 import { useJob } from '../../shared/api/jobs'
 import type { ListedSource } from '../../shared/api/sources'
 import { Icon } from '../../shared/ui/icon'
+import { displayName } from '../../shared/lib/format'
 import type { MenuItem } from '../../shared/ui/popover'
 import { DOCUMENT_INGEST, DOCUMENT_VIEW } from './constants'
 import { fileBadgeClass, fileExt, uploadMeta } from './my-rules'
@@ -21,7 +22,7 @@ const DocumentFileRow = ({ file, fresh, menu, onView }: DocumentFileRowProps) =>
     <div className={fresh ? 'doc-line fresh' : 'doc-line'}>
       <span className={fileBadgeClass(file.fileName)}>{fileExt(file.fileName)}</span>
       <span className="doc-copy">
-        <span className="b1 w7 cap">{file.fileName}</span>
+        <span className="b1 w7 cap">{displayName(file.fileName)}</span>
         <span className="c1 t3">{uploadMeta(file)}</span>
       </span>
       {state ? (
@@ -33,7 +34,7 @@ const DocumentFileRow = ({ file, fresh, menu, onView }: DocumentFileRowProps) =>
         <Icon name="eye" size={16} />
         {DOCUMENT_VIEW}
       </button>
-      <RowMore label={file.fileName} items={menu} />
+      <RowMore label={displayName(file.fileName)} items={menu} />
     </div>
   )
 }

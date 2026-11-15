@@ -3,7 +3,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useRef, useState } from 'react'
 
 import { COMPOSER_PROMPT, postsCreate, uploadsImage } from '../../features/compose-post'
-import { lengthCount } from '../../shared/lib/format'
+import { displayName, lengthCount } from '../../shared/lib/format'
 import { Dialog } from '../../shared/ui/dialog'
 import { Icon } from '../../shared/ui/icon'
 import { invalidFields, type ComposeField } from './compose-fields'
@@ -98,7 +98,7 @@ const ComposerSheet = ({ initialCategory, onClose }: { initialCategory: PostCate
         />
         {shown('body') ? <span className="auth-error">{COMPOSE_ERRORS.body}</span> : null}
       </label>
-      {files.length > 0 ? <p className="c1 t3">{files.map((file) => file.name).join(', ')}</p> : null}
+      {files.length > 0 ? <p className="c1 t3">{files.map((file) => displayName(file.name)).join(', ')}</p> : null}
       {error ? <p className="auth-error">{error}</p> : null}
       <div className="cmp-foot">
         <input

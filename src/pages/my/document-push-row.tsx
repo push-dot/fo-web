@@ -1,4 +1,5 @@
 import type { SourceItem } from '@push/api-client'
+import { displayName } from '../../shared/lib/format'
 import { Icon } from '../../shared/ui/icon'
 import type { MenuItem } from '../../shared/ui/popover'
 import { DOCUMENT_VIEW } from './constants'
@@ -13,14 +14,14 @@ const DocumentPushRow = ({ item, menu, onView }: DocumentPushRowProps) => (
       <Icon name="doc" size={20} />
     </span>
     <span className="doc-copy">
-      <span className="b1 w7 cap">{item.fileName}</span>
+      <span className="b1 w7 cap">{displayName(item.fileName)}</span>
       <span className="c1 t3 cap">{pushDocumentMeta(item)}</span>
     </span>
     <button type="button" className="btn sec sm" onClick={onView}>
       <Icon name="eye" size={16} />
       {DOCUMENT_VIEW}
     </button>
-    <RowMore label={item.fileName} items={menu} />
+    <RowMore label={displayName(item.fileName)} items={menu} />
   </div>
 )
 
