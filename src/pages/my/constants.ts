@@ -24,7 +24,7 @@ export const ACTIVITY_CHIP_KEY = {
 } as const
 
 export const DOCUMENT_EMPTY = '아직 등록한 서류가 없어요'
-export const DOCUMENT_UPLOADED = '이력서 파일을 올렸어요'
+export const DOCUMENT_UPLOADED = '파일을 올렸어요'
 export const DOCUMENT_INGEST = { reading: '읽는 중', failed: '읽지 못했어요' } as const
 export const APPLICATION_EMPTY = '아직 지원한 공고가 없어요.'
 export const CALENDAR_EMPTY = '이날은 일정이 없어요.'
@@ -141,7 +141,7 @@ export const ACTIVITY_LOAD_ERROR = '목록을 불러오지 못했어요.'
 export const listTotal = (envelope: { data: unknown[]; page: { total?: number } }) =>
   envelope.page.total ?? envelope.data.length
 
-export const PUSH_DOCS_TITLE = 'Push 서류'
+export const PUSH_DOCS_TITLE = 'Push 프로필'
 export const UPLOADS_TITLE = '올린 파일'
 export const UPLOADS_GROUP = (count: number) => `${UPLOADS_TITLE} · ${count}개`
 export const DOCUMENT_COUNT = (count: number) => `내 서류 ${count}개`
@@ -151,7 +151,7 @@ export const DOCUMENT_VIEW = '보기'
 export const MORE_LABEL = '더 보기'
 export const DOCUMENT_UPLOADING = '올리는 중'
 export const DOCUMENT_UPLOAD_CANCEL = '올리기 취소'
-export const DOCUMENT_UPLOAD_FAILED = '이력서 파일을 올리지 못했어요. 잠시 후 다시 시도해 주세요.'
+export const DOCUMENT_UPLOAD_FAILED = '파일을 올리지 못했어요. 잠시 후 다시 시도해 주세요.'
 export const DOCUMENT_TOO_BIG = (size: string) => `20MB까지 올릴 수 있어요 · 이 파일은 ${size}예요`
 export const DOCUMENT_LOAD_FAILED = '서류를 불러오지 못했어요.'
 export const DOCUMENT_OPEN_FAILED = '서류를 열지 못했어요'

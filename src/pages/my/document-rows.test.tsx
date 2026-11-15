@@ -33,7 +33,7 @@ describe('document rows', () => {
   it('titles the AI group with a light note and the upload group with its count', () => {
     expect(
       renderToStaticMarkup(
-        <DocumentGroup title="Push 서류" note="앱의 에이전트에서 만듦">
+        <DocumentGroup title="Push 프로필" note="앱의 에이전트에서 만듦">
           x
         </DocumentGroup>,
       ),
