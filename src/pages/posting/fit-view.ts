@@ -21,6 +21,8 @@ export const bookmarkFitParts = <T extends { label: string }>(parts: T[]) => par
 
 export const FIT_LOCK = 'PRO로 올리면 항목별 점수와 약점을 볼 수 있어요'
 export const FIT_LOCK_CLOSED = '항목별 점수와 약점은 PRO에서 볼 수 있어요'
+// The job fit always reads the default hub profile (마이 프로필), so the card names it instead of a file.
+export const FIT_TITLE = '내 적합도 · 내 프로필'
 export const FIT_SOON = '적합도는 곧 볼 수 있어요'
 export const FIT_COMPARING = '공고와 서류를 비교하는 중…'
 
@@ -42,14 +44,11 @@ export const FIT_LOCK_PREVIEW = {
 } as const
 
 export type FitCardModel = {
-  document: string
   score: number
   parts: { label: string; value: number | null }[]
   weakness: string | null
   locked: boolean
   reachable?: number
-  /** ULTRA draws the `이렇게 고치면 N점대` row under the card (JobDetail ULTRA boards). */
-  ultra?: boolean
 }
 
 type FitClient = {
@@ -63,15 +62,13 @@ export const planOf = (plan: string | undefined) => (plan === 'PRO' || plan === 
 const reachableBand = ({ fitScore, reachable }: FitPayload) =>
   reachable != null && Math.floor(reachable) > Math.floor(fitScore) ? Math.floor(reachable) : undefined
 
-export const fitCardModel = (payload: FitPayload, document: string): FitCardModel => {
+export const fitCardModel = (payload: FitPayload): FitCardModel => {
   const locked = planOf(payload.plan) === 'FREE'
   return {
-    document,
     score: payload.fitScore,
     locked,
     weakness: locked ? null : payload.topGap || null,
     reachable: locked ? undefined : reachableBand(payload),
-    ultra: planOf(payload.plan) === 'ULTRA',
     parts: FIT_PARTS.map(([key, label]) => ({
       label,
       value: locked ? null : payload.parts[key],
@@ -79,7 +76,7 @@ export const fitCardModel = (payload: FitPayload, document: string): FitCardMode
   }
 }
 
-type MockFit = { document: string; score: number; parts: { label: string; value: number }[]; weakness: string; reachable: number }
+type MockFit = { score: number; parts: { label: string; value: number }[]; weakness: string; reachable: number }
 
 /** The WebView mock answers like the server for the plan the app tells it (`window.__PUSH__.plan`, PRO when absent). */
 export const mockFitModel = (fit: MockFit, plan: string | undefined): FitCardModel =>
@@ -90,9 +87,7 @@ export const mockFitModel = (fit: MockFit, plan: string | undefined): FitCardMod
       topGap: fit.weakness,
       plan: plan ?? 'PRO',
       reachable: fit.reachable,
-    },
-    fit.document,
-  )
+    })
 
 const settled = new Set(['DONE', 'FAILED', 'DEAD', 'CANCELLED'])
 
@@ -117,7 +112,7 @@ export const runPostingFit = async (
     const { jobId } = await client.startFit(postingId, doc.id)
     for (;;) {
       const job = await client.readJob(jobId)
-      if (job.status === 'DONE') return job.result ? fitCardModel(job.result, doc.title) : null
+      if (job.status === 'DONE') return job.result ? fitCardModel(job.result) : null
       if (settled.has(job.status)) return null
       await sleep(JOB_POLL_MS)
     }
