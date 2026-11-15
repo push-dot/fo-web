@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { usePaymentsOpen } from '../../entities/billing'
 import { api } from '../../shared/api/client'
 import { loadMock } from '../../shared/api/mock-loader'
+import MidDotText from '../../shared/ui/mid-dot-text'
 import { isMock, isWebView, pushEnv, send, webViewFrom } from '../../shared/lib/bridge'
 import { MOCK_FIT_DELAY_MS } from './constants'
 import {
@@ -105,7 +106,9 @@ const FitCard = ({ postingId }: { postingId: string }) => {
           <span className="ring ring-empty">{status === 'comparing' ? <span className="glyph" /> : <span className="num t4">–</span>}</span>
         )}
         <span className="fit-title">
-          <span className="c1 t3 w7">{FIT_TITLE}</span>
+          <span className="c1 t3 w7">
+            <MidDotText text={FIT_TITLE} />
+          </span>
           {subtitle ? <span className={status === 'comparing' ? 'h3 shim shim-ac' : 'h3'}>{subtitle}</span> : null}
         </span>
         {tappable ? (

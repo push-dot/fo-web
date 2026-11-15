@@ -75,7 +75,9 @@ const PostingPage = () => {
           <svg className="ic" viewBox="0 0 24 24" aria-hidden="true">
             <path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" />
           </svg>
-          원문 보기 · {p.company} 채용 사이트
+          <span>
+            <MidDotText text={`원문 보기 · ${p.company} 채용 사이트`} />
+          </span>
           <svg className="ic" viewBox="0 0 24 24" aria-hidden="true">
             <path d="m9.5 5.5 6.5 6.5-6.5 6.5" />
           </svg>
