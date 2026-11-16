@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom'
 
 import { useMyCompany } from '../../entities/company'
 import { changeCompanyLogo } from '../../features/edit-company'
+import { assetUrl } from '../../shared/api/client'
 import { useSession } from '../../shared/auth/use-session'
 import { formatBno } from '../../features/verify-business'
 import { Icon } from '../../shared/ui/icon'
@@ -54,12 +55,13 @@ const CompanyPanel = () => {
   if (query.isError) return <p className="b2 t3">회사 정보를 불러오지 못했어요.</p>
   if (!query.data) return <p className="b2 t3" aria-busy="true">회사 정보를 불러오고 있어요.</p>
   const company = query.data
+  const logoSrc = assetUrl(company.logoUrl)
   const sub = [company.industry, company.website].filter(Boolean).join(' · ')
   return (
     <section className="stack company-panel">
       <div className="box company-hero">
-        {company.logoUrl ? (
-          <img className="av" src={company.logoUrl} alt="" />
+        {logoSrc ? (
+          <img className="av" src={logoSrc} alt="" />
         ) : (
           <span className="av" style={{ background: brandColor(company.name) }}>
             {[...company.name][0]}
