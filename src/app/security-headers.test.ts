@@ -40,8 +40,8 @@ describe('security headers on every page', () => {
     for (const hash of inlineScriptHashes()) expect(scripts).toContain(hash)
   })
 
-  it('blocks plugins, base hijacking, and framing by other sites', () => {
-    expect(csp.get('object-src')).toEqual(["'none'"])
+  it('allows plugin data only from our own PDF blobs and blocks base hijacking and framing', () => {
+    expect(csp.get('object-src')).toEqual(['blob:'])
     expect(csp.get('base-uri')).toEqual(["'self'"])
     expect(csp.get('frame-ancestors')).toEqual(["'none'"])
     expect(headers.get('x-frame-options')).toBe('DENY')
