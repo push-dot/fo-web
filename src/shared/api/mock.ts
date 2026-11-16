@@ -2496,7 +2496,10 @@ export const mockFetch: typeof fetch = async (input, init) => {
   if (method === 'POST' && matches(pathname, '/auth/email/verify')) {
     const payload = await readJson(input, init)
     const token = String(payload.token ?? '')
-    if (token === 'bad') return json(400, { error: { code: 'INVALID_TOKEN', message: 'bad' } })
+    if (token === 'bad') return json(401, { error: { code: 'UNAUTHENTICATED', message: 'bad' } })
+    if (String(payload.password ?? '').length < 8) {
+      return json(400, { error: { code: 'VALIDATION_ERROR', message: 'password', details: { field: 'password' } } })
+    }
     const kind = token === 'employer' || signupEmail.startsWith('employer') ? 'employer-new' : 'personal'
     return json(200, { data: mockSession(kind) })
   }

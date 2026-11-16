@@ -30,3 +30,11 @@ describe('employer sign-up consent', () => {
     expect(html).not.toContain('개인정보 처리방침에 동의해요')
   })
 })
+
+describe('employer sign-up has no password', () => {
+  it('leaves the password to the verify page', () => {
+    const html = employerForm()
+    expect(html).not.toContain('type="password"')
+    expect(html).toContain('이메일로 인증한 뒤 비밀번호를 정해요.')
+  })
+})

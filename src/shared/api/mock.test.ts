@@ -468,7 +468,7 @@ describe('mock route coverage', () => {
       name: 'verifies an email token into a session',
       persona: 'personal',
       act: async () => {
-        const response = await postJson(api('/auth/email/verify'), { token: 'ok' })
+        const response = await postJson(api('/auth/email/verify'), { token: 'ok', password: 'chosen-pw-1' })
         expect(response.status).toBe(200)
         const body = await read<{ data: { accessToken: string } }>(response)
         expect(typeof body.data.accessToken).toBe('string')
