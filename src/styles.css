@@ -39,9 +39,9 @@ button.fit:active{transform:scale(.99)}
 .fit-title{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
 button.fit .fit-title .c1{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .fit-chev{width:18px;height:18px;stroke-width:2.2;color:var(--t3)}
-.fit-lock{position:relative}
-.fit-lock-rows{display:flex;flex-direction:column;gap:12px;filter:blur(5px);opacity:.55;pointer-events:none}
-.fit-lock-pill{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:0 8px}
+.fit-lock{display:flex;flex-direction:column;gap:14px}
+.fit-lock-rows{display:flex;flex-direction:column;gap:12px;pointer-events:none}
+.fit-lock-pill{display:flex;align-items:center;justify-content:center;padding:0 8px}
 .fit-lock-pill>span{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;background:var(--bg);box-shadow:0 4px 14px rgba(0,0,0,.08);color:var(--t1);text-align:center}
 .fit-lock-pill .ic{width:14px;height:14px;stroke-width:2.2}
 .weak-ghost{flex:1;max-width:70%;height:12px;margin-top:3px;border-radius:6px;background:var(--fill2)}
@@ -59,6 +59,7 @@ button.fit .fit-title .c1{white-space:nowrap;overflow:hidden;text-overflow:ellip
 .bar{height:8px;border-radius:4px;background:var(--fill2);overflow:hidden}
 .bar i{display:block;height:100%;border-radius:4px;background:var(--ac);transform-origin:left;animation:grow .9s cubic-bezier(.2,.8,.2,1) .15s both}
 .bar i.lo{background:var(--orange)}
+.bar i.ex{background:var(--deco)}
 .weak{display:flex;gap:8px}
 .bang{color:var(--orange);font-weight:800}
 @keyframes grow{from{transform:scaleX(0)}}

@@ -11,7 +11,7 @@ import {
   FIT_PART_LABELS,
   bookmarkFitParts,
   WAITING_FIT_PARTS,
-  FIT_LOCK_PREVIEW,
+  FIT_LOCK_EXAMPLE,
   FIT_SOON,
   firstDocument,
   fitLockText,
@@ -56,15 +56,15 @@ const loadFit = (postingId: string, doc: FitDocument) =>
         readJob: (id) => api.jobs.get<FitPayload>(id),
       })
 
-const FitRow = ({ label, value, index }: { label: string; value: number | null; index: number }) => (
+const FitRow = ({ label, value, index, example }: { label: string; value: number | null; index: number; example?: boolean }) => (
   <div className="frow">
     <span>{label}</span>
     <span className="bar">
       {value !== null ? (
-        <i className={isLowFit(value) ? 'lo' : undefined} style={{ width: `${value * 10}%`, animationDelay: `${0.15 + index * 0.08}s` }} />
+        <i className={example ? 'ex' : isLowFit(value) ? 'lo' : undefined} style={{ width: `${value * 10}%`, animationDelay: `${0.15 + index * 0.08}s` }} />
       ) : null}
     </span>
-    <b className={value !== null ? 'num' : 'num t4'}>{value !== null ? value.toFixed(1) : '–'}</b>
+    <b className={value !== null && !example ? 'num' : 'num t4'}>{value !== null && !example ? value.toFixed(1) : '–'}</b>
   </div>
 )
 
@@ -121,12 +121,8 @@ const FitCard = ({ postingId }: { postingId: string }) => {
         <div className="fit-lock">
           <div className="fit-lock-rows" aria-hidden="true">
             {FIT_PART_LABELS.map((label, i) => (
-              <FitRow key={label} label={label} value={FIT_LOCK_PREVIEW.parts[i] ?? null} index={i} />
+              <FitRow key={label} label={label} value={FIT_LOCK_EXAMPLE[i] ?? null} index={i} example />
             ))}
-            <span className="c1 t2 weak">
-              <span className="bang">!</span>
-              {FIT_LOCK_PREVIEW.weakness}
-            </span>
           </div>
           <span className="fit-lock-pill">
             <span className="c1 w7">
