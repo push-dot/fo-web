@@ -2,6 +2,7 @@ import { useQueryClient, type QueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 
 import { authLogout } from '../../shared/api/operations'
+import { cookieSession } from '../../shared/auth/cookie-session'
 import { sessionStore } from '../../shared/auth/session'
 
 /**
@@ -10,7 +11,7 @@ import { sessionStore } from '../../shared/auth/session'
  */
 export const signOut = async (queryClient: Pick<QueryClient, 'clear'>, { revoke = true } = {}) => {
   const refreshToken = sessionStore.load()?.refreshToken
-  if (revoke && refreshToken) await authLogout(refreshToken).catch(() => undefined)
+  if (revoke && (cookieSession || refreshToken)) await authLogout(cookieSession ? undefined : refreshToken).catch(() => undefined)
   sessionStore.clear()
   queryClient.clear()
 }

@@ -94,8 +94,11 @@ pnpm --filter @push/fo-web dev
 | 이름 | 읽는 곳 |
 | --- | --- |
 | `VITE_API_BASE_URL` | `src/shared/api/client.ts` |
+| `VITE_COOKIE_SESSION` | `src/shared/auth/cookie-session.ts` |
 
 `window.__PUSH__.apiBaseUrl`이 있으면 그 주소를 `VITE_API_BASE_URL`보다 먼저 씁니다.
+
+`VITE_COOKIE_SESSION=1`로 빌드하면 refresh 토큰을 push-be의 HttpOnly 쿠키(`push_rt`)에 두고 access 토큰은 메모리에만 둡니다(localStorage에 토큰 없음). 쿠키는 웹과 API가 같은 등록 도메인일 때만 전달되므로, 두 주소가 `*.workers.dev`처럼 서로 다른 사이트인 배포에서는 켜지 마세요. 기본은 꺼짐입니다.
 
 목업은 목업 빌드에서만 켜집니다. 주소에 `mock` 쿼리를 붙이고, `as`는 `personal`, `employer`, `employer-pro`, `employer-ultra`, `employer-new` 중 하나입니다. 목업이면 `shared/api/mock.ts`가 fetch를 대체합니다.
 
