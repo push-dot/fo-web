@@ -4,27 +4,21 @@ import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-do
 
 import { pathAfterAuth, takeReturnTo } from '../../shared/auth/return-path'
 import { sessionStore } from '../../shared/auth/session'
-import {
-  EMAIL_TAKEN_EMPLOYER_COPY,
-  EMAIL_TAKEN_PERSONAL_COPY,
-  PASSWORD_LENGTH_COPY,
-} from '../../shared/model/constants'
-import { emailSignupInput, emailTakenCopy, passwordError } from '../../shared/model/login-providers'
+import { EMAIL_TAKEN_EMPLOYER_COPY, EMAIL_TAKEN_PERSONAL_COPY } from '../../shared/model/constants'
+import { emailSignupInput, emailTakenCopy } from '../../shared/model/login-providers'
 import { Icon } from '../../shared/ui/icon'
 import Toast from '../../shared/ui/toast'
 import AccountTypeControl from './account-type-control'
 import AuthCheck from './auth-check'
-import AuthPasswordField from './auth-password-field'
 import {
   EMAIL_LABEL,
   LOGIN_FAILED_COPY,
   LOGIN_SUBMIT_COPY,
   NAME_LABEL,
-  PASSWORD_HINT,
-  PASSWORD_LABEL,
   SIGNUP_EMPLOYER_TITLE,
   SIGNUP_HAS_ACCOUNT,
   SIGNUP_LEAD,
+  SIGNUP_SENDING_COPY,
   SIGNUP_SUBMIT_COPY,
   TERM_VIEW,
   TERMS_COLLECTION_LINK,
@@ -78,7 +72,6 @@ const EmployerSignup = ({
 }) => {
   const [displayName, setDisplayName] = useState('')
   const [email, setEmail] = useState(initialEmail)
-  const [password, setPassword] = useState('')
   const [terms, setTerms] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [taken, setTaken] = useState(false)
@@ -86,16 +79,10 @@ const EmployerSignup = ({
   const [pending, setPending] = useState(false)
   const resend = useVerifyResend(email)
   const emailTaken = error === EMAIL_TAKEN_PERSONAL_COPY || error === EMAIL_TAKEN_EMPLOYER_COPY
-  const passwordInvalid = error === PASSWORD_LENGTH_COPY
   const blocked = !terms || taken
 
   const send = async () => {
-    const invalid = passwordError(password)
-    if (invalid) {
-      setError(invalid)
-      return
-    }
-    const input = emailSignupInput({ email, password, accountType: 'EMPLOYER', displayName, terms })
+    const input = emailSignupInput({ email, accountType: 'EMPLOYER', displayName, terms })
     if (!input) return
     setError(null)
     setPending(true)
@@ -185,14 +172,6 @@ const EmployerSignup = ({
             </span>
           ) : null}
         </label>
-        <AuthPasswordField
-          label={PASSWORD_LABEL}
-          value={password}
-          onChange={setPassword}
-          autoComplete="new-password"
-          hint={PASSWORD_HINT}
-          error={passwordInvalid ? error : null}
-        />
         <div className="auth-consents">
           <AuthCheck checked={terms} onChange={setTerms}>
             <span>
@@ -214,7 +193,7 @@ const EmployerSignup = ({
             </a>
           </span>
         </div>
-        {error && !emailTaken && !passwordInvalid ? (
+        {error && !emailTaken ? (
           <p className="auth-error" role="alert">
             {error}
           </p>
@@ -224,7 +203,7 @@ const EmployerSignup = ({
           className={blocked ? 'auth-btn pri dis' : 'auth-btn pri'}
           disabled={blocked || pending}
         >
-          {SIGNUP_SUBMIT_COPY}
+          {pending ? SIGNUP_SENDING_COPY : SIGNUP_SUBMIT_COPY}
         </button>
       </form>
       <p className="auth-foot">

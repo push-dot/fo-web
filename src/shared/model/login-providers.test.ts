@@ -37,7 +37,7 @@ describe('passwordError', () => {
 })
 
 describe('emailSignupInput', () => {
-  const form = { email: 'hr@acme.kr', password: 'password1', accountType: 'EMPLOYER' as const, displayName: '김서준' }
+  const form = { email: 'hr@acme.kr', accountType: 'EMPLOYER' as const, displayName: '김서준' }
 
   it('sends agreeTerms true once the terms checkbox is ticked', () => {
     expect(emailSignupInput({ ...form, terms: true })).toEqual({ ...form, agreeTerms: true })
