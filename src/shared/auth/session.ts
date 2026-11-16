@@ -2,6 +2,7 @@ import type { Session } from '@push/api-client'
 import { mockBuild } from '../lib/bridge'
 import { browserLocalStorage, browserSessionStorage } from '../lib/storage'
 import { SESSION_STORAGE_KEY } from './constants'
+import { cookieSession } from './cookie-session'
 import { usesMockSessionStorage } from './mock-session-storage'
 import { forgetSignupReturnTo } from './return-path'
 
@@ -25,6 +26,7 @@ const memoryStorage = (): StorageLike => {
 }
 
 const defaultStorage = (): StorageLike => {
+  if (cookieSession) return memoryStorage()
   const local = browserLocalStorage()
   const session = browserSessionStorage()
   if (!local || !session) return memoryStorage()

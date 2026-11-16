@@ -6,9 +6,10 @@ import { createRoot } from 'react-dom/client'
 import { applyMockSearch } from './app/mock-bootstrap'
 import Providers from './app/providers'
 import AppRouter from './app/router'
+import { restoreSession } from './shared/api/client'
 import { sessionStore } from './shared/auth/session'
 
-void applyMockSearch(window.location.search, sessionStore).then(() =>
+void applyMockSearch(window.location.search, sessionStore).then(restoreSession).then(() =>
   createRoot(document.getElementById('root')!).render(
     <StrictMode>
       <Providers>
