@@ -36,11 +36,8 @@ export type FitPayload = {
   plan: string
 }
 
-// The blurred rows behind the FREE lock pill (JobDetail FREE boards): decoration only, the server sends no part scores to a FREE account.
-export const FIT_LOCK_PREVIEW = {
-  parts: [7.5, 7, 8, 4.5, 5],
-  weakness: 'Kafka 운영 경험과 부하 테스트 근거가 부족해요',
-} as const
+// The example bars under the FREE lock pill (JobDetail FREE boards): they show what a PRO card looks like, the server sends no part scores to a FREE account.
+export const FIT_LOCK_EXAMPLE = [8, 6, 7, 4, 5] as const
 
 export type FitCardModel = {
   score: number
