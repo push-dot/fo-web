@@ -58,7 +58,10 @@ if (typeof window !== 'undefined') {
   })
 }
 
+const HTTP_URL = /^https?:\/\//i
+
 export const send = (message: BridgeMessage) => {
+  if (message.type === 'external' && !HTTP_URL.test(message.url)) return
   if (message.type === 'title') document.title = message.title
   if (window.ReactNativeWebView) return window.ReactNativeWebView.postMessage(JSON.stringify(message))
   if (message.type === 'external') window.open(message.url, '_blank', 'noopener')
