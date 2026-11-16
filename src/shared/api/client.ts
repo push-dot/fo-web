@@ -17,14 +17,20 @@ let refreshInFlight: Promise<boolean> | null = null
 
 const refreshUrl = () => `${apiBaseUrl.replace(/\/+$/, '')}/auth/refresh`
 
+// A visitor with no session has nothing to clear, and clearing would also drop the sign-up return path
+// saved for a verify link opened in a new tab.
+const dropSession = () => {
+  if (sessionStore.load()) sessionStore.clear()
+}
+
 const refreshFromCookieOnce = async () => {
   try {
     const session = await refreshFromCookie(refreshUrl(), (input, init) => fetch(input, init))
     if (session) sessionStore.save(session)
-    else sessionStore.clear()
+    else dropSession()
     return session !== null
   } catch {
-    sessionStore.clear()
+    dropSession()
     return false
   }
 }
