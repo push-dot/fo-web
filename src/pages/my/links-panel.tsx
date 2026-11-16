@@ -5,6 +5,7 @@ import { useState } from 'react'
 import { useLinks } from '../../entities/profile'
 import { meAddLink } from '../../features/add-link'
 import { removeLink, restoreLink } from '../../features/remove-link'
+import { send } from '../../shared/lib/bridge'
 import { Icon } from '../../shared/ui/icon'
 import type { MenuItem } from '../../shared/ui/popover'
 import Skeleton from '../../shared/ui/skeleton'
@@ -72,7 +73,7 @@ const LinksPanel = () => {
     {
       label: LINK_MENU.open,
       icon: 'ext',
-      onSelect: () => window.open(link.url, '_blank', 'noopener'),
+      onSelect: () => send({ type: 'external', url: link.url }),
     },
     { divider: true },
     { label: LINK_MENU.remove, icon: 'trash', danger: true, onSelect: () => remove.mutate(link) },

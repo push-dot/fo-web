@@ -1,0 +1,5 @@
+/*
+  Content-Security-Policy: script-src 'self' 'sha256-17qmolO0I1qORMw++UeNBNPcy6EPHc02Fpn2obzpY08='; object-src 'none'; base-uri 'self'; frame-ancestors 'none'
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
