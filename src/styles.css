@@ -39,10 +39,10 @@ button.fit:active{transform:scale(.99)}
 .fit-title{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
 button.fit .fit-title .c1{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .fit-chev{width:18px;height:18px;stroke-width:2.2;color:var(--t3)}
-.fit-lock{display:flex;flex-direction:column;gap:14px}
+.fit-lock{display:flex;flex-direction:column;gap:16px}
 .fit-lock-rows{display:flex;flex-direction:column;gap:12px;pointer-events:none}
-.fit-lock-pill{display:flex;align-items:center;justify-content:center;padding:0 8px}
-.fit-lock-pill>span{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;background:var(--bg);box-shadow:0 4px 14px rgba(0,0,0,.08);color:var(--t1);text-align:center}
+.fit-lock-pill{display:flex;align-items:center;justify-content:center}
+.fit-lock-pill>span{display:flex;align-items:center;gap:8px;padding:10px 16px;border-radius:999px;background:var(--bg);box-shadow:0 4px 14px rgba(0,0,0,.08);color:var(--t1);text-align:center}
 .fit-lock-pill .ic{width:14px;height:14px;stroke-width:2.2}
 .weak-ghost{flex:1;max-width:70%;height:12px;margin-top:3px;border-radius:6px;background:var(--fill2)}
 .ring{position:relative;width:64px;height:64px;flex:none}
