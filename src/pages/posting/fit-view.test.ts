@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import styles from '../../styles.css?raw'
 import { bookmarkFitParts, FIT_LOCK, FIT_TITLE, FIT_LOCK_CLOSED, FIT_PART_LABELS, firstDocument, fitCardModel, fitLockText, fitStatus, isLowFit, FIT_LOCK_EXAMPLE, mockFitModel, runPostingFit, WAITING_FIT_PARTS, type FitPayload } from './fit-view'
 
 const payload = (plan: string): FitPayload => ({
@@ -142,5 +143,11 @@ describe('mockFitModel', () => {
 describe('fit bar tone', () => {
   it('draws 4.5 and 5.0 low and 5.1 normal, as the JobDetail boards do', () => {
     expect([4.5, 5, 5.1, 7.5].map(isLowFit)).toEqual([true, true, false, false])
+  })
+})
+
+describe('locked fit bars', () => {
+  it('draws the example bars as the board\'s .gy: the grey text token at 70%, not the decoration grey', () => {
+    expect(styles).toContain('.bar i.ex{background:var(--t4);opacity:.7}')
   })
 })
