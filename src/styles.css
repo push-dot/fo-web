@@ -59,7 +59,7 @@ button.fit .fit-title .c1{white-space:nowrap;overflow:hidden;text-overflow:ellip
 .bar{height:8px;border-radius:4px;background:var(--fill2);overflow:hidden}
 .bar i{display:block;height:100%;border-radius:4px;background:var(--ac);transform-origin:left;animation:grow .9s cubic-bezier(.2,.8,.2,1) .15s both}
 .bar i.lo{background:var(--orange)}
-.bar i.ex{background:var(--deco)}
+.bar i.ex{background:var(--t4);opacity:.7}
 .weak{display:flex;gap:8px}
 .bang{color:var(--orange);font-weight:800}
 @keyframes grow{from{transform:scaleX(0)}}
