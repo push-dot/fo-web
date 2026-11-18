@@ -2,6 +2,8 @@
 
 Push의 웹 앱입니다. 개인 사용자는 공고를 찾고 지원하며, 허브와 소셜을 이용합니다. 기업 사용자는 공고를 올리고 지원자를 관리하며, 기업 AI 채팅을 사용합니다. 모바일 앱의 WebView도 이 앱의 공고·프로필 상세를 엽니다.
 
+배포 주소: https://push-fo-web.youngjoon568.workers.dev (Cloudflare Workers, `workers.dev`)
+
 개발 서버 포트는 5174입니다. 화면 문구는 한국어이고, 글꼴은 Noto Sans KR입니다.
 
 ## 주요 기능

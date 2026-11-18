@@ -92,6 +92,7 @@ export const VERIFY_MAIL_DONE = '메일의 링크를 누르면 비밀번호를 �
 export const VERIFY_MAIL_MISSING = '메일이 오지 않았나요?'
 export const VERIFY_MAIL_SPAM = '스팸함을 확인해 주세요. 링크는 24시간 동안 쓸 수 있어요.'
 export const VERIFY_MAIL_RESEND = '인증 메일 다시 보내기'
+export const verifyResendWait = (seconds: number) => `${VERIFY_MAIL_RESEND} (${seconds}초)`
 export const VERIFY_RESEND_SENT = '인증 메일을 다시 보냈어요'
 export const VERIFY_RESEND_LATER = '잠시 뒤에 다시 보내 주세요'
 export const VERIFY_RESEND_FAILED = '인증 메일을 다시 보내지 못했어요'

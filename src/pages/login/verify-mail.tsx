@@ -7,17 +7,20 @@ import {
   VERIFY_MAIL_SPAM,
   VERIFY_MAIL_TAIL,
   VERIFY_MAIL_TITLE,
+  verifyResendWait,
 } from './constants'
 
 const VerifyMail = ({
   email,
   pending,
+  wait = 0,
   error,
   onResend,
   onEdit,
 }: {
   email: string
   pending: boolean
+  wait?: number
   error: string | null
   onResend: () => void
   onEdit: () => void
@@ -44,7 +47,7 @@ const VerifyMail = ({
       disabled={pending}
       onClick={onResend}
     >
-      {VERIFY_MAIL_RESEND}
+      {wait > 0 ? verifyResendWait(wait) : VERIFY_MAIL_RESEND}
     </button>
     <button type="button" className="auth-text" onClick={onEdit}>
       {VERIFY_MAIL_OTHER}

@@ -18,6 +18,7 @@ import {
   APPLY_ASIDE,
   APPLY_LABEL,
   BOOKMARK_LABEL,
+  BOOKMARKED_TOAST,
   EMPLOYER_POSTING_CTA,
   EMPLOYER_POSTING_NOTE,
   EMPLOYER_VERIFY_PATH,
@@ -64,6 +65,7 @@ const PostingActions = ({ posting, onToast }: { posting: PostingView; onToast: (
   const bookmark = useMutation({
     mutationFn: () => (posting.bookmarked ? postingsUnbookmark(posting.id) : postingsBookmark(posting.id)),
     onSuccess: async () => {
+      if (!posting.bookmarked) onToast(BOOKMARKED_TOAST)
       await queryClient.invalidateQueries({ queryKey: ['posting', posting.id] })
       await queryClient.invalidateQueries({ queryKey: ['postings'] })
       await queryClient.invalidateQueries({ queryKey: ['bookmarks'] })

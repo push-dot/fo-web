@@ -112,6 +112,7 @@ const EmployerSignup = ({
         <VerifyMail
           email={email}
           pending={resend.pending || resend.cooling}
+          wait={resend.wait}
           error={resend.error}
           onResend={() => void resend.send()}
           onEdit={() => {
