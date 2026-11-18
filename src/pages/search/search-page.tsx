@@ -139,7 +139,7 @@ const SearchPage = () => {
               {peopleFailed ? (
                 <ErrorState title={SEARCH_ERROR} onRetry={() => void people.refetch()} />
               ) : (
-                <div className="search-list">
+                <div className="search-list search-people-list">
                   {persons.map((person) => (
                     <PersonRow key={person.userId} person={person} q={q} />
                   ))}

@@ -8,13 +8,17 @@ import Providers from './app/providers'
 import AppRouter from './app/router'
 import { restoreSession } from './shared/api/client'
 import { sessionStore } from './shared/auth/session'
+import { isWebView } from './shared/lib/bridge'
+import { holdForFonts } from './shared/lib/hold-for-fonts'
 
-void applyMockSearch(window.location.search, sessionStore).then(restoreSession).then(() =>
+if (isWebView()) holdForFonts()
+
+void applyMockSearch(window.location.search, sessionStore).then(restoreSession).then(() => {
   createRoot(document.getElementById('root')!).render(
     <StrictMode>
       <Providers>
         <AppRouter />
       </Providers>
     </StrictMode>,
-  ),
-)
+  )
+})

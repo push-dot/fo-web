@@ -3,7 +3,7 @@ import { brandColor, careerLabel } from '@push/shared'
 import { Fragment } from 'react'
 import { useParams } from 'react-router-dom'
 import { assetUrl } from '../../shared/api/client'
-import { isWebView, send } from '../../shared/lib/bridge'
+import { isWebView } from '../../shared/lib/bridge'
 import { dDay } from '../../shared/lib/format'
 import type { PostingView } from '../../shared/api/mock'
 import { showFitCard } from '../../shared/model/fit-card'
@@ -63,26 +63,6 @@ const PostingPage = () => {
       <Section title="자격 요건" items={p.requirements} />
       <Section title="우대 사항" items={p.preferred ?? []} />
       <Section title="근무 조건" items={workConditionLines(p.workConditions)} />
-      {p.sourceUrl ? (
-        <a
-          className="c1 w6 source"
-          href={p.sourceUrl}
-          onClick={(e) => {
-            e.preventDefault()
-            send({ type: 'external', url: p.sourceUrl! })
-          }}
-        >
-          <svg className="ic" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" />
-          </svg>
-          <span>
-            <MidDotText text={`원문 보기 · ${p.company} 채용 사이트`} />
-          </span>
-          <svg className="ic" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="m9.5 5.5 6.5 6.5-6.5 6.5" />
-          </svg>
-        </a>
-      ) : null}
       <Toast message={toast.message} />
     </main>
   )

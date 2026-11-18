@@ -8,7 +8,7 @@ import RowMore from './row-more'
 
 const KIND_ICON: Record<Exclude<UserLink['kind'], 'github'>, IconName> = {
   job: 'brief',
-  portfolio: 'doc',
+  portfolio: 'folder',
   blog: 'pencil',
   other: 'link',
 }

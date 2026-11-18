@@ -39,7 +39,8 @@ export const useVerifyResend = (email: string) => {
 
   useEffect(() => {
     if (!resendCooling(now, until)) return
-    const timer = window.setTimeout(() => setNow(Date.now()), until - Date.now())
+    // Ticks each second so the button can count down (board WebVerifyMailResent: "(59초)").
+    const timer = window.setTimeout(() => setNow(Date.now()), Math.min(1000, until - Date.now()))
     return () => window.clearTimeout(timer)
   }, [now, until])
 
@@ -58,5 +59,6 @@ export const useVerifyResend = (email: string) => {
     }
   }
 
-  return { pending, cooling: resendCooling(now, until), error, send, toast }
+  const cooling = resendCooling(now, until)
+  return { pending, cooling, wait: cooling ? Math.ceil((until - now) / 1000) : 0, error, send, toast }
 }

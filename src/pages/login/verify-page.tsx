@@ -31,6 +31,7 @@ import {
   VERIFY_INVALID_WHY,
   VERIFY_MAIL_OTHER,
   VERIFY_MAIL_RESEND,
+  verifyResendWait,
 } from './constants'
 import { authEmailVerify } from '../../features/verify-email'
 import Toast from '../../shared/ui/toast'
@@ -67,7 +68,7 @@ export const VerifyExpired = ({ email }: { email: string }) => {
         disabled={quiet}
         onClick={() => void resend.send()}
       >
-        {VERIFY_MAIL_RESEND}
+        {resend.wait > 0 ? verifyResendWait(resend.wait) : VERIFY_MAIL_RESEND}
       </button>
       <Link className="auth-text" to={SIGNUP}>
         {VERIFY_MAIL_OTHER}

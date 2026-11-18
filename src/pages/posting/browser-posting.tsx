@@ -3,7 +3,6 @@ import { brandColor, careerLabel } from '@push/shared'
 import { brandGradient } from '../../shared/lib/brand/brand'
 import { Link } from 'react-router-dom'
 import { assetUrl } from '../../shared/api/client'
-import { send } from '../../shared/lib/bridge'
 import { dDay } from '../../shared/lib/format'
 import type { PostingView } from '../../shared/api/mock'
 import { Icon } from '../../shared/ui/icon'
@@ -109,19 +108,6 @@ const BrowserPosting = ({ posting, message, onToast }: { posting: PostingView; m
                 ) : null}
               </div>
             </section>
-          ) : null}
-          {posting.sourceUrl ? (
-            <a
-              className="b2 w6 source-link"
-              href={posting.sourceUrl}
-              onClick={(event) => {
-                event.preventDefault()
-                send({ type: 'external', url: posting.sourceUrl! })
-              }}
-            >
-              <Icon name="ext" size={18} />
-              {`원문 보기 · ${posting.company} 채용 사이트`}
-            </a>
           ) : null}
         </div>
         <PostingActions posting={posting} onToast={onToast} />

@@ -680,135 +680,57 @@
       "status": 200,
       "data": {
         "userId": "u3",
-        "displayName": "김태윤",
+        "displayName": "박도윤",
         "avatarUrl": null,
-        "headline": "결제 시스템을 만드는 백엔드 개발자",
+        "headline": "SwiftUI로 앱을 만드는 iOS 개발자",
         "jobCategory": "dev",
-        "tenureYears": 5,
-        "careerStatus": "seeking",
-        "openToOffers": true,
-        "intro": "결제 승인과 정산을 5년 동안 만들어 왔어요. 하루 2,000만 건을 처리하는 승인 API의 p99를 420ms에서 180ms로 줄였고, 정산 배치를 Kafka 기반 스트림으로 바꿨어요. 다음에는 더 큰 트래픽을 다루는 팀에서 일하고 싶어요.",
-        "careers": [
-          {
-            "company": "모아페이",
-            "role": "백엔드 엔지니어",
-            "startedOn": "2022-03-01",
-            "endedOn": null,
-            "description": "결제 승인 API 성능 개선, 정산 파이프라인 재설계"
-          },
-          {
-            "company": "누리클라우드",
-            "role": "서버 개발자",
-            "startedOn": "2021-01-01",
-            "endedOn": "2022-02-28",
-            "description": "멀티 테넌트 과금 시스템 개발"
-          }
-        ],
-        "skills": [
-          "Kotlin",
-          "Spring Boot",
-          "JPA",
-          "Kafka",
-          "MySQL",
-          "Redis",
-          "AWS",
-          "Kubernetes"
-        ],
-        "followerCount": 128,
+        "tenureYears": 3,
+        "careerStatus": "feedback",
+        "openToOffers": false,
+        "intro": "SwiftUI로 앱을 만드는 iOS 개발자",
+        "careers": [],
+        "skills": [],
+        "followerCount": 40,
         "resumeSourceId": null,
-        "updatedAt": "2026-10-17T09:00:00.000Z",
-        "followingCount": 42,
-        "postCount": 15
+        "updatedAt": "2026-10-17T09:00:00.000Z"
       }
     },
     "/profiles/u4": {
       "status": 200,
       "data": {
         "userId": "u4",
-        "displayName": "김태윤",
+        "displayName": "최지우",
         "avatarUrl": null,
-        "headline": "결제 시스템을 만드는 백엔드 개발자",
+        "headline": "데이터 파이프라인 · Spark · Airflow",
         "jobCategory": "dev",
         "tenureYears": 5,
         "careerStatus": "seeking",
         "openToOffers": true,
-        "intro": "결제 승인과 정산을 5년 동안 만들어 왔어요. 하루 2,000만 건을 처리하는 승인 API의 p99를 420ms에서 180ms로 줄였고, 정산 배치를 Kafka 기반 스트림으로 바꿨어요. 다음에는 더 큰 트래픽을 다루는 팀에서 일하고 싶어요.",
-        "careers": [
-          {
-            "company": "모아페이",
-            "role": "백엔드 엔지니어",
-            "startedOn": "2022-03-01",
-            "endedOn": null,
-            "description": "결제 승인 API 성능 개선, 정산 파이프라인 재설계"
-          },
-          {
-            "company": "누리클라우드",
-            "role": "서버 개발자",
-            "startedOn": "2021-01-01",
-            "endedOn": "2022-02-28",
-            "description": "멀티 테넌트 과금 시스템 개발"
-          }
-        ],
-        "skills": [
-          "Kotlin",
-          "Spring Boot",
-          "JPA",
-          "Kafka",
-          "MySQL",
-          "Redis",
-          "AWS",
-          "Kubernetes"
-        ],
-        "followerCount": 128,
+        "intro": "데이터 파이프라인 · Spark · Airflow",
+        "careers": [],
+        "skills": [],
+        "followerCount": 40,
         "resumeSourceId": null,
-        "updatedAt": "2026-10-17T09:00:00.000Z",
-        "followingCount": 42,
-        "postCount": 15
+        "updatedAt": "2026-10-17T09:00:00.000Z"
       }
     },
     "/profiles/u5": {
       "status": 200,
       "data": {
         "userId": "u5",
-        "displayName": "김태윤",
+        "displayName": "정민재",
         "avatarUrl": null,
-        "headline": "결제 시스템을 만드는 백엔드 개발자",
+        "headline": "쿠버네티스 운영이 즐거운 DevOps",
         "jobCategory": "dev",
-        "tenureYears": 5,
-        "careerStatus": "seeking",
-        "openToOffers": true,
-        "intro": "결제 승인과 정산을 5년 동안 만들어 왔어요. 하루 2,000만 건을 처리하는 승인 API의 p99를 420ms에서 180ms로 줄였고, 정산 배치를 Kafka 기반 스트림으로 바꿨어요. 다음에는 더 큰 트래픽을 다루는 팀에서 일하고 싶어요.",
-        "careers": [
-          {
-            "company": "모아페이",
-            "role": "백엔드 엔지니어",
-            "startedOn": "2022-03-01",
-            "endedOn": null,
-            "description": "결제 승인 API 성능 개선, 정산 파이프라인 재설계"
-          },
-          {
-            "company": "누리클라우드",
-            "role": "서버 개발자",
-            "startedOn": "2021-01-01",
-            "endedOn": "2022-02-28",
-            "description": "멀티 테넌트 과금 시스템 개발"
-          }
-        ],
-        "skills": [
-          "Kotlin",
-          "Spring Boot",
-          "JPA",
-          "Kafka",
-          "MySQL",
-          "Redis",
-          "AWS",
-          "Kubernetes"
-        ],
-        "followerCount": 128,
+        "tenureYears": 4,
+        "careerStatus": "satisfied",
+        "openToOffers": false,
+        "intro": "쿠버네티스 운영이 즐거운 DevOps",
+        "careers": [],
+        "skills": [],
+        "followerCount": 40,
         "resumeSourceId": null,
-        "updatedAt": "2026-10-17T09:00:00.000Z",
-        "followingCount": 42,
-        "postCount": 15
+        "updatedAt": "2026-10-17T09:00:00.000Z"
       }
     },
     "/profiles/u-haeun": {
@@ -1594,135 +1516,57 @@
       "status": 200,
       "data": {
         "userId": "u3",
-        "displayName": "김태윤",
+        "displayName": "박도윤",
         "avatarUrl": null,
-        "headline": "결제 시스템을 만드는 백엔드 개발자",
+        "headline": "SwiftUI로 앱을 만드는 iOS 개발자",
         "jobCategory": "dev",
-        "tenureYears": 5,
-        "careerStatus": "seeking",
-        "openToOffers": true,
-        "intro": "결제 승인과 정산을 5년 동안 만들어 왔어요. 하루 2,000만 건을 처리하는 승인 API의 p99를 420ms에서 180ms로 줄였고, 정산 배치를 Kafka 기반 스트림으로 바꿨어요. 다음에는 더 큰 트래픽을 다루는 팀에서 일하고 싶어요.",
-        "careers": [
-          {
-            "company": "모아페이",
-            "role": "백엔드 엔지니어",
-            "startedOn": "2022-03-01",
-            "endedOn": null,
-            "description": "결제 승인 API 성능 개선, 정산 파이프라인 재설계"
-          },
-          {
-            "company": "누리클라우드",
-            "role": "서버 개발자",
-            "startedOn": "2021-01-01",
-            "endedOn": "2022-02-28",
-            "description": "멀티 테넌트 과금 시스템 개발"
-          }
-        ],
-        "skills": [
-          "Kotlin",
-          "Spring Boot",
-          "JPA",
-          "Kafka",
-          "MySQL",
-          "Redis",
-          "AWS",
-          "Kubernetes"
-        ],
-        "followerCount": 128,
+        "tenureYears": 3,
+        "careerStatus": "feedback",
+        "openToOffers": false,
+        "intro": "SwiftUI로 앱을 만드는 iOS 개발자",
+        "careers": [],
+        "skills": [],
+        "followerCount": 40,
         "resumeSourceId": null,
-        "updatedAt": "2026-10-17T09:00:00.000Z",
-        "followingCount": 42,
-        "postCount": 15
+        "updatedAt": "2026-10-17T09:00:00.000Z"
       }
     },
     "/profiles/u4": {
       "status": 200,
       "data": {
         "userId": "u4",
-        "displayName": "김태윤",
+        "displayName": "최지우",
         "avatarUrl": null,
-        "headline": "결제 시스템을 만드는 백엔드 개발자",
+        "headline": "데이터 파이프라인 · Spark · Airflow",
         "jobCategory": "dev",
         "tenureYears": 5,
         "careerStatus": "seeking",
         "openToOffers": true,
-        "intro": "결제 승인과 정산을 5년 동안 만들어 왔어요. 하루 2,000만 건을 처리하는 승인 API의 p99를 420ms에서 180ms로 줄였고, 정산 배치를 Kafka 기반 스트림으로 바꿨어요. 다음에는 더 큰 트래픽을 다루는 팀에서 일하고 싶어요.",
-        "careers": [
-          {
-            "company": "모아페이",
-            "role": "백엔드 엔지니어",
-            "startedOn": "2022-03-01",
-            "endedOn": null,
-            "description": "결제 승인 API 성능 개선, 정산 파이프라인 재설계"
-          },
-          {
-            "company": "누리클라우드",
-            "role": "서버 개발자",
-            "startedOn": "2021-01-01",
-            "endedOn": "2022-02-28",
-            "description": "멀티 테넌트 과금 시스템 개발"
-          }
-        ],
-        "skills": [
-          "Kotlin",
-          "Spring Boot",
-          "JPA",
-          "Kafka",
-          "MySQL",
-          "Redis",
-          "AWS",
-          "Kubernetes"
-        ],
-        "followerCount": 128,
+        "intro": "데이터 파이프라인 · Spark · Airflow",
+        "careers": [],
+        "skills": [],
+        "followerCount": 40,
         "resumeSourceId": null,
-        "updatedAt": "2026-10-17T09:00:00.000Z",
-        "followingCount": 42,
-        "postCount": 15
+        "updatedAt": "2026-10-17T09:00:00.000Z"
       }
     },
     "/profiles/u5": {
       "status": 200,
       "data": {
         "userId": "u5",
-        "displayName": "김태윤",
+        "displayName": "정민재",
         "avatarUrl": null,
-        "headline": "결제 시스템을 만드는 백엔드 개발자",
+        "headline": "쿠버네티스 운영이 즐거운 DevOps",
         "jobCategory": "dev",
-        "tenureYears": 5,
-        "careerStatus": "seeking",
-        "openToOffers": true,
-        "intro": "결제 승인과 정산을 5년 동안 만들어 왔어요. 하루 2,000만 건을 처리하는 승인 API의 p99를 420ms에서 180ms로 줄였고, 정산 배치를 Kafka 기반 스트림으로 바꿨어요. 다음에는 더 큰 트래픽을 다루는 팀에서 일하고 싶어요.",
-        "careers": [
-          {
-            "company": "모아페이",
-            "role": "백엔드 엔지니어",
-            "startedOn": "2022-03-01",
-            "endedOn": null,
-            "description": "결제 승인 API 성능 개선, 정산 파이프라인 재설계"
-          },
-          {
-            "company": "누리클라우드",
-            "role": "서버 개발자",
-            "startedOn": "2021-01-01",
-            "endedOn": "2022-02-28",
-            "description": "멀티 테넌트 과금 시스템 개발"
-          }
-        ],
-        "skills": [
-          "Kotlin",
-          "Spring Boot",
-          "JPA",
-          "Kafka",
-          "MySQL",
-          "Redis",
-          "AWS",
-          "Kubernetes"
-        ],
-        "followerCount": 128,
+        "tenureYears": 4,
+        "careerStatus": "satisfied",
+        "openToOffers": false,
+        "intro": "쿠버네티스 운영이 즐거운 DevOps",
+        "careers": [],
+        "skills": [],
+        "followerCount": 40,
         "resumeSourceId": null,
-        "updatedAt": "2026-10-17T09:00:00.000Z",
-        "followingCount": 42,
-        "postCount": 15
+        "updatedAt": "2026-10-17T09:00:00.000Z"
       }
     },
     "/profiles/u-haeun": {
