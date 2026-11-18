@@ -11,6 +11,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 
+import { assetUrl } from '../../shared/api/client'
 import { useSession } from '../../shared/auth/use-session'
 import { Icon } from '../../shared/ui/icon'
 import { ConfirmDialog } from '../../shared/ui/dialog'
@@ -306,7 +307,7 @@ const PostingEditorPage = () => {
           <div className="box editor-card">
             <span className="b2 w7">{LABEL_IMAGE}</span>
             <div className="editor-tile" style={{ background: brandColor(company.data?.name ?? 'push') }}>
-              {form.imageUrl ? <img src={form.imageUrl} alt="" /> : <b>{[...companyName][0] ?? ''}</b>}
+              {assetUrl(form.imageUrl) ? <img src={assetUrl(form.imageUrl)} alt="" /> : <b>{[...companyName][0] ?? ''}</b>}
             </div>
             <label className="btn sec sm editor-image">
               <Icon name="image" size={16} />

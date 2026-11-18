@@ -1,4 +1,4 @@
-import { DEFAULT_RETURN_TO } from './constants'
+import { CONTROL_CHARACTER, DEFAULT_RETURN_TO } from './constants'
 
 export const sanitizeReturnTo = (value: string | null | undefined): string => {
   if (
@@ -6,7 +6,8 @@ export const sanitizeReturnTo = (value: string | null | undefined): string => {
     !value.startsWith('/') ||
     value.startsWith('//') ||
     value.includes('://') ||
-    value.includes('\\')
+    value.includes('\\') ||
+    CONTROL_CHARACTER.test(value)
   ) {
     return DEFAULT_RETURN_TO
   }

@@ -1,4 +1,5 @@
 export const DEFAULT_RETURN_TO = '/'
+export const CONTROL_CHARACTER = /[\u0000-\u001f\u007f]/
 
 export const PUBLIC_PATHS = [
   '/',

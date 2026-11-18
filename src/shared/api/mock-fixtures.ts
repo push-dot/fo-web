@@ -348,6 +348,17 @@ export const APP_PROFILES: Record<string, Profile> = {
     resumeSourceId: null,
     updatedAt: '2026-10-18T09:00:00.000Z',
   },
+  // The rest of fo-mobile's hub list, so a tapped person opens as themself rather than the fallback.
+  u3: person('u3', '박도윤', 'SwiftUI로 앱을 만드는 iOS 개발자', 'dev', 3, 'feedback'),
+  u4: person('u4', '최지우', '데이터 파이프라인 · Spark · Airflow', 'dev', 5, 'seeking'),
+  u5: person('u5', '정민재', '쿠버네티스 운영이 즐거운 DevOps', 'dev', 4, 'satisfied'),
+  u6: person('u6', '한서연', '실험으로 증명하는 프로덕트 디자이너', 'design', 6, 'seeking'),
+  u7: person('u7', '오지훈', '추천 랭킹을 고민하는 데이터 분석가', 'data', 2, 'feedback'),
+  u8: person('u8', '윤채원', '0→1 서비스를 기획하는 PM', 'plan', 8, 'satisfied'),
+  u9: person('u9', '강현우', '퍼포먼스 마케팅과 그로스 실험', 'marketing', 3, 'seeking'),
+  u10: person('u10', '서지민', 'B2B SaaS 세일즈를 이끌어요', 'sales', 11, 'satisfied'),
+  u11: person('u11', '임도현', 'Go로 트래픽을 견디는 서버를 만들어요', 'dev', 7, 'seeking'),
+  u12: person('u12', '문예린', 'ML 모델을 서비스로 옮기는 엔지니어', 'data', 1, 'seeking'),
   me: {
     ...ME_PROFILE,
     tenureYears: 4,

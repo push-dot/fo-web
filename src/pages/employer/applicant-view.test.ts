@@ -39,6 +39,6 @@ describe('applicant view', () => {
       documents: [{ id: 'd1', title: '이력서', content: '소개' }],
       files: [{ id: 'f1', fileName: '포트폴리오.pdf', mimeType: 'application/pdf', size: 1, pageCount: 14 }],
     })
-    expect(chips.map((chip) => `${chip.label}/${chip.badge.label}`)).toEqual(['이력서/프로필', '포트폴리오.pdf · 14쪽/PDF'])
+    expect(chips.map((chip) => `${chip.label}/${chip.badge.label}`)).toEqual(['이력서/프로필', '포트폴리오 · 14쪽/PDF'])
   })
 })

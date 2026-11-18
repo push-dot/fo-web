@@ -1,23 +1,14 @@
 import { CAREER_STATUSES } from '@push/api-client'
-import { brandColor } from '@push/shared'
 import { useParams } from 'react-router-dom'
 import { useAuthMe } from '../../entities/session'
 import { assetUrl } from '../../shared/api/client'
-import { isWebView, send } from '../../shared/lib/bridge'
+import { isWebView, send, webViewFrom } from '../../shared/lib/bridge'
 import { initials, periodLabel, roleLabel } from '../../shared/lib/format'
 import { useDetail } from '../../shared/lib/use-detail'
 import BrowserProfile from './browser-profile'
 import Status from '../../shared/ui/status'
 import { profilesGet } from '../../entities/profile'
 import { profileStats } from './profile-stats'
-
-const PROFILE_EDITS = [
-  { section: 'basic', label: '기본 정보 편집' },
-  { section: 'intro', label: '소개 편집' },
-  { section: 'career', label: '경력 편집' },
-  { section: 'skills', label: '기술 스택 편집' },
-] as const
-
 
 const ProfilePage = () => {
   const { id = '' } = useParams()
@@ -27,15 +18,15 @@ const ProfilePage = () => {
   if (!isWebView()) return <BrowserProfile profile={p} />
   const mine = me.data?.id === p.userId
   const status = CAREER_STATUSES.find((s) => s.key === p.careerStatus)?.label
-  const stats = profileStats(p)
+  const stats = profileStats(p, webViewFrom())
   return (
     <>
-      <main className="page profile">
+      <main className="page profile wv">
       <header className="profile-head">
         {p.avatarUrl ? (
           <img className="av" src={assetUrl(p.avatarUrl)} alt="" />
         ) : (
-          <div className="av" style={{ background: brandColor(p.displayName) }} aria-hidden="true">
+          <div className="av" aria-hidden="true">
             {initials(p.displayName)}
           </div>
         )}
@@ -43,7 +34,7 @@ const ProfilePage = () => {
         <span className="b2 t2">{p.headline}</span>
         <span className="badges">
           {p.jobCategory || p.tenureYears != null ? <span className="badge grey">{roleLabel(p.jobCategory, p.tenureYears)}</span> : null}
-          {status ? <span className={`badge ${p.careerStatus === 'seeking' ? 'ac' : 'grey'}`}>{status}</span> : null}
+          {status ? <span className="badge grey">{status}</span> : null}
         </span>
         {stats.length ? (
           <span className="stats">
@@ -56,11 +47,9 @@ const ProfilePage = () => {
         ) : null}
         {mine ? (
           <span className="badges">
-            {PROFILE_EDITS.map((item) => (
-              <button key={item.section} type="button" className="btn sec sm" onClick={() => send({ type: 'open', path: `/(tabs)/(my)/edit-profile/${item.section}` })}>
-                {item.label}
-              </button>
-            ))}
+            <button type="button" className="btn sec sm" onClick={() => send({ type: 'open', path: '/(tabs)/(my)/edit-profile/basic' })}>
+              기본 정보 편집
+            </button>
           </span>
         ) : null}
       </header>

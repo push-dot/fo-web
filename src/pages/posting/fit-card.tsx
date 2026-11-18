@@ -2,15 +2,22 @@ import { useQuery } from '@tanstack/react-query'
 import { usePaymentsOpen } from '../../entities/billing'
 import { api } from '../../shared/api/client'
 import { loadMock } from '../../shared/api/mock-loader'
-import { isMock, send } from '../../shared/lib/bridge'
+import MidDotText from '../../shared/ui/mid-dot-text'
+import { isMock, isWebView, pushEnv, send, webViewFrom } from '../../shared/lib/bridge'
 import { MOCK_FIT_DELAY_MS } from './constants'
 import {
   FIT_COMPARING,
+  FIT_TITLE,
   FIT_PART_LABELS,
+  bookmarkFitParts,
+  WAITING_FIT_PARTS,
+  FIT_LOCK_EXAMPLE,
   FIT_SOON,
   firstDocument,
   fitLockText,
   fitStatus,
+  isLowFit,
+  mockFitModel,
   runPostingFit,
   type FitCardModel,
   type FitDocument,
@@ -25,26 +32,21 @@ const fitCardSubtitle = (
 ): string | null => {
   if (status === 'comparing') return FIT_COMPARING
   if (status === 'soon') return FIT_SOON
-  if (status === 'ready' && fit?.reachable != null) return `조금만 고치면 ${fit.reachable}점대예요`
   return null
 }
 
 const loadMockFit = async (): Promise<FitCardModel> => {
-  const [{ mockFit }] = await Promise.all([loadMock(), new Promise((resolve) => setTimeout(resolve, MOCK_FIT_DELAY_MS))])
-  return {
-    document: mockFit.document,
-    score: mockFit.score,
-    parts: mockFit.parts,
-    weakness: mockFit.weakness,
-    locked: false,
-    reachable: mockFit.reachable,
-  }
+  // The app boards draw the finished fit card, so the WebView mock skips the waiting delay.
+  const [{ mockFit }] = await Promise.all([loadMock(), new Promise((resolve) => setTimeout(resolve, isWebView() ? 0 : MOCK_FIT_DELAY_MS))])
+  const model = mockFitModel(mockFit, pushEnv().plan)
+  // Mock tours (`mock=fit-three`): the Applied and ApplySheet boards draw the three-part card of the waiting rows.
+  return pushEnv().fitParts === 3 ? { ...model, parts: bookmarkFitParts(model.parts) } : model
 }
 
 const loadDocument = () =>
   isMock()
     ? loadMock().then(({ mockFit }) => ({ id: mockFit.document, title: mockFit.document }))
-    : firstDocument({ listDocuments: () => api.documents.list({ limit: 1 }) })
+    : firstDocument({ listDocuments: () => api.documents.list({ kind: 'HUB_PROFILE', limit: 1 }) })
 
 const loadFit = (postingId: string, doc: FitDocument) =>
   isMock()
@@ -54,15 +56,15 @@ const loadFit = (postingId: string, doc: FitDocument) =>
         readJob: (id) => api.jobs.get<FitPayload>(id),
       })
 
-const FitRow = ({ label, value, index }: { label: string; value: number | null; index: number }) => (
+const FitRow = ({ label, value, index, example }: { label: string; value: number | null; index: number; example?: boolean }) => (
   <div className="frow">
     <span>{label}</span>
     <span className="bar">
       {value !== null ? (
-        <i className={value < 5 ? 'lo' : undefined} style={{ width: `${value * 10}%`, animationDelay: `${0.15 + index * 0.08}s` }} />
+        <i className={example ? 'ex' : isLowFit(value) ? 'lo' : undefined} style={{ width: `${value * 10}%`, animationDelay: `${0.15 + index * 0.08}s` }} />
       ) : null}
     </span>
-    <b className={value !== null ? 'num' : 'num t4'}>{value !== null ? value.toFixed(1) : '–'}</b>
+    <b className={value !== null && !example ? 'num' : 'num t4'}>{value !== null && !example ? value.toFixed(1) : '–'}</b>
   </div>
 )
 
@@ -80,13 +82,16 @@ const FitCard = ({ postingId }: { postingId: string }) => {
   const paymentsOpen = usePaymentsOpen()
   const status = fitStatus({ documentPending: documentQuery.isPending, document: doc, fitPending: fitQuery.isPending, fit })
   const subtitle = fitCardSubtitle(status, fit)
-  const document = fit?.document ?? doc?.title
+  // JobFit and JobDetailStates draw the waiting cards without a chevron and without a tap target.
+  const tappable = status === 'ready' || status === 'locked'
+  const Root = tappable ? 'button' : 'div'
   return (
-    <button
-      type="button"
+    <Root
+      {...(tappable
+        ? { type: 'button' as const, onClick: () => send({ type: 'open', path: `/chat?postingId=${encodeURIComponent(postingId)}` }) }
+        : {})}
       className="fit"
       aria-busy={status === 'comparing'}
-      onClick={() => send({ type: 'open', path: `/chat?postingId=${encodeURIComponent(postingId)}` })}
     >
       <div className="fit-head">
         {fit ? (
@@ -98,21 +103,25 @@ const FitCard = ({ postingId }: { postingId: string }) => {
             <span className="num">{fit.score.toFixed(1)}</span>
           </div>
         ) : (
-          <span className="ring ring-empty">{status === 'comparing' ? <span className="glyph" /> : null}</span>
+          <span className="ring ring-empty">{status === 'comparing' ? <span className="glyph" /> : <span className="num t4">–</span>}</span>
         )}
         <span className="fit-title">
-          <span className="c1 t3 w7">내 적합도{document ? ` · ${document}` : ''}</span>
-          {subtitle ? <span className={status === 'comparing' ? 'h3 shim shim-ac' : status === 'soon' ? 'h3 t3' : 'h3'}>{subtitle}</span> : null}
+          <span className="c1 t3 w7">
+            <MidDotText text={FIT_TITLE} />
+          </span>
+          {subtitle ? <span className={status === 'comparing' ? 'h3 shim shim-ac' : 'h3'}>{subtitle}</span> : null}
         </span>
-        <svg className="ic fit-chev" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="m9.5 5.5 6.5 6.5-6.5 6.5" />
-        </svg>
+        {tappable ? (
+          <svg className="ic fit-chev" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="m9.5 5.5 6.5 6.5-6.5 6.5" />
+          </svg>
+        ) : null}
       </div>
       {status === 'locked' ? (
         <div className="fit-lock">
           <div className="fit-lock-rows" aria-hidden="true">
             {FIT_PART_LABELS.map((label, i) => (
-              <FitRow key={label} label={label} value={null} index={i} />
+              <FitRow key={label} label={label} value={FIT_LOCK_EXAMPLE[i] ?? null} index={i} example />
             ))}
           </div>
           <span className="fit-lock-pill">
@@ -126,7 +135,7 @@ const FitCard = ({ postingId }: { postingId: string }) => {
         </div>
       ) : (
         <>
-          {(fit?.parts ?? FIT_PART_LABELS.map((label) => ({ label, value: null }))).map(({ label, value }, i) => (
+          {(fit ? (webViewFrom() === 'bookmark' ? bookmarkFitParts(fit.parts) : fit.parts) : WAITING_FIT_PARTS).map(({ label, value }, i) => (
             <FitRow key={label} label={label} value={value} index={i} />
           ))}
           {fit?.weakness ? (
@@ -137,7 +146,7 @@ const FitCard = ({ postingId }: { postingId: string }) => {
           ) : null}
         </>
       )}
-    </button>
+    </Root>
   )
 }
 

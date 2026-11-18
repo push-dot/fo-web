@@ -1,6 +1,7 @@
 import type { AccessMode } from '@push/api-client'
 import { fileSize } from '@push/shared'
 import { useRef, useState, type FormEvent, type KeyboardEvent } from 'react'
+import { displayName } from '../../shared/lib/format'
 import { Icon } from '../../shared/ui/icon'
 import { Popover } from '../../shared/ui/popover'
 import {
@@ -75,7 +76,7 @@ const ChatComposer = ({
           <span className="chat-file">
             <span className="badge red">{PDF_BADGE}</span>
             <span className="chat-file-copy">
-              <span className="b2 w7">{file.name}</span>
+              <span className="b2 w7">{displayName(file.name)}</span>
               <span className="c2 t3">{fileSize(file.size)}</span>
             </span>
             <button

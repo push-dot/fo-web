@@ -8,9 +8,21 @@ const FIT_PARTS = [
   ['domain', '도메인'],
 ] as const
 
+// The app boards draw the bar orange from 5.0 down (4.5 and 5.0 in JobDetail, ChatPh1Fit); a part scored 5.0 counts as low.
+export const isLowFit = (value: number) => value <= 5
+
 export const FIT_PART_LABELS = FIT_PARTS.map((part) => part[1])
-export const FIT_LOCK = '🔒 PRO로 올리면 항목별 점수와 약점을 볼 수 있어요'
-export const FIT_LOCK_CLOSED = '🔒 항목별 점수와 약점은 PRO에서 볼 수 있어요'
+// JobDetail draws all five parts; only the JobFit waiting card draws these three dashes.
+const WAITING_FIT_LABELS: readonly string[] = ['기술 스택', '경험 연관성', '키워드']
+export const WAITING_FIT_PARTS = FIT_PART_LABELS.filter((label) => WAITING_FIT_LABELS.includes(label)).map((label) => ({ label, value: null }))
+
+// MyBookmarkJob draws the three waiting-card parts with the score; JobDetail draws all five.
+export const bookmarkFitParts = <T extends { label: string }>(parts: T[]) => parts.filter((part) => WAITING_FIT_LABELS.includes(part.label))
+
+export const FIT_LOCK = 'PRO로 올리면 항목별 점수와 약점을 볼 수 있어요'
+export const FIT_LOCK_CLOSED = '항목별 점수와 약점은 PRO에서 볼 수 있어요'
+// The job fit always reads the default hub profile, so the card names it instead of a file (JobDetail boards).
+export const FIT_TITLE = '내 적합도 · 허브 프로필 기준'
 export const FIT_SOON = '적합도는 곧 볼 수 있어요'
 export const FIT_COMPARING = '공고와 서류를 비교하는 중…'
 
@@ -22,16 +34,16 @@ export type FitPayload = {
   parts: Record<(typeof FIT_PARTS)[number][0], number>
   topGap: string
   plan: string
-  reachable?: number
 }
 
+// The example bars under the FREE lock pill (JobDetail FREE boards): they show what a PRO card looks like, the server sends no part scores to a FREE account.
+export const FIT_LOCK_EXAMPLE = [8, 6, 7, 4, 5] as const
+
 export type FitCardModel = {
-  document: string
   score: number
   parts: { label: string; value: number | null }[]
   weakness: string | null
   locked: boolean
-  reachable?: number
 }
 
 type FitClient = {
@@ -40,25 +52,32 @@ type FitClient = {
   readJob: (id: string) => Promise<{ status: string; result: FitPayload | null }>
 }
 
-const planOf = (plan: string) => (plan === 'PRO' || plan === 'ULTRA' ? plan : 'FREE')
+export const planOf = (plan: string | undefined) => (plan === 'PRO' || plan === 'ULTRA' ? plan : 'FREE')
 
-const reachableBand = ({ fitScore, reachable }: FitPayload) =>
-  reachable != null && Math.floor(reachable) > Math.floor(fitScore) ? Math.floor(reachable) : undefined
-
-export const fitCardModel = (payload: FitPayload, document: string): FitCardModel => {
+export const fitCardModel = (payload: FitPayload): FitCardModel => {
   const locked = planOf(payload.plan) === 'FREE'
   return {
-    document,
     score: payload.fitScore,
     locked,
     weakness: locked ? null : payload.topGap || null,
-    reachable: locked ? undefined : reachableBand(payload),
     parts: FIT_PARTS.map(([key, label]) => ({
       label,
       value: locked ? null : payload.parts[key],
     })),
   }
 }
+
+type MockFit = { score: number; parts: { label: string; value: number }[]; weakness: string }
+
+/** The WebView mock answers like the server for the plan the app tells it (`window.__PUSH__.plan`, PRO when absent). */
+export const mockFitModel = (fit: MockFit, plan: string | undefined): FitCardModel =>
+  fitCardModel(
+    {
+      fitScore: fit.score,
+      parts: Object.fromEntries(FIT_PARTS.map(([key, label]) => [key, fit.parts.find((part) => part.label === label)?.value ?? 0])) as FitPayload['parts'],
+      topGap: fit.weakness,
+      plan: plan ?? 'PRO',
+    })
 
 const settled = new Set(['DONE', 'FAILED', 'DEAD', 'CANCELLED'])
 
@@ -83,7 +102,7 @@ export const runPostingFit = async (
     const { jobId } = await client.startFit(postingId, doc.id)
     for (;;) {
       const job = await client.readJob(jobId)
-      if (job.status === 'DONE') return job.result ? fitCardModel(job.result, doc.title) : null
+      if (job.status === 'DONE') return job.result ? fitCardModel(job.result) : null
       if (settled.has(job.status)) return null
       await sleep(JOB_POLL_MS)
     }

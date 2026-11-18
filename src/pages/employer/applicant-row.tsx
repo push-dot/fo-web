@@ -27,7 +27,11 @@ const ApplicantRow = ({
       <Link className="biz-main" to={`/employer/postings/${postingId}/applicants/${applicant.applicationId}`}>
         <span className="badges">
           <strong className="b2 w7">{name}</strong>
-          {applicant.isNew ? <span className="badge ac">{APPLICANT_NEW}</span> : null}
+          {applicant.isNew ? (
+            <span className="new-dot">
+              <span className="sr-only">{APPLICANT_NEW}</span>
+            </span>
+          ) : null}
         </span>
         <span className="c1 t3">{applicantSub(applicant.applicant)}</span>
       </Link>

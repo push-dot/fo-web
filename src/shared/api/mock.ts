@@ -71,7 +71,6 @@ export type Fit = {
   score: number
   parts: { label: string; value: number }[]
   weakness: string
-  reachable: number
 }
 
 export const mockFit: Fit = {
@@ -85,7 +84,6 @@ export const mockFit: Fit = {
     { label: '도메인', value: 5 },
   ],
   weakness: 'Kafka 운영 경험과 부하 테스트 근거가 부족해요',
-  reachable: 8,
 }
 
 const json = (status: number, body: unknown) =>
@@ -870,6 +868,9 @@ const companyRecords = new Map<string, CompanyRecord>()
 let inviteSeq = 0
 
 const personaKey = () => mockPersona() ?? 'default'
+
+// fo-mobile's mock viewer id: the app opens its own hub profile as /profiles/dev, which is 김서준 here.
+const APP_VIEWER_ID = 'dev'
 
 const currentUserId = () => sessionStore.load()?.user.id ?? 'u1'
 
@@ -2464,7 +2465,7 @@ export const mockFetch: typeof fetch = async (input, init) => {
   }
   if (method === 'GET' && /\/profiles\/[^/]+$/.test(pathname)) {
     const id = pathname.match(/\/profiles\/([^/]+)$/)?.[1] ?? HUB_PROFILES[0]!.userId
-    const app = isWebView() ? APP_PROFILES[id] : undefined
+    const app = isWebView() ? APP_PROFILES[id === APP_VIEWER_ID ? 'me' : id] : undefined
     const profile = app ? withFlags(app) : profileById(id)
     return json(200, { data: mockSwitch('offer-blocked') ? { ...profile, blockedMe: true } : profile })
   }
@@ -2495,7 +2496,10 @@ export const mockFetch: typeof fetch = async (input, init) => {
   if (method === 'POST' && matches(pathname, '/auth/email/verify')) {
     const payload = await readJson(input, init)
     const token = String(payload.token ?? '')
-    if (token === 'bad') return json(400, { error: { code: 'INVALID_TOKEN', message: 'bad' } })
+    if (token === 'bad') return json(401, { error: { code: 'UNAUTHENTICATED', message: 'bad' } })
+    if (String(payload.password ?? '').length < 8) {
+      return json(400, { error: { code: 'VALIDATION_ERROR', message: 'password', details: { field: 'password' } } })
+    }
     const kind = token === 'employer' || signupEmail.startsWith('employer') ? 'employer-new' : 'personal'
     return json(200, { data: mockSession(kind) })
   }

@@ -6,7 +6,7 @@ const API = 'http://localhost/api/v1'
 const SIGNED = { headers: { Authorization: 'Bearer mock-access' } }
 
 const APP_POSTING_IDS = Array.from({ length: 25 }, (_, at) => `p${at + 1}`)
-const APP_PROFILE_IDS = ['me', 'u1', 'u2', 'u3', 'u4', 'u5', 'u-haeun', 'u-jihyun']
+const APP_PROFILE_IDS = ['me', 'dev', 'u1', 'u2', 'u3', 'u4', 'u5', 'u-haeun', 'u-jihyun']
 
 // The WebView pages render neither the bookmark/apply nor the follow/offer flags (posting actions return null in the WebView).
 const UNRENDERED = new Set(['bookmarked', 'applied', 'following', 'offered'])
@@ -53,5 +53,14 @@ describe('app WebView data', () => {
     const switched = await pinned()
     setMockSwitches(null)
     expect(switched).toEqual(plain)
+  })
+})
+
+describe('app viewer profile', () => {
+  it('serves /profiles/dev as 김서준 so the own profile renders as mine', async () => {
+    vi.stubGlobal('window', { ReactNativeWebView: { postMessage: () => {} } })
+    const [profile, me] = await Promise.all([read('/profiles/dev', SIGNED), read('/auth/me', SIGNED)])
+    expect(profile.data).toMatchObject({ userId: 'u1', displayName: '김서준' })
+    expect((me.data as { id: string }).id).toBe((profile.data as { userId: string }).userId)
   })
 })

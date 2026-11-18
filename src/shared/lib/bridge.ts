@@ -1,4 +1,4 @@
-type PushEnv = { token?: string | null; apiBaseUrl?: string; mock?: boolean; theme?: 'light' | 'dark' }
+type PushEnv = { token?: string | null; apiBaseUrl?: string; mock?: boolean; plan?: string; fitParts?: number; theme?: 'light' | 'dark' }
 
 export const themeOf = (value: unknown): 'light' | 'dark' | undefined => (value === 'light' || value === 'dark' ? value : undefined)
 
@@ -26,6 +26,14 @@ export const pushEnv = (): PushEnv => {
   return (window.__PUSH__ ??= {})
 }
 
+/** Which app list opened the page; the app boards for one route differ by it. */
+export type WebViewFrom = 'following' | 'bookmark'
+
+export const webViewFrom = (search = typeof location === 'undefined' ? '' : location.search): WebViewFrom | undefined => {
+  const from = new URLSearchParams(search).get('from')
+  return from === 'following' || from === 'bookmark' ? from : undefined
+}
+
 export const isWebView = () => typeof window !== 'undefined' && !!window.ReactNativeWebView
 
 export const mockBuild = import.meta.env.DEV || import.meta.env.VITE_PUSH_MOCK === '1'
@@ -50,7 +58,10 @@ if (typeof window !== 'undefined') {
   })
 }
 
+const HTTP_URL = /^https?:\/\//i
+
 export const send = (message: BridgeMessage) => {
+  if (message.type === 'external' && !HTTP_URL.test(message.url)) return
   if (message.type === 'title') document.title = message.title
   if (window.ReactNativeWebView) return window.ReactNativeWebView.postMessage(JSON.stringify(message))
   if (message.type === 'external') window.open(message.url, '_blank', 'noopener')

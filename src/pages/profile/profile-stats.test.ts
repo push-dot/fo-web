@@ -10,6 +10,11 @@ describe('profileStats', () => {
     ])
   })
 
+  it('hides the counts row when the app opened the profile from the following list', () => {
+    expect(profileStats({ followingCount: 42, followerCount: 128, postCount: 15 }, 'following')).toEqual([])
+    expect(profileStats({ followingCount: 42 }, 'bookmark')).toEqual([{ value: 42, label: '팔로잉' }])
+  })
+
   it('skips a count the server left out', () => {
     expect(profileStats({ followerCount: 3 })).toEqual([{ value: 3, label: '팔로워' }])
   })

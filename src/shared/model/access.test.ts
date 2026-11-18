@@ -32,6 +32,8 @@ describe('sanitizeReturnTo', () => {
     expect(sanitizeReturnTo('https://evil')).toBe('/')
     expect(sanitizeReturnTo('//evil')).toBe('/')
     expect(sanitizeReturnTo('/\\evil')).toBe('/')
+    expect(sanitizeReturnTo('/\t/evil.example')).toBe('/')
+    expect(sanitizeReturnTo('/\n/evil.example')).toBe('/')
     expect(sanitizeReturnTo('/\\\\evil')).toBe('/')
     expect(sanitizeReturnTo('')).toBe('/')
     expect(sanitizeReturnTo(null)).toBe('/')

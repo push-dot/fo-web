@@ -2,6 +2,8 @@
 
 Push의 웹 앱입니다. 개인 사용자는 공고를 찾고 지원하며, 허브와 소셜을 이용합니다. 기업 사용자는 공고를 올리고 지원자를 관리하며, 기업 AI 채팅을 사용합니다. 모바일 앱의 WebView도 이 앱의 공고·프로필 상세를 엽니다.
 
+배포 주소: https://push-fo-web.youngjoon568.workers.dev (Cloudflare Workers, `workers.dev`)
+
 개발 서버 포트는 5174입니다. 화면 문구는 한국어이고, 글꼴은 Noto Sans KR입니다.
 
 ## 주요 기능
@@ -94,8 +96,11 @@ pnpm --filter @push/fo-web dev
 | 이름 | 읽는 곳 |
 | --- | --- |
 | `VITE_API_BASE_URL` | `src/shared/api/client.ts` |
+| `VITE_COOKIE_SESSION` | `src/shared/auth/cookie-session.ts` |
 
 `window.__PUSH__.apiBaseUrl`이 있으면 그 주소를 `VITE_API_BASE_URL`보다 먼저 씁니다.
+
+`VITE_COOKIE_SESSION=1`로 빌드하면 refresh 토큰을 push-be의 HttpOnly 쿠키(`push_rt`)에 두고 access 토큰은 메모리에만 둡니다(localStorage에 토큰 없음). 쿠키는 웹과 API가 같은 등록 도메인일 때만 전달되므로, 두 주소가 `*.workers.dev`처럼 서로 다른 사이트인 배포에서는 켜지 마세요. 기본은 꺼짐입니다.
 
 목업은 목업 빌드에서만 켜집니다. 주소에 `mock` 쿼리를 붙이고, `as`는 `personal`, `employer`, `employer-pro`, `employer-ultra`, `employer-new` 중 하나입니다. 목업이면 `shared/api/mock.ts`가 fetch를 대체합니다.
 
