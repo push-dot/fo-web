@@ -1,5 +1,5 @@
 /*
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'sha256-17qmolO0I1qORMw++UeNBNPcy6EPHc02Fpn2obzpY08=' https://js.tosspayments.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://push-be.youngjoon568.workers.dev https://*.tosspayments.com https://*.toss.im; frame-src https://*.tosspayments.com https://*.toss.im; object-src blob:; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'sha256-17qmolO0I1qORMw++UeNBNPcy6EPHc02Fpn2obzpY08=' https://js.tosspayments.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://push-be.youngjoon568.workers.dev https://*.tosspayments.com https://*.toss.im; frame-src https://*.tosspayments.com https://*.toss.im; object-src blob:; base-uri 'self'; form-action 'self' https://*.tosspayments.com https://*.toss.im; frame-ancestors 'none'
   Strict-Transport-Security: max-age=31536000; includeSubDomains
   X-Frame-Options: DENY
   X-Content-Type-Options: nosniff
