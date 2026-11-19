@@ -4,7 +4,7 @@ import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-do
 import { AgentMark, Icon } from '../shared/ui/icon'
 import { useSession } from '../shared/auth/use-session'
 import { isAuthChrome } from './auth-chrome'
-import { AUTH_BIZ, AUTH_LOGOUT, BRAND, FOOTER_LINKS, FOOTER_MARK, NAV, SEARCH_PLACEHOLDER } from './constants'
+import { AUTH_BIZ, AUTH_LOGOUT, BRAND, FOOTER_BUSINESS, FOOTER_LINKS, FOOTER_MARK, NAV, SEARCH_PLACEHOLDER } from './constants'
 import AccountMenu from './account-menu'
 import { EMPLOYER_LINKS, topEndLinks } from './shell-links'
 import TabBar from './tab-bar'
@@ -179,6 +179,13 @@ const Shell = () => {
             )}
             <span className="ft-mark">{FOOTER_MARK}</span>
           </div>
+          {FOOTER_BUSINESS.length === 0 ? null : (
+            <address className="wrap ft-biz">
+              {FOOTER_BUSINESS.map((line) => (
+                <span key={line}>{line}</span>
+              ))}
+            </address>
+          )}
         </footer>
       )}
       {tabs ? <TabBar kind={!session ? 'guest' : employer ? 'employer' : 'personal'} /> : null}
