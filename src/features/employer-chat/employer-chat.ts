@@ -1,19 +1,18 @@
 import {
-  conversationsAttach as call1,
-  conversationsCancel as call6,
-  conversationsCreateEmployer as call0,
-  conversationsFollow as call4,
-  conversationsResolveApproval as call5,
-  conversationsStream as call3,
+  conversationsAttach,
+  conversationsCancel,
+  conversationsCreateEmployer,
+  conversationsFollow,
+  conversationsResolveApproval,
+  conversationsStream,
 } from '../../shared/api/operations'
 import type { TurnDeps } from './chat-turn'
 
-export const conversationsCreateEmployer = (...args: Parameters<typeof call0>) => call0(...args)
-export const conversationsAttach = (...args: Parameters<typeof call1>) => call1(...args)
+export { conversationsAttach, conversationsCreateEmployer }
 
 export const chatTurnDeps: TurnDeps = {
-  stream: (id, body, signal) => call3(id, body, signal),
-  follow: (id, after, signal) => call4(id, after, signal),
-  resolve: (id, approvalId, optionId) => call5(id, approvalId, optionId),
-  cancel: (id) => call6(id),
+  stream: conversationsStream,
+  follow: conversationsFollow,
+  resolve: conversationsResolveApproval,
+  cancel: conversationsCancel,
 }

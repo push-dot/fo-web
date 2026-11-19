@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 
+import { withCleanup } from '../../shared/lib/with-cleanup'
 import { passwordError } from '../../shared/model/login-providers'
 import AuthBack from './auth-back'
 import AuthPasswordField from './auth-password-field'
@@ -120,19 +121,19 @@ const ResetPage = () => {
     if (!token) return
     setError(null)
     setPending(true)
-    try {
-      await authConfirmPasswordReset(token, password)
-      setView('done')
-    } catch (caught) {
-      const outcome = linkOutcome(caught)
-      if (outcome.view === 'form') setError({ field: 'form', text: LOGIN_FAILED_COPY })
-      else {
-        if (outcome.view === 'expired') setEmail(outcome.email)
-        setView(outcome.view)
+    await withCleanup(async () => {
+      try {
+        await authConfirmPasswordReset(token, password)
+        setView('done')
+      } catch (caught) {
+        const outcome = linkOutcome(caught)
+        if (outcome.view === 'form') setError({ field: 'form', text: LOGIN_FAILED_COPY })
+        else {
+          if (outcome.view === 'expired') setEmail(outcome.email)
+          setView(outcome.view)
+        }
       }
-    } finally {
-      setPending(false)
-    }
+    }, () => setPending(false))
   }
 
   if (view === 'sent') {

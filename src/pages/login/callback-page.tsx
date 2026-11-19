@@ -1,5 +1,5 @@
 import { ApiError, type Session } from '@push/api-client'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 
 import { takePkceVerifier } from '../../shared/auth/pkce'
@@ -27,13 +27,10 @@ const CallbackPage = () => {
   const [{ provider, accountType }] = useState(() => readPendingLogin(params))
   const [consent, setConsent] = useState<Session | null>(null)
   const loginPath = accountType === 'EMPLOYER' ? '/login?accountType=EMPLOYER' : '/login'
-  const finish = useCallback(
-    (session: Session) => {
-      sessionStore.save(session)
-      navigate(pathAfterAuth(takeReturnTo(), session), { replace: true })
-    },
-    [navigate],
-  )
+  const finish = (session: Session) => {
+    sessionStore.save(session)
+    navigate(pathAfterAuth(takeReturnTo(), session), { replace: true })
+  }
 
   useEffect(() => {
     if (started.current) return

@@ -2,6 +2,7 @@ import type { Session } from '@push/api-client'
 import { useEffect, useId, useRef, useState, type FormEvent } from 'react'
 
 import { authPhoneSend, authPhoneVerify } from '../../features/sign-in'
+import { withCleanup } from '../../shared/lib/with-cleanup'
 import type { OAuthProvider } from '../../shared/model/login-providers'
 import { Icon } from '../../shared/ui/icon'
 import AuthAlert from './auth-alert'
@@ -39,6 +40,9 @@ import PhoneConsent from './phone-consent'
 import { termsPending } from './terms-gate'
 
 type CodeState = Extract<PhoneFailure, { kind: 'wrong' | 'expired' | 'limit' }> | null
+
+const sendFailureCopy = (caught: unknown) =>
+  (caught as { code?: string } | null)?.code === 'RATE_LIMITED' ? CODE_SEND_LATER : LOGIN_FAILED_COPY
 
 const PhoneFlow = ({
   pendingToken,
@@ -92,62 +96,63 @@ const PhoneFlow = ({
   const send = async () => {
     setError(null)
     setPending(true)
-    try {
-      const sent = await authPhoneSend(toE164(phone))
-      setResendAt(Date.now() + sent.cooldownSeconds * 1000)
-      setNow(Date.now())
-      setCode('')
-      setCodeState(null)
-      setRefused(false)
-      setStep('code')
-    } catch (caught) {
-      const wait = sendCooldown(caught)
-      if (wait === null) {
-        setError((caught as { code?: string } | null)?.code === 'RATE_LIMITED' ? CODE_SEND_LATER : LOGIN_FAILED_COPY)
-        return
-      }
-      // A code went to this number moments ago: go (back) to the code step so it can still be entered, like the app.
-      setResendAt(Date.now() + wait * 1000)
-      setNow(Date.now())
-      setRefused(true)
-      if (step === 'number') {
+    await withCleanup(async () => {
+      try {
+        const sent = await authPhoneSend(toE164(phone))
+        setResendAt(Date.now() + sent.cooldownSeconds * 1000)
+        setNow(Date.now())
         setCode('')
         setCodeState(null)
+        setRefused(false)
         setStep('code')
+      } catch (caught) {
+        const wait = sendCooldown(caught)
+        if (wait === null) {
+          setError(sendFailureCopy(caught))
+          return
+        }
+        // A code went to this number moments ago: go (back) to the code step so it can still be entered, like the app.
+        setResendAt(Date.now() + wait * 1000)
+        setNow(Date.now())
+        setRefused(true)
+        if (step === 'number') {
+          setCode('')
+          setCodeState(null)
+          setStep('code')
+        }
       }
-    } finally {
-      setPending(false)
-    }
+    }, () => setPending(false))
   }
 
   const verify = async () => {
     setError(null)
     setPending(true)
-    try {
-      const result = await authPhoneVerify({ phone: toE164(phone), code, ...(pendingToken ? { pendingToken } : {}) })
-      const { created: _created, linked: _linked, provider: _provider, ...session } = result
-      // The code is spent once verified, so a failed terms read asks for a new code rather than a retry.
-      const pendingTerms = await termsPending(session).catch(() => null)
-      if (pendingTerms === null) {
-        setCode('')
-        setError(TERMS_READ_FAILED)
-      } else if (pendingTerms) setConsent(session)
-      else onDone(session)
-    } catch (caught) {
-      const failure = phoneFailure(caught)
-      if (failure.kind === 'taken') {
-        // push-be sends the code to any number and refuses only here, so the board's number-step card shows after the code step.
-        setTaken({ provider: failure.provider })
-        setStep('number')
-      } else if (failure.kind === 'failed') {
-        setError(LOGIN_FAILED_COPY)
-      } else {
-        if (failure.kind === 'limit') setCode('')
-        setCodeState(failure)
+    const credentials = { phone: toE164(phone), code, ...(pendingToken ? { pendingToken } : {}) }
+    await withCleanup(async () => {
+      try {
+        const result = await authPhoneVerify(credentials)
+        const { created: _created, linked: _linked, provider: _provider, ...session } = result
+        // The code is spent once verified, so a failed terms read asks for a new code rather than a retry.
+        const pendingTerms = await termsPending(session).catch(() => null)
+        if (pendingTerms === null) {
+          setCode('')
+          setError(TERMS_READ_FAILED)
+        } else if (pendingTerms) setConsent(session)
+        else onDone(session)
+      } catch (caught) {
+        const failure = phoneFailure(caught)
+        if (failure.kind === 'taken') {
+          // push-be sends the code to any number and refuses only here, so the board's number-step card shows after the code step.
+          setTaken({ provider: failure.provider })
+          setStep('number')
+        } else if (failure.kind === 'failed') {
+          setError(LOGIN_FAILED_COPY)
+        } else {
+          if (failure.kind === 'limit') setCode('')
+          setCodeState(failure)
+        }
       }
-    } finally {
-      setPending(false)
-    }
+    }, () => setPending(false))
   }
 
   if (consent) return <PhoneConsent session={consent} onDone={onDone} />
@@ -234,6 +239,7 @@ const PhoneFlow = ({
     else if (code.length === 6) void verify()
   }
   const codeError = codeState?.kind === 'wrong' ? CODE_WRONG : codeState?.kind === 'expired' ? CODE_EXPIRED : null
+  const describedBy = [codeError ? codeErrorId : '', error ? errorId : ''].filter(Boolean).join(' ')
   const controlClass = ['auth-control', codeError ? 'err' : '', codeState?.kind === 'limit' ? 'dim' : ''].filter(Boolean).join(' ')
   return (
     <main className="auth-card">
@@ -258,7 +264,7 @@ const PhoneFlow = ({
               placeholder={CODE_PLACEHOLDER}
               aria-label={CODE_PLACEHOLDER}
               aria-invalid={codeError ? true : undefined}
-              aria-describedby={[codeError ? codeErrorId : '', error ? errorId : ''].filter(Boolean).join(' ') || undefined}
+              aria-describedby={describedBy || undefined}
               disabled={codeState?.kind === 'limit'}
               onChange={(event) => {
                 setCode(codeDigits(event.target.value))

@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@fontsource-variable/noto-sans-kr": "^5.3.1",
+    "@legendapp/list": "^3.7.3",
     "@push/api-client": "workspace:*",
     "@push/design-system": "workspace:*",
     "@push/shared": "workspace:*",
@@ -25,6 +26,7 @@
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.0",
     "@vitejs/plugin-react": "^4.4.0",
+    "babel-plugin-react-compiler": "^1.0.0",
     "happy-dom": "^21.0.4",
     "typescript": "~5.8.3",
     "vite": "^6.3.5",

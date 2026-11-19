@@ -1,7 +1,7 @@
 import type { ConversationTurn, Message } from '@push/api-client'
 import { describe, expect, it } from 'vitest'
 import { EMPTY_TURN } from './chat-turn'
-import { threadItems } from './chat-thread'
+import { applicationTrail, threadItems, type ThreadItem } from './chat-thread'
 
 const message = (id: string, role: Message['role'], text: string): Message => ({
   id,
@@ -105,5 +105,27 @@ describe('threadItems', () => {
       known: ['m1'],
     })
     expect(items.map((item) => item.key)).toEqual(['m1', 'j1', 'live-turn'])
+  })
+})
+
+describe('applicationTrail', () => {
+  const user = (key: string, ids: string[]): ThreadItem => ({
+    kind: 'user',
+    key,
+    text: key,
+    attachments: ids.map((id) => ({ type: 'APPLICATION' as const, id })),
+  })
+  const reply: ThreadItem = { kind: 'reply', key: 'r', text: '' }
+
+  it('names the application attached before each item, in one pass', () => {
+    const items = [user('a', []), user('b', ['x']), reply, user('c', ['y', 'z']), reply]
+    expect(applicationTrail(items)).toEqual({
+      before: [undefined, undefined, 'x', 'x', 'z'],
+      last: 'z',
+    })
+  })
+
+  it('has none for a thread without an attachment', () => {
+    expect(applicationTrail([reply])).toEqual({ before: [undefined], last: undefined })
   })
 })

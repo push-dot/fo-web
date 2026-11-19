@@ -1,4 +1,5 @@
 import { POST_CATEGORIES, type PostCategory } from '@push/api-client'
+import { LegendList } from '@legendapp/list/react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
@@ -13,6 +14,8 @@ import { COMPOSER_ACTION, POPULAR_TITLE, POST_PAGE_SIZE, SOCIAL_EMPTY, SOCIAL_ER
 import PostCard from './post-card'
 import { usePopularPosts } from './popular-posts'
 import { useViewerAuthor } from './use-viewer-author'
+
+const POST_CARD_HEIGHT = 170
 
 const SocialPage = () => {
   const [category, setCategory] = useState<PostCategory | null>(null)
@@ -43,9 +46,18 @@ const SocialPage = () => {
           </button>
         )}
         <div className="post-list">
-          {items.map((post) => (
-            <PostCard key={post.id} post={post} />
-          ))}
+          <LegendList
+            useWindowScroll
+            recycleItems
+            data={items}
+            estimatedItemSize={POST_CARD_HEIGHT}
+            keyExtractor={(post) => post.id}
+            renderItem={({ item }) => <PostCard post={item} />}
+            onEndReachedThreshold={1.5}
+            onEndReached={() => {
+              if (listQuery.hasNextPage && !listQuery.isFetchingNextPage) void listQuery.fetchNextPage()
+            }}
+          />
         </div>
         {listQuery.isLoading ? <Skeleton rows={3} /> : null}
         {listQuery.isError ? <ErrorState title={SOCIAL_ERROR} retryLabel={SOCIAL_RETRY} onRetry={() => void listQuery.refetch()} /> : null}
@@ -59,11 +71,6 @@ const SocialPage = () => {
               </button>
             }
           />
-        ) : null}
-        {listQuery.hasNextPage ? (
-          <button type="button" className="btn sec" disabled={listQuery.isFetchingNextPage} onClick={() => void listQuery.fetchNextPage()}>
-            더 보기
-          </button>
         ) : null}
       </div>
       {popular.length > 0 ? (

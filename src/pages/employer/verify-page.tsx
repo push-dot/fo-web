@@ -1,6 +1,7 @@
 import { ApiError, type Company } from '@push/api-client'
 import { useState, type FormEvent } from 'react'
 
+import { withCleanup } from '../../shared/lib/with-cleanup'
 import { sessionStore } from '../../shared/auth/session'
 import { Icon } from '../../shared/ui/icon'
 import {
@@ -51,31 +52,31 @@ const VerifyPage = () => {
     if (!ready || pending) return
     setError(null)
     setPending(true)
-    try {
-      const company = await companiesVerify({
-        bNo: bNoDigits,
-        startDt: startDigits,
-        pNm: pNm.trim(),
-        bNm: bNm.trim(),
-      })
-      const me = await authMe()
-      const current = sessionStore.load()
-      if (current) {
-        sessionStore.save({
-          ...current,
-          user: { ...current.user, companyId: me.companyId, companyRole: me.companyRole },
+    await withCleanup(async () => {
+      try {
+        const company = await companiesVerify({
+          bNo: bNoDigits,
+          startDt: startDigits,
+          pNm: pNm.trim(),
+          bNm: bNm.trim(),
         })
+        const me = await authMe()
+        const current = sessionStore.load()
+        if (current) {
+          sessionStore.save({
+            ...current,
+            user: { ...current.user, companyId: me.companyId, companyRole: me.companyRole },
+          })
+        }
+        setDone(company)
+      } catch (caught) {
+        if (caught instanceof ApiError && caught.code === 'COMPANY_EXISTS') {
+          setError(COMPANY_EXISTS_COPY)
+          return
+        }
+        setError(VERIFY_RETRY)
       }
-      setDone(company)
-    } catch (caught) {
-      if (caught instanceof ApiError && caught.code === 'COMPANY_EXISTS') {
-        setError(COMPANY_EXISTS_COPY)
-        return
-      }
-      setError(VERIFY_RETRY)
-    } finally {
-      setPending(false)
-    }
+    }, () => setPending(false))
   }
 
   if (done) {

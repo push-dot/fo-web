@@ -64,8 +64,9 @@ const PostPage = () => {
   }
   const share = async () => {
     if (typeof navigator.share !== 'function') return copyLink()
+    const title = post?.title
     try {
-      await navigator.share({ url: window.location.href, title: post?.title })
+      await navigator.share({ url: window.location.href, title })
     } catch {
       return
     }
