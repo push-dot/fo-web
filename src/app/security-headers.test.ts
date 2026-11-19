@@ -40,6 +40,15 @@ describe('security headers on every page', () => {
     for (const hash of inlineScriptHashes()) expect(scripts).toContain(hash)
   })
 
+  it('lets the Toss Payments SDK load and talk to Toss, and no other third-party script', () => {
+    const scripts = csp.get('script-src') ?? []
+    expect(scripts).toContain('https://js.tosspayments.com')
+    expect(scripts.filter((source) => source.startsWith('https://'))).toEqual(['https://js.tosspayments.com'])
+    expect(csp.get('frame-src')).toEqual(['https://*.tosspayments.com', 'https://*.toss.im'])
+    expect(csp.get('connect-src')).toEqual(expect.arrayContaining(['https://*.tosspayments.com', 'https://*.toss.im']))
+    expect(csp.get('form-action')).toEqual(["'self'"])
+  })
+
   it('allows plugin data only from our own PDF blobs and blocks base hijacking and framing', () => {
     expect(csp.get('object-src')).toEqual(['blob:'])
     expect(csp.get('base-uri')).toEqual(["'self'"])

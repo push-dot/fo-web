@@ -18,6 +18,7 @@
     "@push/design-system": "workspace:*",
     "@push/shared": "workspace:*",
     "@tanstack/react-query": "^5.103.1",
+    "@tosspayments/tosspayments-sdk": "2.10.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-router-dom": "^7.6.0"

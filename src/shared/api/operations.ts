@@ -31,11 +31,17 @@ export const authRequestPasswordReset = (...args: Parameters<Api['auth']['reques
 
 export const authStart = (...args: Parameters<Api['auth']['start']>) => api.auth.start(...args)
 
-export const billingCheckout = (...args: Parameters<Api['billing']['checkout']>) => api.billing.checkout(...args)
-
 export const billingCompanyStatus = (...args: Parameters<Api['billing']['companyStatus']>) => api.billing.companyStatus(...args)
 
-export const billingTopup = (...args: Parameters<Api['billing']['topup']>) => api.billing.topup(...args)
+export const billingTossAuth = (...args: Parameters<Api['billing']['tossBillingAuth']>) => api.billing.tossBillingAuth(...args)
+
+export const billingTossConfirm = (...args: Parameters<Api['billing']['tossBillingConfirm']>) => api.billing.tossBillingConfirm(...args)
+
+export const billingTossTopup = (...args: Parameters<Api['billing']['tossTopup']>) => api.billing.tossTopup(...args)
+
+export const billingTossTopupConfirm = (...args: Parameters<Api['billing']['tossTopupConfirm']>) => api.billing.tossTopupConfirm(...args)
+
+export const billingTossCancel = (...args: Parameters<Api['billing']['tossCancel']>) => api.billing.tossCancel(...args)
 
 export const billingLedger = (...args: Parameters<Api['billing']['ledger']>) => api.billing.ledger(...args)
 
