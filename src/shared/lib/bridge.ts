@@ -13,6 +13,7 @@ export type BridgeMessage =
   | { type: 'open'; path: string }
   | { type: 'error'; status: number }
   | { type: 'external'; url: string }
+  | { type: 'ready' }
 
 declare global {
   interface Window {
@@ -21,9 +22,32 @@ declare global {
   }
 }
 
+/** The app's access token lives here, never on `window`: a script from another origin cannot read it off a global. */
+let nativeToken: string | null | undefined
+let resolveToken: ((token: string | null) => void) | undefined
+const tokenWait = new Promise<string | null>((resolve) => (resolveToken = resolve))
+
+export const setNativeToken = (token: string | null | undefined) => {
+  nativeToken = token
+  if (token !== undefined) resolveToken?.(token)
+}
+
 export const pushEnv = (): PushEnv => {
   if (typeof window === 'undefined') return {}
-  return (window.__PUSH__ ??= {})
+  const env = (window.__PUSH__ ??= {})
+  // An older app still injects `token` into the global: take it once, then remove it.
+  if ('token' in env && !Object.getOwnPropertyDescriptor(env, 'token')?.get) {
+    setNativeToken(env.token)
+    delete env.token
+  }
+  // The api client reads `.token` synchronously; before the app's first push:token in a WebView it gets a promise it awaits.
+  if (!Object.getOwnPropertyDescriptor(env, 'token'))
+    Object.defineProperty(env, 'token', {
+      enumerable: false,
+      configurable: true,
+      get: () => (nativeToken !== undefined || !window.ReactNativeWebView ? nativeToken : (tokenWait as unknown as string)),
+    })
+  return env
 }
 
 /** Which app list opened the page; the app boards for one route differ by it. */
@@ -50,8 +74,10 @@ export const isMock = () => {
 
 if (typeof window !== 'undefined') {
   applyTheme(pushEnv().theme)
+  // Ask the app for the token: it answers with push:token once, so the page never has it before it asks.
+  window.ReactNativeWebView?.postMessage(JSON.stringify({ type: 'ready' }))
   window.addEventListener('push:token', (e) => {
-    pushEnv().token = (e as CustomEvent<{ token?: string | null }>).detail?.token
+    setNativeToken((e as CustomEvent<{ token?: string | null }>).detail?.token ?? null)
   })
   window.addEventListener('push:theme', (e) => {
     applyTheme((e as CustomEvent<{ theme?: unknown }>).detail?.theme)

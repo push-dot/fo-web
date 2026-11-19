@@ -12,7 +12,7 @@ const ops = vi.hoisted(() => ({
 }))
 vi.mock('../../shared/api/operations', () => ops)
 
-const { removeDocument, restoreDocument } = await import('./manage-documents')
+const { blobTypeFor, removeDocument, restoreDocument } = await import('./manage-documents')
 
 beforeEach(() => vi.clearAllMocks())
 
@@ -39,5 +39,15 @@ describe('restoreDocument', () => {
   it('does not restore an upload, which push-be hard-deletes', async () => {
     await restoreDocument({ id: 'src-1', origin: 'UPLOAD' }, undefined)
     expect(ops.documentsRestore).not.toHaveBeenCalled()
+  })
+})
+
+describe('blobTypeFor', () => {
+  it('keeps PDF inline', () => {
+    expect(blobTypeFor('application/pdf')).toBe('application/pdf')
+    expect(blobTypeFor('Application/PDF; charset=binary')).toBe('application/pdf')
+  })
+  it('forces everything else to a download type', () => {
+    for (const type of ['text/html', 'image/svg+xml', 'application/xhtml+xml', '']) expect(blobTypeFor(type)).toBe('application/octet-stream')
   })
 })

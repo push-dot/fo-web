@@ -75,6 +75,13 @@ export const LOGOUT_TITLE = '로그아웃할까요?'
 export const WITHDRAW_TITLE = '회원 탈퇴할까요?'
 export const WITHDRAW_CONFIRM = '탈퇴'
 
+export const REAUTH = {
+  title: '다시 로그인해 주세요',
+  body: '탈퇴는 로그인한 지 10분 안에만 할 수 있어요. 다시 로그인한 뒤 탈퇴해 주세요.',
+  close: '닫기',
+  action: '다시 로그인',
+} as const
+
 export const ADMIN_TRANSFER = {
   title: '관리자를 먼저 넘겨 주세요',
   body: '관리자는 바로 탈퇴할 수 없어요. 담당자 관리에서 다른 담당자에게 관리자를 넘긴 뒤 탈퇴해 주세요.',
