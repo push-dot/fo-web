@@ -91,12 +91,13 @@ pnpm --filter @push/fo-web dev
 
 ### 환경 변수
 
-이 저장소에는 `.env.example`이 없습니다. 값은 적지 않습니다. 비우면 `src/shared/api/client.ts`의 기본 주소를 씁니다.
+`.env.example`에 이름만 있고 값은 적지 않습니다. 비우면 `src/shared/api/client.ts`의 기본 주소를 씁니다.
 
 | 이름 | 읽는 곳 |
 | --- | --- |
 | `VITE_API_BASE_URL` | `src/shared/api/client.ts` |
 | `VITE_COOKIE_SESSION` | `src/shared/auth/cookie-session.ts` |
+| `VITE_TOSS_CLIENT_KEY` | `src/features/checkout-plan/toss-client-key.ts` (토스페이먼츠 클라이언트 키. 비우면 결제가 닫혀요) |
 
 `window.__PUSH__.apiBaseUrl`이 있으면 그 주소를 `VITE_API_BASE_URL`보다 먼저 씁니다.
 

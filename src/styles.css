@@ -440,6 +440,7 @@ button.shortcut{border:0;cursor:pointer;font:inherit}
 .browser .ft{border-top:1px solid var(--line);margin-top:72px;padding:36px 0 48px;color:var(--t3);font-size:13px}
 .browser .ft .w7{color:var(--t2)}
 .browser .ft-mark{margin-left:auto}
+.browser .ft .ft-biz{flex-wrap:wrap;gap:2px 16px;margin-top:12px;font-size:12px;font-style:normal;color:var(--t3)}
 .browser .ft{line-height:22px}
 .browser .ft .wordmark{height:auto;margin-right:0}
 .browser .cap{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -1373,6 +1374,8 @@ button.shortcut{border:0;cursor:pointer;font:inherit}
 .browser .plan-main>.h1{margin:0}
 .browser .plan-banner{display:flex;gap:12px;padding:16px 18px;border-radius:16px;background:var(--bg2);margin-top:-8px}
 .browser .plan-banner>svg{flex:none;color:var(--t3);margin-top:1px}
+.browser .plan-terms{margin-top:0}
+.browser .plan-terms ul{margin:6px 0 0;padding-left:18px;display:flex;flex-direction:column;gap:4px}
 .browser .plan-usage{display:flex;flex-direction:column;gap:12px;padding:22px}
 .browser .plan-usage-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
 .browser .plan-meter{display:block;height:10px;border-radius:5px;background:var(--fill);overflow:hidden}

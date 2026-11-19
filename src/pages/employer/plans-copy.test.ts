@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { LedgerEntry } from '@push/api-client'
-import { buyTotal, ledgerDate, ledgerNeedsAnotherPage, ledgerPayments, ledgerShowsMore, ledgerUsd, ledgerView, planPaid, planSwitchLabel, planUsedPercent, planViewerBody } from './constants'
+import { BUY_TERMS, PLAN_TERMS, buyTotal, planBuyPackHint, planMonthly, planPayFailedBody, ledgerDate, ledgerNeedsAnotherPage, ledgerPayments, ledgerShowsMore, ledgerUsd, ledgerView, planPaid, planSwitchLabel, planUsedPercent, planViewerBody } from './constants'
 
 describe('plan switch label', () => {
   it('picks the josa by the last sound of the plan name', () => {
@@ -99,9 +99,31 @@ describe('ledger rows', () => {
 })
 
 describe('credit purchase', () => {
-  it('prices packs at 1,500 credits and $10 each', () => {
-    expect(buyTotal(1)).toBe('1,500크레딧 · $10')
-    expect(buyTotal(20)).toBe('30,000크레딧 · $200')
+  it('prices packs at 1,500 credits and 14,000원 each', () => {
+    expect(buyTotal(1, 14_000)).toBe('1,500크레딧 · 14,000원')
+    expect(buyTotal(20, 14_000)).toBe('30,000크레딧 · 280,000원')
+  })
+
+  it('states the pack price and the 20-pack limit', () => {
+    expect(planBuyPackHint(14_000)).toBe('1팩에 1,500크레딧 · 14,000원이에요. 한 번에 20팩까지 살 수 있어요.')
+  })
+
+  it('shows the monthly price as 월 29,000원', () => {
+    expect(planMonthly(29_000)).toBe('월 29,000원')
+  })
+
+  it('tells the pre-payment terms: auto renewal, how to cancel, the 7-day limit', () => {
+    const terms = PLAN_TERMS.join(' ')
+    expect(terms).toContain('자동 결제')
+    expect(terms).toContain('구독 해지')
+    expect(terms).toContain('7일')
+    expect(BUY_TERMS).toContain('7일')
+  })
+
+  it('shows Toss failure code and message, capped, and never says money left', () => {
+    expect(planPayFailedBody('PAY_PROCESS_CANCELED', '구매자가 결제를 취소했습니다.')).toBe('구매자가 결제를 취소했습니다. (PAY_PROCESS_CANCELED) 요금은 나가지 않았어요.')
+    expect(planPayFailedBody(null, null)).toBe('결제창에서 나왔어요 요금은 나가지 않았어요.')
+    expect(planPayFailedBody('C', 'x'.repeat(500)).length).toBeLessThan(260)
   })
 
   it('names the admin to ask when the member knows them', () => {

@@ -122,6 +122,7 @@ jobs:
       - name: Build
         env:
           VITE_API_BASE_URL: https://push-be.youngjoon568.workers.dev/api/v1
+          VITE_TOSS_CLIENT_KEY: ${{ vars.VITE_TOSS_CLIENT_KEY }}
         run: |
           set -euo pipefail
           # Production bundles must not include the mock client.

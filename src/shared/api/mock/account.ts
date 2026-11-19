@@ -23,7 +23,7 @@ export const seatLimitFor = (plan: 'BASIC' | 'PRO' | 'ULTRA') =>
 
 export const PACK_MICRO = 9_000_000
 
-export const PAYMENT_TAILS = new Set(['/billing/checkout', '/billing/topup', '/billing/iap/verify'])
+export const PAYMENT_TAILS = new Set(['/billing/checkout', '/billing/topup', '/billing/iap/verify', '/billing/toss/billing-auth', '/billing/toss/topup'])
 
 export const MAX_PACKS = 20
 
