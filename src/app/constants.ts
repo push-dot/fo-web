@@ -1,3 +1,5 @@
+import { LEGAL_OPERATOR } from '@push/shared'
+
 export const BRAND = 'Push.'
 export const AUTH_BIZ = '기업'
 export const AUTH_LOGOUT = '로그아웃'
@@ -34,3 +36,16 @@ export const FOOTER_LINKS = [
   { label: '기업 서비스' },
 ] as const
 export const FOOTER_MARK = '© 2026 Push'
+// Payment providers review the site for the operator's business details in the footer.
+export const FOOTER_BUSINESS: readonly string[] =
+  LEGAL_OPERATOR.kind === 'business'
+    ? [
+        `상호 ${LEGAL_OPERATOR.tradeName}`,
+        `대표자 ${LEGAL_OPERATOR.representative}`,
+        `사업자등록번호 ${LEGAL_OPERATOR.businessNumber}`,
+        `통신판매업 신고번호 ${LEGAL_OPERATOR.mailOrderNumber}`,
+        `주소 ${LEGAL_OPERATOR.address}`,
+        `대표전화 ${LEGAL_OPERATOR.phone}`,
+        `이메일 ${LEGAL_OPERATOR.contactEmail}`,
+      ]
+    : []
