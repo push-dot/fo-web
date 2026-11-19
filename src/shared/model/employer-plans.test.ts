@@ -1,14 +1,14 @@
-import { afterEach, describe, expect, it, vi } from 'vitest'
-import { EMPLOYER_PLAN_CARDS, canChangeEmployerPlan, checkoutBackoff, checkoutBalance, checkoutPlanId, checkoutPlanName, checkoutReturn, checkoutTarget, paidPlanVisible, paymentsOpen, refreshUntilPaid, rememberCheckoutBalance, rememberCheckoutPlan, showEmployerCheckout, topupReady } from './employer-plans'
+import { describe, expect, it } from 'vitest'
+import { DEFAULT_PLAN_PRICES, EMPLOYER_PLAN_CARDS, canChangeEmployerPlan, formatKrw, paymentsOpen, planPrices, showEmployerCheckout, tossReturn, tossReturnUrls, topupReady } from './employer-plans'
 
 const FORBIDDEN_MODEL_NAMES = ['Sonnet', 'Opus', 'Fable']
 
 describe('employer plan cards', () => {
-  it('prices Basic at $20, Pro at $100, and Ultra at $200', () => {
+  it('lists Basic, Pro and Ultra with their credits', () => {
     expect(EMPLOYER_PLAN_CARDS).toEqual([
-      { id: 'BASIC', name: 'Basic', price: '$20', credits: '3,000', blurb: '사용량 · 공고 생성 · 서류 검토' },
-      { id: 'PRO', name: 'Pro', price: '$100', credits: '15,000', blurb: '사용량 ↑ · 더 깊이 분석 · 면접 준비 · 담당자 2명' },
-      { id: 'ULTRA', name: 'Ultra', price: '$200', credits: '30,000', blurb: '사용량 ↑ · 더 깊이 분석 · 외부 PDF · 담당자 5명' },
+      { id: 'BASIC', name: 'Basic', credits: '3,000', blurb: '사용량 · 공고 생성 · 서류 검토' },
+      { id: 'PRO', name: 'Pro', credits: '15,000', blurb: '사용량 ↑ · 더 깊이 분석 · 면접 준비 · 담당자 2명' },
+      { id: 'ULTRA', name: 'Ultra', credits: '30,000', blurb: '사용량 ↑ · 더 깊이 분석 · 외부 PDF · 담당자 5명' },
     ])
   })
 
@@ -59,28 +59,6 @@ describe('showEmployerCheckout', () => {
   })
 })
 
-describe('checkoutTarget', () => {
-  it('keeps a same-origin plans url on this site', () => {
-    expect(checkoutTarget('/employer/plans?checkout=PRO', 'http://localhost:5175/employer/plans?mock=1')).toEqual({
-      stay: true,
-      href: '/employer/plans?checkout=PRO',
-    })
-  })
-
-  it('keeps an absolute localhost plans url on this site', () => {
-    expect(
-      checkoutTarget('http://localhost:5175/employer/plans?checkout=ULTRA', 'http://localhost:5175/employer/plans?mock=1'),
-    ).toEqual({ stay: true, href: '/employer/plans?checkout=ULTRA' })
-  })
-
-  it('leaves the site only for a different host', () => {
-    expect(checkoutTarget('https://example.test/checkout?plan=PRO', 'http://localhost:5175/employer/plans?mock=1')).toEqual({
-      stay: false,
-      href: 'https://example.test/checkout?plan=PRO',
-    })
-  })
-})
-
 describe('paymentsOpen', () => {
   it('closes checkout and top-up when the server reports payments off', () => {
     expect(paymentsOpen({ paymentsEnabled: false })).toBe(false)
@@ -96,131 +74,72 @@ describe('paymentsOpen', () => {
   })
 })
 
-describe('Stripe return (push-be billing.ts returnUrls)', () => {
-  afterEach(() => vi.unstubAllGlobals())
-  const of = (search: string) => checkoutReturn(new URL(`https://push.devcyjoon.tech/employer/plans${search}`).searchParams)
 
-  it('reads success, credits and canceled the way push-be writes them', () => {
-    expect(of('?checkout=success&session_id=cs_test_a1')).toBe('success')
-    expect(of('?checkout=credits&session_id=cs_test_a1')).toBe('credits')
-    expect(of('?checkout=canceled')).toBe('canceled')
-    expect(of('?checkout=ULTRA')).toBeNull()
-    expect(of('')).toBeNull()
+describe('KRW prices', () => {
+  it('lists Basic at 29,000원, Pro at 140,000원, Ultra at 280,000원 and a pack at 14,000원', () => {
+    expect(DEFAULT_PLAN_PRICES).toEqual({ BASIC: 29_000, PRO: 140_000, ULTRA: 280_000, pack: 14_000 })
   })
 
-  it('names the plan that was bought from the tab, and nothing once it is cleared', () => {
-    const store = new Map<string, string>()
-    vi.stubGlobal('sessionStorage', {
-      getItem: (key: string) => store.get(key) ?? null,
-      setItem: (key: string, value: string) => store.set(key, value),
-      removeItem: (key: string) => store.delete(key),
-    })
-    rememberCheckoutPlan('ULTRA')
-    expect(checkoutPlanId()).toBe('ULTRA')
-    expect(checkoutPlanName()).toBe('Ultra')
-    rememberCheckoutPlan(null)
-    expect(checkoutPlanId()).toBeNull()
-    expect(checkoutPlanName()).toBeUndefined()
+  it('formats whole won with thousands separators', () => {
+    expect(formatKrw(29_000)).toBe('29,000원')
+    expect(formatKrw(280_000)).toBe('280,000원')
+    expect(formatKrw(0)).toBe('0원')
   })
 
-  it('remembers the pre-checkout balance and uses it when the return page has no cache', async () => {
-    const store = new Map<string, string>()
-    vi.stubGlobal('sessionStorage', {
-      getItem: (key: string) => store.get(key) ?? null,
-      setItem: (key: string, value: string) => store.set(key, value),
-      removeItem: (key: string) => store.delete(key),
-    })
-    rememberCheckoutBalance(100)
-    expect(checkoutBalance()).toBe(100)
-    expect(paidPlanVisible('credits', { plan: 'PRO', balanceMicroCredits: 100 }, null, null)).toBe(false)
-    expect(paidPlanVisible('credits', { plan: 'PRO', balanceMicroCredits: 250 }, null, null)).toBe(true)
-    const balances = [100, 100, 250]
-    const waits: number[] = []
-    await refreshUntilPaid(
-      'credits',
-      null,
-      null,
-      async () => ({ plan: 'PRO', balanceMicroCredits: balances.shift() ?? 250 }),
-      async (ms) => {
-        waits.push(ms)
-      },
-    )
-    expect(waits).toEqual([500, 1000])
-    rememberCheckoutBalance(null)
-    expect(checkoutBalance()).toBeNull()
-    expect(paidPlanVisible('credits', { plan: 'PRO', balanceMicroCredits: 10 }, null, null)).toBe(true)
+  it('prefers the server prices and falls back per field', () => {
+    expect(planPrices(undefined)).toEqual(DEFAULT_PLAN_PRICES)
+    expect(planPrices({})).toEqual(DEFAULT_PLAN_PRICES)
+    expect(planPrices({ prices: { BASIC: 30_000, PRO: 150_000, ULTRA: 300_000, pack: 15_000 } })).toEqual({ BASIC: 30_000, PRO: 150_000, ULTRA: 300_000, pack: 15_000 })
+    expect(planPrices({ prices: { BASIC: 30_000, PRO: -1, ULTRA: 'x', pack: 1.5 } })).toEqual({ ...DEFAULT_PLAN_PRICES, BASIC: 30_000 })
   })
 })
 
-describe('checkout billing refresh', () => {
-  const billing = (plan: string | null, balanceMicroCredits: number) => ({ plan, balanceMicroCredits })
-
-  it('waits 500, 1000, 2000, then 4000ms and stops after five reads', () => {
-    expect(checkoutBackoff(0)).toBe(500)
-    expect(checkoutBackoff(1)).toBe(1000)
-    expect(checkoutBackoff(2)).toBe(2000)
-    expect(checkoutBackoff(3)).toBe(4000)
-    expect(checkoutBackoff(4)).toBeNull()
-  })
-
-  it('sees the bought plan, and added credits, once billing shows them', () => {
-    expect(paidPlanVisible('success', billing('PRO', 1), 'ULTRA', 1)).toBe(false)
-    expect(paidPlanVisible('success', billing('ULTRA', 1), 'ULTRA', 1)).toBe(true)
-    expect(paidPlanVisible('success', undefined, 'ULTRA', 1)).toBe(false)
-    expect(paidPlanVisible('credits', billing('PRO', 100), null, 100)).toBe(false)
-    expect(paidPlanVisible('credits', billing('PRO', 250), null, 100)).toBe(true)
-    expect(paidPlanVisible('credits', billing('PRO', 10), null, null)).toBe(true)
-  })
-
-  it('refetches with backoff until the paid plan shows, and stops when the reads run out', async () => {
-    const plans = ['PRO', 'PRO', 'ULTRA']
-    const waits: number[] = []
-    await refreshUntilPaid('success', 'ULTRA', 1, async () => billing(plans.shift() ?? 'ULTRA', 1), async (ms) => {
-      waits.push(ms)
+describe('Toss return URLs', () => {
+  it('sends the subscription back with the plan, and failures to ?toss=fail', () => {
+    expect(tossReturnUrls('https://push.example', 'billing', 'PRO')).toEqual({
+      successUrl: 'https://push.example/employer/plans?toss=billing&planId=PRO',
+      failUrl: 'https://push.example/employer/plans?toss=fail',
     })
-    expect(waits).toEqual([500, 1000])
-
-    let reads = 0
-    const bounded: number[] = []
-    await refreshUntilPaid(
-      'success',
-      'ULTRA',
-      1,
-      async () => {
-        reads += 1
-        return billing('PRO', 1)
-      },
-      async (ms) => {
-        bounded.push(ms)
-      },
-    )
-    expect(reads).toBe(5)
-    expect(bounded).toEqual([500, 1000, 2000, 4000])
   })
 
-  it('retries a failed read, and stops when the page is gone', async () => {
-    let reads = 0
-    const waits: number[] = []
-    await refreshUntilPaid(
-      'credits',
-      null,
-      100,
-      async () => {
-        reads += 1
-        if (reads === 1) throw new Error('offline')
-        return billing('PRO', 250)
-      },
-      async (ms) => {
-        waits.push(ms)
-      },
-    )
-    expect(waits).toEqual([500])
+  it('sends a top-up back without a plan', () => {
+    expect(tossReturnUrls('https://push.example', 'topup').successUrl).toBe('https://push.example/employer/plans?toss=topup')
+  })
+})
 
-    let after = 0
-    await refreshUntilPaid('success', 'ULTRA', 1, async () => {
-      after += 1
-      return billing('PRO', 1)
-    }, async () => undefined, () => false)
-    expect(after).toBe(0)
+describe('tossReturn', () => {
+  const of = (search: string) => tossReturn(new URL(`https://push.example/employer/plans${search}`).searchParams)
+
+  it('reads a card registration with authKey and customerKey', () => {
+    expect(of('?toss=billing&planId=PRO&customerKey=ck_1&authKey=ak_1')).toEqual({ kind: 'billing', authKey: 'ak_1', customerKey: 'ck_1', planId: 'PRO' })
+  })
+
+  it('ignores a registration that lacks a key or names an unknown plan', () => {
+    expect(of('?toss=billing&planId=PRO&customerKey=ck_1')).toBeNull()
+    expect(of('?toss=billing&planId=PRO&authKey=ak_1')).toBeNull()
+    expect(of('?toss=billing&planId=FREE&customerKey=ck_1&authKey=ak_1')).toBeNull()
+    expect(of('?toss=billing&customerKey=ck_1&authKey=ak_1')).toBeNull()
+  })
+
+  it('reads a top-up payment with its paymentKey, orderId and amount', () => {
+    expect(of('?toss=topup&paymentType=NORMAL&orderId=o_1&paymentKey=pk_1&amount=14000')).toEqual({ kind: 'topup', paymentKey: 'pk_1', orderId: 'o_1', amount: 14_000 })
+  })
+
+  it('ignores a top-up with a missing or bad amount', () => {
+    expect(of('?toss=topup&orderId=o_1&paymentKey=pk_1')).toBeNull()
+    expect(of('?toss=topup&orderId=o_1&paymentKey=pk_1&amount=abc')).toBeNull()
+    expect(of('?toss=topup&orderId=o_1&paymentKey=pk_1&amount=0')).toBeNull()
+    expect(of('?toss=topup&orderId=o_1&amount=14000')).toBeNull()
+  })
+
+  it('reads a failure with its code and message', () => {
+    expect(of('?toss=fail&code=PAY_PROCESS_CANCELED&message=%EC%B7%A8%EC%86%8C&orderId=o_1')).toEqual({ kind: 'fail', code: 'PAY_PROCESS_CANCELED', message: '취소' })
+    expect(of('?toss=fail')).toEqual({ kind: 'fail', code: null, message: null })
+  })
+
+  it('ignores a plain page load and the old Stripe return', () => {
+    expect(of('')).toBeNull()
+    expect(of('?toss=other')).toBeNull()
+    expect(of('?checkout=success&session_id=cs_1')).toBeNull()
   })
 })

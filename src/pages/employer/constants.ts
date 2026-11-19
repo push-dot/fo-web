@@ -1,6 +1,7 @@
 import { ApiError, QueueBusyError, type AccessMode, type EmployerStage, type LedgerEntry } from '@push/api-client'
 import type { ApprovalFailure } from '../../features/employer-chat'
 import { creditText } from '../../entities/billing'
+import { MAX_PACKS, PACK_CREDITS, formatKrw } from '../../shared/model/employer-plans'
 import { PLAN_NAME, seatLimit, type EmployerPlanId } from '../../shared/model/employer-plan'
 
 export const BNO_DIGITS = 10
@@ -280,17 +281,43 @@ export const PLAN_BUY_TITLE = '크레딧 구매'
 export const PLAN_BUY_HINT = '이번 달 크레딧이 모자라면 더 살 수 있어요'
 export const PLAN_BUY = '구매'
 export const PLAN_BUY_PACKS = '구매할 팩 수'
-export const PLAN_BUY_PACK_HINT = '1팩에 1,500크레딧 · $10예요. 한 번에 20팩까지 살 수 있어요.'
-export const buyTotal = (packs: number) => `${creditText(packs * 1500)}크레딧 · $${packs * 10}`
+export const planBuyPackHint = (packPrice: number) => `1팩에 ${creditText(PACK_CREDITS)}크레딧 · ${formatKrw(packPrice)}이에요. 한 번에 ${MAX_PACKS}팩까지 살 수 있어요.`
+export const buyTotal = (packs: number, packPrice: number) => `${creditText(packs * PACK_CREDITS)}크레딧 · ${formatKrw(packs * packPrice)}`
+export const BUY_TERMS = '크레딧은 한 번만 결제돼요. 자동으로 다시 결제되지 않아요. 결제한 날부터 7일 안에 쓰지 않았다면 환불받을 수 있어요.'
 export const PLAN_HISTORY = '결제 내역'
 export const PLAN_CLOSE = '닫기'
 export const PLAN_CANCEL = '취소'
 export const PLAN_LEAD = '요금제마다 쓸 수 있는 양이 달라요'
-export const PLAN_PER_MONTH = '/ 월'
-export const PLAN_NOTE = '요금제는 에이전트에만 적용돼요. 공고 등록과 지원자 관리는 요금제 없이도 쓸 수 있어요. 결제와 변경은 관리자만 해요 · 월 구독 · USD'
-export const PLAN_SECURE = 'Stripe로 안전하게 결제돼요'
-export const PLAN_CANCELED_TITLE = '결제를 취소했어요'
-export const PLAN_CANCELED_BODY = '요금은 나가지 않았어요. 요금제와 크레딧은 그대로예요.'
+export const planMonthly = (price: number) => `월 ${formatKrw(price)}`
+export const PLAN_NOTE = '요금제는 에이전트에만 적용돼요. 공고 등록과 지원자 관리는 요금제 없이도 쓸 수 있어요. 결제와 변경은 관리자만 해요.'
+export const PLAN_SECURE = '토스페이먼츠로 안전하게 결제돼요'
+export const PLAN_TERMS_TITLE = '결제 전에 확인해 주세요'
+export const PLAN_TERMS = [
+  '구독하면 매달 같은 날, 등록한 카드로 요금이 자동 결제돼요.',
+  '언제든 이 화면의 ‘구독 해지’에서 해지할 수 있어요. 해지해도 이미 결제한 기간이 끝날 때까지는 쓸 수 있어요.',
+  '결제한 날부터 7일 안에, 받은 크레딧을 쓰지 않았다면 전액 환불받을 수 있어요.',
+] as const
+export const PLAN_PAY_FAILED_TITLE = '결제를 마치지 못했어요'
+const FAIL_TEXT_MAX = 200
+export const planPayFailedBody = (code: string | null, message: string | null) => {
+  const reason = message?.trim().slice(0, FAIL_TEXT_MAX) || '결제창에서 나왔어요'
+  const tail = code?.trim().slice(0, FAIL_TEXT_MAX)
+  return `${reason}${tail ? ` (${tail})` : ''} 요금은 나가지 않았어요.`
+}
+export const PLAN_CONFIRM_FAILED = '결제를 확인하지 못했어요. 결제 내역을 확인하고, 반영되지 않았다면 문의해 주세요.'
+export const PLAN_MANAGE_TITLE = '구독 관리'
+export const planRenews = (date: string) => `${date}에 자동으로 결제돼요`
+export const planEndsOn = (date: string) => `해지했어요. ${date}까지 쓸 수 있어요`
+export const PLAN_UNSUBSCRIBE = '구독 해지'
+export const PLAN_UNSUBSCRIBE_TITLE = '구독을 해지할까요?'
+export const planUnsubscribeBody = (date: string | null) =>
+  date ? `${date}까지는 지금 요금제를 쓸 수 있어요. 그 뒤로는 요금이 나가지 않아요.` : '이미 결제한 기간이 끝날 때까지는 지금 요금제를 쓸 수 있어요. 그 뒤로는 요금이 나가지 않아요.'
+export const PLAN_UNSUBSCRIBE_CONFIRM = '해지하기'
+export const PLAN_UNSUBSCRIBE_KEEP = '계속 쓰기'
+export const PLAN_UNSUBSCRIBE_DONE = '구독을 해지했어요'
+export const planConfirmError = (error: unknown) =>
+  error instanceof ApiError && error.code === 'PAYMENTS_DISABLED' ? PAYMENTS_CLOSED : PLAN_CONFIRM_FAILED
+export const PLAN_UNSUBSCRIBE_FAILED = '구독을 해지하지 못했어요. 잠시 후 다시 해 주세요.'
 export const PLAN_VIEWER_TITLE = '요금제는 관리자만 바꿀 수 있어요'
 export const planViewerBody = (admin?: string) =>
   admin ? `바꾸거나 크레딧을 사려면 관리자 ${admin} 님에게 말해 주세요.` : '바꾸거나 크레딧을 사려면 관리자에게 말해 주세요.'

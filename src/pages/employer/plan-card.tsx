@@ -1,5 +1,4 @@
 import { Icon } from '../../shared/ui/icon'
-import { PLAN_PER_MONTH } from './constants'
 
 const PlanCard = ({
   name,
@@ -26,7 +25,6 @@ const PlanCard = ({
     <h3 className="h2">{name}</h3>
     <p className="plan-price">
       <b className="num">{price}</b>
-      <span className="b2 t3">{PLAN_PER_MONTH}</span>
     </p>
     <p className="c1 t3">{blurb}</p>
     <div className="plan-hr" />
