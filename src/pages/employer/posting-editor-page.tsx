@@ -119,7 +119,9 @@ const PostingEditorPage = () => {
   const [confirm, setConfirm] = useState<'draft' | 'close' | null>(null)
   const revisionRef = useRef(0)
   const formRef = useRef(form)
-  formRef.current = form
+  useEffect(() => {
+    formRef.current = form
+  })
   const queryClient = useQueryClient()
   const company = useMyCompany({ enabled: Boolean(session?.user.companyId) })
   const detail = useEmployerPosting(id)

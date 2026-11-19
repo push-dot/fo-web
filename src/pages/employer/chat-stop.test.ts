@@ -15,10 +15,15 @@ describe('stop failure copy', () => {
     expect(stopFailedText(new Error('offline'))).toBe(CHAT_STOP_FAILED)
   })
 
-  it('uses that copy when the room’s cancel fails', () => {
-    const source = readFileSync(new URL('./chat-room.tsx', import.meta.url), 'utf8')
-    const halt = source.slice(source.indexOf('const halt'), source.indexOf('const tracker'))
-    expect(halt).toContain('stopFailedText(error)')
+  it('hands that copy to the session, which shows it when the cancel fails', () => {
+    const room = readFileSync(new URL('./chat-room.tsx', import.meta.url), 'utf8')
+    expect(room).toContain('stopFailed: stopFailedText')
+    const hook = readFileSync(
+      new URL('../../features/employer-chat/use-chat-session.ts', import.meta.url),
+      'utf8',
+    )
+    const halt = hook.slice(hook.indexOf('const halt'), hook.indexOf('const tracker'))
+    expect(halt).toContain('copy.stopFailed(error)')
     expect(halt).not.toContain('CHAT_STOP_FAILED')
   })
 })

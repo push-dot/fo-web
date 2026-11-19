@@ -2,6 +2,7 @@ import { ApiError, type AccountType, type Session } from '@push/api-client'
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
+import { withCleanup } from '../../shared/lib/with-cleanup'
 import { pathAfterAuth, takeReturnTo } from '../../shared/auth/return-path'
 import { sessionStore } from '../../shared/auth/session'
 import { loginProviders, type OAuthProvider } from '../../shared/model/login-providers'
@@ -86,25 +87,25 @@ const LoginPage = () => {
     event.preventDefault()
     clearNotes()
     setPending(true)
-    try {
-      const session = await authEmailLogin(email, password)
-      // The session stays unused until the terms are on record. A failed read blocks it, as social and phone do.
-      const gate = await termsOutcome(session)
-      if (gate === 'blocked') {
-        setError(LOGIN_FAILED_COPY)
-        return
+    await withCleanup(async () => {
+      try {
+        const session = await authEmailLogin(email, password)
+        // The session stays unused until the terms are on record. A failed read blocks it, as social and phone do.
+        const gate = await termsOutcome(session)
+        if (gate === 'blocked') {
+          setError(LOGIN_FAILED_COPY)
+          return
+        }
+        if (gate === 'pending') {
+          setConsent(session)
+          return
+        }
+        leave(session)
+      } catch (caught) {
+        if (caught instanceof ApiError && caught.code === 'EMAIL_NOT_VERIFIED') setUnverified(email)
+        else setError(caught instanceof ApiError && caught.status === 401 ? BAD_CREDENTIALS_COPY : LOGIN_FAILED_COPY)
       }
-      if (gate === 'pending') {
-        setConsent(session)
-        return
-      }
-      leave(session)
-    } catch (caught) {
-      if (caught instanceof ApiError && caught.code === 'EMAIL_NOT_VERIFIED') setUnverified(email)
-      else setError(caught instanceof ApiError && caught.status === 401 ? BAD_CREDENTIALS_COPY : LOGIN_FAILED_COPY)
-    } finally {
-      setPending(false)
-    }
+    }, () => setPending(false))
   }
 
   if (consent) return <PhoneConsent session={consent} onDone={leave} />

@@ -14,7 +14,7 @@ const ProfileCard = ({ profile }: { profile: Profile }) => {
     <Link to={`/profiles/${profile.userId}`} className="hub-card">
       <span className="hub-top">
         {profile.avatarUrl ? (
-          <img className="hub-av" src={assetUrl(profile.avatarUrl)} alt="" />
+          <img className="hub-av" src={assetUrl(profile.avatarUrl)} alt="" loading="lazy" decoding="async" width={48} height={48} />
         ) : (
           <span className="hub-av" style={{ background: brandColor(profile.displayName) }}>
             {initials(profile.displayName)}

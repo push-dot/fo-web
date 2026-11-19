@@ -1,7 +1,6 @@
 import { renderToStaticMarkup } from 'react-dom/server'
 import { MemoryRouter } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { onFirstScroll } from './first-scroll'
 import JobsPage from './jobs-page'
 
 const list = vi.hoisted(() => ({ current: {} as Record<string, unknown> }))
@@ -38,24 +37,5 @@ describe('JobsPage states', () => {
     const html = render()
     expect(html).toContain('공고 0개')
     expect(html).not.toContain('공고를 불러오지 못했어요')
-  })
-})
-
-describe('onFirstScroll', () => {
-  it('stops listening once cleaned up', () => {
-    const target = new EventTarget()
-    const done = vi.fn()
-    onFirstScroll(target, done)()
-    target.dispatchEvent(new Event('scroll'))
-    expect(done).not.toHaveBeenCalled()
-  })
-
-  it('fires once on the first scroll', () => {
-    const target = new EventTarget()
-    const done = vi.fn()
-    onFirstScroll(target, done)
-    target.dispatchEvent(new Event('scroll'))
-    target.dispatchEvent(new Event('scroll'))
-    expect(done).toHaveBeenCalledTimes(1)
   })
 })

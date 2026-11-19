@@ -1,0 +1,96 @@
+import { LegendList, type LegendListRef } from '@legendapp/list/react'
+import { memo, useCallback, useEffect, useRef, useSyncExternalStore, type ReactNode } from 'react'
+
+import type { LiveTurnStore, ThreadItem } from '../../features/employer-chat'
+import ChatAnswer from './chat-answer'
+import ChatTurnView from './chat-turn-view'
+import ChatUser from './chat-user'
+
+type TurnItem = Extract<ThreadItem, { kind: 'turn' }>
+
+type TurnRowProps = { item: TurnItem; applicationId?: string }
+
+// Stored turns keep their object between rebuilds of the thread, so a row redraws only when its own turn changes.
+const TurnRow = memo(
+  ({ item, applicationId }: TurnRowProps) => <ChatTurnView item={item} applicationId={applicationId} />,
+  (prev, next) =>
+    prev.item.turn === next.item.turn &&
+    prev.item.picked === next.item.picked &&
+    prev.applicationId === next.applicationId,
+)
+
+/** The turn streaming now: the only row that follows the store, so a token redraws this row and nothing else. */
+const LiveRow = ({ item, store, applicationId }: TurnRowProps & { store: LiveTurnStore }) => {
+  const turn = useSyncExternalStore(store.subscribe, store.turn)
+  return <ChatTurnView item={turn ? { ...item, turn } : item} applicationId={applicationId} />
+}
+
+const UserRow = memo(ChatUser)
+const ReplyRow = memo(ChatAnswer)
+
+type Props = {
+  items: ThreadItem[]
+  /** The application attached before each item. */
+  before: (string | undefined)[]
+  store: LiveTurnStore
+  /** The conversation: a new one starts at its newest message. */
+  listKey: string | undefined
+  /** Bumped on every send: the thread goes back to the newest message even when the reader had scrolled up. */
+  pin: number
+  onStartReached: () => void
+  header?: ReactNode
+  footer?: ReactNode
+}
+
+/** The message thread as a virtualised list that starts at, and follows, the newest message. */
+const ChatThreadList = ({ items, before, store, listKey, pin, onStartReached, header, footer }: Props) => {
+  const list = useRef<LegendListRef>(null)
+  useEffect(() => {
+    if (!pin) return
+    // After the question joins the list, so the end it scrolls to includes it.
+    const frame = requestAnimationFrame(() => void list.current?.scrollToEnd({ animated: false }))
+    return () => cancelAnimationFrame(frame)
+  }, [pin])
+
+  const renderItem = useCallback(
+    ({ item, index }: { item: ThreadItem; index: number }) => {
+      const applicationId = before[index]
+      return (
+        <div className="chat-row">
+          {item.kind === 'user' ? (
+            <UserRow text={item.text} attachments={item.attachments} />
+          ) : item.kind === 'reply' ? (
+            <ReplyRow text={item.text} live={false} after="start" />
+          ) : item.live ? (
+            <LiveRow item={item} store={store} applicationId={applicationId} />
+          ) : (
+            <TurnRow item={item} applicationId={applicationId} />
+          )}
+        </div>
+      )
+    },
+    [before, store],
+  )
+
+  return (
+    <LegendList
+      ref={list}
+      className="chat-list"
+      data={items}
+      dataKey={listKey}
+      renderItem={renderItem}
+      keyExtractor={(item) => item.key}
+      estimatedItemSize={120}
+      alignItemsAtEnd
+      initialScrollAtEnd
+      maintainScrollAtEnd
+      maintainVisibleContentPosition
+      onStartReached={onStartReached}
+      recycleItems={false}
+      ListHeaderComponent={<div className="chat-row chat-row-head">{header}</div>}
+      ListFooterComponent={<div className="chat-row chat-row-foot">{footer}</div>}
+    />
+  )
+}
+
+export default ChatThreadList

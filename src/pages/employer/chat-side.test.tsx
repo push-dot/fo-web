@@ -3,7 +3,7 @@ import { renderToStaticMarkup } from 'react-dom/server'
 import { MemoryRouter } from 'react-router-dom'
 import { describe, expect, it } from 'vitest'
 
-import ChatSide from './chat-side'
+import { ChatRoomRow } from './chat-side'
 
 const row = (patch: Partial<ConversationListItem>): ConversationListItem => ({
   id: 'c1',
@@ -25,7 +25,7 @@ const row = (patch: Partial<ConversationListItem>): ConversationListItem => ({
 const html = (conversation: ConversationListItem) =>
   renderToStaticMarkup(
     <MemoryRouter>
-      <ChatSide conversations={[conversation]} loading={false} failed={false} usage={null} />
+      <ChatRoomRow conversation={conversation} active={false} />
     </MemoryRouter>,
   )
 

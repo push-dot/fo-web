@@ -36,8 +36,8 @@ describe('chatGateFrom', () => {
   it('keeps text typed while a file upload is stopped, and restores the question only into an empty composer', () => {
     expect(composerAfterVanish('그 사이 적은 말', '첨부해서 정리해 줘')).toBe('그 사이 적은 말')
     expect(composerAfterVanish('', '첨부해서 정리해 줘')).toBe('첨부해서 정리해 줘')
-    const room = readFileSync(new URL('../../pages/employer/chat-room.tsx', import.meta.url), 'utf8')
-    const stopped = room.slice(room.indexOf('if (current.stopped)'), room.indexOf('const body'))
+    const room = readFileSync(new URL('./use-chat-session.ts', import.meta.url), 'utf8')
+    const stopped = room.slice(room.indexOf('if (current.stopped)'), room.indexOf('let first'))
     expect(stopped).toContain('composerAfterVanish(typed, out.text)')
     expect(stopped).not.toContain('setText(out.text)')
   })

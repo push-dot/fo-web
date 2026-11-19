@@ -1,4 +1,5 @@
 import type { ConversationListItem, ConversationStatus } from '@push/api-client'
+import { LegendList } from '@legendapp/list/react'
 import { Link } from 'react-router-dom'
 import { relativeTime } from '../../shared/lib/format'
 import { Icon } from '../../shared/ui/icon'
@@ -20,6 +21,40 @@ export const UsageMeter = ({ usage, className }: { usage: ChatUsage; className: 
     <i style={{ width: `${usage.percent}%` }} />
   </span>
 )
+
+const RoomGap = () => <div style={{ height: 4 }} />
+
+/** One conversation on the board: stateless, so its view is reused as the list scrolls. */
+export const ChatRoomRow = ({
+  conversation,
+  active,
+}: {
+  conversation: ConversationListItem
+  active: boolean
+}) => {
+  const mark = chatListMark(conversation.status)
+  const author = conversation.createdBy.displayName
+  const queued =
+    conversation.queuePosition !== null && conversation.queuePosition > 0
+      ? queueAhead(conversation.queuePosition)
+      : ''
+  const meta = [author, queued].filter(Boolean).join(' · ')
+  return (
+    <Link
+      className={active ? 'chat-link on' : 'chat-link'}
+      aria-current={active ? 'page' : undefined}
+      to={`/employer/chat/${conversation.id}`}
+    >
+      <span className="chat-link-title">
+        <span className="b2 w7 cap">{conversation.title || CHAT_NEW}</span>
+        {mark ? <span className={`badge ${mark.tone}`}>{mark.label}</span> : null}
+        <span className="c1 t3">{relativeTime(conversation.updatedAt)}</span>
+      </span>
+      {meta ? <span className="c1 t3 cap">{meta}</span> : null}
+      {conversation.lastLine ? <span className="c1 t3 cap">{conversation.lastLine}</span> : null}
+    </Link>
+  )
+}
 
 const ChatSide = ({
   conversations,
@@ -50,30 +85,16 @@ const ChatSide = ({
       <p className="c1 t3 chat-side-note">{CHAT_EMPTY}</p>
     ) : null}
     <nav className="chat-rooms">
-      {conversations.map((conversation) => {
-        const mark = chatListMark(conversation.status)
-        const author = conversation.createdBy.displayName
-        const queued = conversation.queuePosition !== null && conversation.queuePosition > 0 ? queueAhead(conversation.queuePosition) : ''
-        const meta = [author, queued].filter(Boolean).join(' · ')
-        return (
-          <Link
-            key={conversation.id}
-            className={conversation.id === activeId ? 'chat-link on' : 'chat-link'}
-            aria-current={conversation.id === activeId ? 'page' : undefined}
-            to={`/employer/chat/${conversation.id}`}
-          >
-            <span className="chat-link-title">
-              <span className="b2 w7 cap">{conversation.title || CHAT_NEW}</span>
-              {mark ? <span className={`badge ${mark.tone}`}>{mark.label}</span> : null}
-              <span className="c1 t3">{relativeTime(conversation.updatedAt)}</span>
-            </span>
-            {meta ? <span className="c1 t3 cap">{meta}</span> : null}
-            {conversation.lastLine ? (
-              <span className="c1 t3 cap">{conversation.lastLine}</span>
-            ) : null}
-          </Link>
-        )
-      })}
+      <LegendList
+        className="chat-rooms-list"
+        data={conversations}
+        extraData={activeId}
+        keyExtractor={(conversation) => conversation.id}
+        estimatedItemSize={72}
+        recycleItems
+        ItemSeparatorComponent={RoomGap}
+        renderItem={({ item }) => <ChatRoomRow conversation={item} active={item.id === activeId} />}
+      />
     </nav>
     {usage ? (
       <div className="chat-usage">

@@ -34,7 +34,7 @@ const PostingCard = ({ posting }: { posting: Posting }) => {
     <article className="jc">
       <div className="ph" style={{ background: posting.imageUrl ? undefined : brandGradient(brandColor(posting.company)) }}>
         <Link to={`/postings/${posting.id}`} className="ph-hit">
-          {posting.imageUrl ? <img src={assetUrl(posting.imageUrl)} alt="" /> : <b>{letter}</b>}
+          {posting.imageUrl ? <img src={assetUrl(posting.imageUrl)} alt="" loading="lazy" decoding="async" width={320} height={218} /> : <b>{letter}</b>}
         </Link>
         <button
           type="button"
