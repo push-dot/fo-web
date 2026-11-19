@@ -1,4 +1,4 @@
-import { absoluteUrl, createApi, createClient, type Session } from '@push/api-client'
+import { absoluteUrl, ApiError, createApi, createClient, createRefresher, type RefresherConfig, type Session } from '@push/api-client'
 import { cookieFetch, cookieSession, refreshFromCookie } from '../auth/cookie-session'
 import { readAccessToken, sessionStore } from '../auth/session'
 import { accessToken } from '../auth/token-source'
@@ -13,66 +13,54 @@ const mockFetch: typeof fetch = (input, init) => loadMock().then((mock) => mock.
 
 export const assetUrl = (url: string | null | undefined) => absoluteUrl(url, apiBaseUrl) ?? undefined
 
-let refreshInFlight: Promise<boolean> | null = null
-
 const refreshUrl = () => `${apiBaseUrl.replace(/\/+$/, '')}/auth/refresh`
 
-// A visitor with no session has nothing to clear, and clearing would also drop the sign-up return path
-// saved for a verify link opened in a new tab.
-const dropSession = () => {
-  if (sessionStore.load()) sessionStore.clear()
-}
+const isAuthFailure = (error: unknown) => error instanceof ApiError && (error.status === 401 || error.status === 403)
 
-const refreshFromCookieOnce = async () => {
-  try {
-    const session = await refreshFromCookie(refreshUrl(), (input, init) => fetch(input, init))
-    if (session) sessionStore.save(session)
-    else dropSession()
-    return session !== null
-  } catch {
-    dropSession()
-    return false
-  }
-}
-
-const refreshOnce = async () => {
-  if (cookieSession) return refreshFromCookieOnce()
-  const current = sessionStore.load()
-  if (!current?.refreshToken) {
-    sessionStore.clear()
-    return false
-  }
-  try {
-    const transport = mockTransport ? mockFetch : fetch
-    const response = await transport(refreshUrl(), {
-      method: 'POST',
-      headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
-      body: JSON.stringify({ refreshToken: current.refreshToken }),
-    })
-    if (!response.ok) {
-      sessionStore.clear()
-      return false
-    }
-    const body = (await response.json()) as { data?: Session }
-    if (!body.data?.accessToken) {
-      sessionStore.clear()
-      return false
-    }
-    sessionStore.save(body.data)
-    return true
-  } catch {
-    sessionStore.clear()
-    return false
-  }
-}
-
-const refreshSession = () => {
-  if (isWebView()) return Promise.resolve(false)
-  refreshInFlight ??= refreshOnce().finally(() => {
-    refreshInFlight = null
+const refreshWithToken = async (refreshToken: string): Promise<Session> => {
+  const transport = mockTransport ? mockFetch : fetch
+  const response = await transport(refreshUrl(), {
+    method: 'POST',
+    headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+    body: JSON.stringify({ refreshToken }),
   })
-  return refreshInFlight
+  if (!response.ok) throw new ApiError('refresh failed', 'HTTP_ERROR', response.status)
+  const body = (await response.json().catch(() => ({}))) as { data?: Session }
+  if (!body.data?.accessToken) throw new ApiError('invalid refresh response', 'INVALID_REFRESH_TOKEN', 401)
+  return body.data
 }
+
+const refreshStored = async (current: Session | null): Promise<Session> => {
+  if (cookieSession) {
+    const session = await refreshFromCookie(refreshUrl(), (input, init) => fetch(input, init))
+    if (!session) throw new ApiError('no cookie session', 'UNAUTHENTICATED', 401)
+    return session
+  }
+  if (!current?.refreshToken) throw new ApiError('no refresh token', 'UNAUTHENTICATED', 401)
+  return refreshWithToken(current.refreshToken)
+}
+
+// Tabs share one refresh token and it rotates, so a refresh runs under a lock; the second tab then finds the
+// session already renewed and skips its own call.
+const refreshLock: RefresherConfig['lock'] =
+  typeof navigator !== 'undefined' && navigator.locks
+    ? (run) => navigator.locks.request('push-refresh', run)
+    : undefined
+
+const refresh = createRefresher({
+  refresh: refreshStored,
+  load: sessionStore.load,
+  save: sessionStore.save,
+  // A visitor with no session has nothing to clear, and clearing would also drop the sign-up return path
+  // saved for a verify link opened in a new tab.
+  clear: () => {
+    if (sessionStore.load()) sessionStore.clear()
+  },
+  isAuthFailure,
+  lock: refreshLock,
+})
+
+const refreshSession = () => (isWebView() ? Promise.resolve(false) : refresh())
 
 /** A reload keeps no token in memory, so a web session kept in the cookie is asked back before the first screen. */
 export const restoreSession = async () => {

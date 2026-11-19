@@ -1,4 +1,4 @@
-import type { Session } from '@push/api-client'
+import { ApiError, type Session } from '@push/api-client'
 
 import { isMock, isWebView } from '../lib/bridge'
 
@@ -25,14 +25,15 @@ export const cookieFetch =
     return transport(request)
   }
 
-/** A session from the cookie alone: no token is sent, and a refused call (no cookie, an expired one) is null. */
+/** A session from the cookie alone: no token is sent. A refused call (no cookie, an expired one) is null; a server or network failure throws. */
 export const refreshFromCookie = async (url: string, transport: typeof fetch): Promise<Session | null> => {
   const response = await cookieFetch(transport)(url, {
     method: 'POST',
     headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
     body: '{}',
   })
-  if (!response.ok) return null
+  if (response.status === 401 || response.status === 403) return null
+  if (!response.ok) throw new ApiError('refresh failed', 'HTTP_ERROR', response.status)
   const body = (await response.json()) as { data?: Session }
   return body.data?.accessToken ? body.data : null
 }

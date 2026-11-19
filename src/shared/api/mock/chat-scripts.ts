@@ -1,6 +1,6 @@
 import type { ConversationTurn, Message, StreamEvent } from '@push/api-client'
-import { parsePostingDraft } from '../model/employer-chat'
-import { CHAT_SEEDS, DRAFT_REPLY } from './mock-fixtures'
+import { parsePostingDraft } from '../../model/employer-chat'
+import { CHAT_SEEDS, DRAFT_REPLY } from './fixtures'
 
 export type ChatScriptName =
   | 'gen'

@@ -1689,3 +1689,13 @@ button.shortcut{border:0;cursor:pointer;font:inherit}
 /* C) my page / apply board sync */
 .browser .me-page .state.box .state-tile{margin-bottom:8px}
 .browser .me-page .state.box .state-actions{margin-top:12px}
+/* agent thread: the message list scrolls itself; rows are the old .chat-col column, one per message */
+.browser .chat-list{flex:1;min-height:0;overscroll-behavior:contain}
+.browser .chat-row{width:100%;max-width:800px;margin:0 auto;padding:0 32px 22px;box-sizing:border-box;word-break:keep-all}
+.browser .chat-row-head,.browser .chat-row-foot{display:flex;flex-direction:column;gap:22px}
+.browser .chat-row-head{padding-top:32px}
+.browser .chat-row-head:empty{padding-bottom:0}
+.browser .chat-row-foot{padding-bottom:24px}
+@media (max-width:600px){.browser .chat-row{padding-left:16px;padding-right:16px}}
+.browser .chat-rooms{flex:1;min-height:0}
+.browser .chat-rooms-list{flex:1;min-height:0;overscroll-behavior:contain}

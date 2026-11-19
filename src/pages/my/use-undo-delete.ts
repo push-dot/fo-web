@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState, type Dispatch, type SetStateAction } from 'react'
 
 import { isPushDocument, restoreDocument } from '../../features/manage-documents'
 import { UNDO_MS } from './constants'
@@ -115,28 +115,34 @@ export const createUndoDelete = <T extends UndoItem>({
   return { start, undo, flush }
 }
 
+const createLatestUndoDelete = <T extends UndoItem>(
+  initial: UndoDelete<T>,
+  setHidden: Dispatch<SetStateAction<string[]>>,
+) => {
+  let latest = initial
+  const machine = createUndoDelete<T>({
+    remove: (item) => latest.remove(item),
+    onDone: () => void latest.onDone(),
+    onFail: (retry, error) => latest.onFail(retry, error),
+    onHide: (id) => setHidden((list) => (list.includes(id) ? list : [...list, id])),
+    onShow: (id) => setHidden((list) => list.filter((item) => item !== id)),
+  })
+  return {
+    machine,
+    update: (next: UndoDelete<T>) => {
+      latest = next
+    },
+  }
+}
+
 export const useUndoDelete = <T extends UndoItem>({ remove, onDone, onFail }: UndoDelete<T>) => {
   const [hidden, setHidden] = useState<string[]>([])
-  const latest = useRef({ remove, onDone, onFail })
+  const [bound] = useState(() => createLatestUndoDelete<T>({ remove, onDone, onFail }, setHidden))
   useEffect(() => {
-    latest.current = { remove, onDone, onFail }
+    bound.update({ remove, onDone, onFail })
   })
 
-  const machine = useRef<ReturnType<typeof createUndoDelete<T>> | null>(null)
-  if (!machine.current) {
-    machine.current = createUndoDelete<T>({
-      remove: (item) => latest.current.remove(item),
-      onDone: () => void latest.current.onDone(),
-      onFail: (retry, error) => latest.current.onFail(retry, error),
-      onHide: (id) => setHidden((list) => (list.includes(id) ? list : [...list, id])),
-      onShow: (id) => setHidden((list) => list.filter((item) => item !== id)),
-    })
-  }
+  useEffect(() => () => bound.machine.flush(), [bound])
 
-  useEffect(() => {
-    const current = machine.current
-    return () => current?.flush()
-  }, [])
-
-  return { hidden, start: machine.current.start, undo: machine.current.undo }
+  return { hidden, start: bound.machine.start, undo: bound.machine.undo }
 }

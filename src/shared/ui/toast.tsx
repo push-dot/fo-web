@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { isWebView } from '../lib/bridge'
 import { Icon } from './icon'
 
@@ -15,9 +15,9 @@ export const useToast = () => {
     const timer = window.setTimeout(() => setState(null), state.action ? TOAST_MS * 2 : TOAST_MS)
     return () => window.clearTimeout(timer)
   }, [state])
-  const show = useCallback((message: string | null, options?: { tone?: ToastTone; action?: ToastAction }) => {
+  const show = (message: string | null, options?: { tone?: ToastTone; action?: ToastAction }) => {
     setState(message ? { message, tone: options?.tone ?? 'ok', action: options?.action } : null)
-  }, [])
+  }
   return { message: state?.message ?? null, tone: state?.tone, action: state?.action, show }
 }
 

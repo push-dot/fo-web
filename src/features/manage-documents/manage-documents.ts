@@ -42,15 +42,23 @@ const documentResponse = async (item: SourceItem) => {
   return documentsExportFile(item.id, version, 'PDF')
 }
 
+// An uploaded file's own type must never render in the app origin (HTML/SVG would run script), so only PDF is shown inline.
+export const blobTypeFor = (serverType: string) =>
+  serverType.split(';')[0]?.trim().toLowerCase() === 'application/pdf' ? 'application/pdf' : 'application/octet-stream'
+
 export const openDocument = async (item: SourceItem, download: boolean) => {
+  // The tab opens before the fetch so the click still counts as a user gesture.
   const tab = download ? null : window.open('', '_blank')
   try {
-    const url = URL.createObjectURL(await (await documentResponse(item)).blob())
+    const source = await (await documentResponse(item)).blob()
+    const type = blobTypeFor(source.type)
+    const url = URL.createObjectURL(new Blob([source], { type }))
     window.setTimeout(() => URL.revokeObjectURL(url), REVOKE_AFTER_MS)
-    if (tab) {
+    if (tab && type === 'application/pdf') {
       tab.location.href = url
       return
     }
+    tab?.close()
     const anchor = document.createElement('a')
     anchor.href = url
     anchor.download = isPushDocument(item) ? `${item.fileName}.pdf` : item.fileName

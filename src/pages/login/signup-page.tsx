@@ -2,6 +2,7 @@ import { ApiError, type Session } from '@push/api-client'
 import { useState, type FormEvent } from 'react'
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
+import { withCleanup } from '../../shared/lib/with-cleanup'
 import { pathAfterAuth, takeReturnTo } from '../../shared/auth/return-path'
 import { sessionStore } from '../../shared/auth/session'
 import { EMAIL_TAKEN_EMPLOYER_COPY, EMAIL_TAKEN_PERSONAL_COPY } from '../../shared/model/constants'
@@ -86,19 +87,19 @@ const EmployerSignup = ({
     if (!input) return
     setError(null)
     setPending(true)
-    try {
-      await authEmailSignup(input)
-      setDone(true)
-    } catch (caught) {
-      if (caught instanceof ApiError && caught.code === 'EMAIL_TAKEN') {
-        setTaken(true)
-        setError(emailTakenCopy(caught.details?.accountType))
-        return
+    await withCleanup(async () => {
+      try {
+        await authEmailSignup(input)
+        setDone(true)
+      } catch (caught) {
+        if (caught instanceof ApiError && caught.code === 'EMAIL_TAKEN') {
+          setTaken(true)
+          setError(emailTakenCopy(caught.details?.accountType))
+          return
+        }
+        setError(LOGIN_FAILED_COPY)
       }
-      setError(LOGIN_FAILED_COPY)
-    } finally {
-      setPending(false)
-    }
+    }, () => setPending(false))
   }
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {

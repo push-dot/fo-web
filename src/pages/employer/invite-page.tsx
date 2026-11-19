@@ -1,11 +1,13 @@
 import { ApiError, type InvitePreview } from '@push/api-client'
 import { brandColor } from '@push/shared'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState, type ReactNode } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 
 import { authMe, useAuthMe } from '../../entities/session'
 import { companiesAcceptInvite, companiesInvitePreview } from '../../features/accept-invite'
+import { signOut } from '../../features/sign-out'
+import { withCleanup } from '../../shared/lib/with-cleanup'
 import { saveReturnTo, saveSignupReturnTo } from '../../shared/auth/return-path'
 import { sessionStore } from '../../shared/auth/session'
 import { useSession } from '../../shared/auth/use-session'
@@ -97,6 +99,7 @@ const CompanyHead = ({ invite, title, children, done }: { invite: InvitePreview;
 const InvitePage = () => {
   const { token = '' } = useParams()
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const session = useSession()
   const personal = session?.user.accountType === 'PERSONAL'
   const preview = useQuery({ queryKey: ['invite', token], queryFn: () => companiesInvitePreview(token), retry: false })
@@ -229,8 +232,8 @@ const InvitePage = () => {
           <button
             type="button"
             className="auth-btn pri"
-            onClick={() => {
-              sessionStore.clear()
+            onClick={async () => {
+              await signOut(queryClient)
               saveReturnTo(`/invites/${token}`)
               navigate('/login?accountType=EMPLOYER')
             }}
@@ -250,17 +253,17 @@ const InvitePage = () => {
   const accept = async () => {
     setAcceptError(null)
     setAccepting(true)
-    try {
-      await companiesAcceptInvite(token)
-      const account = await authMe()
-      const current = sessionStore.load()
-      if (current) sessionStore.save({ ...current, user: { ...current.user, companyId: account.companyId, companyRole: account.companyRole } })
-      setJoined(true)
-    } catch (caught) {
-      setAcceptError(caught)
-    } finally {
-      setAccepting(false)
-    }
+    await withCleanup(async () => {
+      try {
+        await companiesAcceptInvite(token)
+        const account = await authMe()
+        const current = sessionStore.load()
+        if (current) sessionStore.save({ ...current, user: { ...current.user, companyId: account.companyId, companyRole: account.companyRole } })
+        setJoined(true)
+      } catch (caught) {
+        setAcceptError(caught)
+      }
+    }, () => setAccepting(false))
   }
   const viaGoogle = () => {
     if (session) return void accept()

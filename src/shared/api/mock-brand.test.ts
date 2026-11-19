@@ -27,7 +27,7 @@ describe('mock brand colours', () => {
   it('names the fixtures only in the mock layer', () => {
     const src = fileURLToPath(new URL('../..', import.meta.url))
     const leaks = sourceFiles(src)
-      .filter((file) => !/shared\/api\/mock[^/]*\.ts$|\.test\.tsx?$/.test(file))
+      .filter((file) => !/shared\/api\/mock([^/]*\.ts$|\/)|\.test\.tsx?$/.test(file))
       .filter((file) => Object.keys(MOCK_BRAND_COLORS).some((name) => readFileSync(file, 'utf8').includes(name)))
     expect(leaks).toEqual([])
   })

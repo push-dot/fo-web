@@ -1,11 +1,11 @@
-import { useCallback, useState } from 'react'
+import { useState } from 'react'
 import { Icon } from '../../shared/ui/icon'
 import { Menu, Popover, type MenuItem } from '../../shared/ui/popover'
 import { MORE_LABEL } from './constants'
 
 const RowMore = ({ label, items }: { label: string; items: MenuItem[] }) => {
   const [open, setOpen] = useState(false)
-  const close = useCallback(() => setOpen(false), [])
+  const close = () => setOpen(false)
   return (
     <span className="row-more">
       <button

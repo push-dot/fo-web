@@ -1,6 +1,16 @@
 import type { ConversationTurn, Message } from '@push/api-client'
 import { storedTurn, type ChatTurn } from './chat-turn'
 
+// Same job, same turn object: rows memoised on it do not redraw when the thread is rebuilt.
+const storedCache = new WeakMap<ConversationTurn, ReturnType<typeof storedTurn>>()
+const storedOnce = (turn: ConversationTurn) => {
+  const known = storedCache.get(turn)
+  if (known) return known
+  const made = storedTurn(turn)
+  storedCache.set(turn, made)
+  return made
+}
+
 export type Attachment = Message['attachments'][number]
 
 /** `text` is empty when the live turn only follows an answer to a card already on screen. */
@@ -35,7 +45,7 @@ export const threadItems = (
   const shown = new Set<string>()
   const replay = (turn: ConversationTurn): ThreadItem => {
     shown.add(turn.jobId)
-    return { kind: 'turn', key: turn.jobId, live: false, ...storedTurn(turn) }
+    return { kind: 'turn', key: turn.jobId, live: false, ...storedOnce(turn) }
   }
   const items = rows.flatMap((message): ThreadItem[] => {
     if (message.role === 'USER') {
@@ -73,4 +83,21 @@ export const threadItems = (
       ? [{ kind: 'turn' as const, key: 'live-turn', turn: live.turn, picked: {}, live: true }]
       : []),
   ]
+}
+
+/**
+ * The application attached most recently before each item, in one pass (a card offers actions for that applicant),
+ * and the last one overall. Replaces slicing the thread per item.
+ */
+export const applicationTrail = (
+  items: ThreadItem[],
+): { before: (string | undefined)[]; last: string | undefined } => {
+  let last: string | undefined
+  const before = items.map((item) => {
+    const seen = last
+    if (item.kind === 'user')
+      for (const attachment of item.attachments) if (attachment.type === 'APPLICATION') last = attachment.id
+    return seen
+  })
+  return { before, last }
 }

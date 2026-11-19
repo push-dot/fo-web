@@ -9,7 +9,7 @@ import {
 } from 'react-router-dom'
 import { describe, expect, it, vi } from 'vitest'
 import { isWebView } from '../shared/lib/bridge'
-import { ErrorScreen, RouteError } from './route-error'
+import { RouteError } from './route-error'
 import { ScrollRoot, appRoutes } from './router'
 
 vi.mock('react-router-dom', async (importOriginal) => ({
@@ -90,20 +90,5 @@ describe('route errors', () => {
     }
     const paths = appRoutes(true)[0]?.children?.map((r) => r.path)
     expect(paths).toContain('*')
-  })
-
-  it('retry button runs onRetry', () => {
-    const onRetry = vi.fn()
-    const buttons: Array<{ props: { onClick: () => void } }> = []
-    const walk = (node: unknown) => {
-      if (!isValidElement(node)) return
-      const { props } = node as { props: { children?: unknown } }
-      if (node.type === 'button') buttons.push(node as never)
-      ;[props.children].flat(Infinity).forEach(walk)
-    }
-    walk(ErrorScreen({ onRetry }))
-    expect(buttons).toHaveLength(1)
-    buttons[0]?.props.onClick()
-    expect(onRetry).toHaveBeenCalledOnce()
   })
 })

@@ -28,7 +28,7 @@ const PostCard = ({ post }: { post: Post }) => {
       {post.imageUrls.length > 0 ? (
         <span className="post-thumbs">
           {post.imageUrls.slice(0, POST_THUMBS).map((url) => (
-            <img key={url} src={assetUrl(url)} alt="" />
+            <img key={url} src={assetUrl(url)} alt="" loading="lazy" decoding="async" />
           ))}
         </span>
       ) : null}

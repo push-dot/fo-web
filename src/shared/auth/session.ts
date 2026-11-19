@@ -59,6 +59,12 @@ export const createSessionStore = (storage: StorageLike) => {
       return null
     }
   }
+  // Another tab signing in, refreshing or out writes the shared localStorage; this tab's subscribers follow.
+  if (typeof window !== 'undefined') {
+    window.addEventListener('storage', (event) => {
+      if (event.key === SESSION_STORAGE_KEY || event.key === null) emit()
+    })
+  }
   return {
     load,
     save: (session: Session) => {

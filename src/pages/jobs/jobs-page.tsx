@@ -1,17 +1,21 @@
 import { CAREER_YEARS, chipLabel, EMPLOYMENT_TYPES, JOB_CATEGORIES, withDeadlineWindow, type CareerYears, type EmploymentType, type JobCategory } from '@push/api-client'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { LegendList } from '@legendapp/list/react'
+import { useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 
 import FilterPopover from './filter-popover'
 import PostingCard from './posting-card'
 import { Icon } from '../../shared/ui/icon'
+import { useMedia } from '../../shared/lib/use-media'
 import { Popover } from '../../shared/ui/popover'
 import Skeleton from '../../shared/ui/skeleton'
 import StateBlock, { ErrorState } from '../../shared/ui/state-block'
-import { onFirstScroll } from './first-scroll'
-import { EMPTY_FILTERS, FILTER_CHIPS, FILTER_RESET, FILTERED_EMPTY, FILTERED_EMPTY_HINT, JOB_PAGE_SIZE, JOBS_ERROR, JOB_SORTS, LOAD_MORE_MARGIN, LOADING_MORE, SORT_LABEL, sortFrom, type FilterKey, type JobFilters, type JobSort } from './constants'
+import { EMPTY_FILTERS, FILTER_CHIPS, FILTER_RESET, FILTERED_EMPTY, FILTERED_EMPTY_HINT, JOB_PAGE_SIZE, JOBS_ERROR, JOB_SORTS, LOADING_MORE, SORT_LABEL, sortFrom, type FilterKey, type JobFilters, type JobSort } from './constants'
 import { usePostingCount, usePostingLocations, usePostingPages } from '../../entities/posting'
 
+
+const WIDE = '(min-width: 1025px)'
+const JOB_CARD_HEIGHT = 280
 
 const readList = (params: URLSearchParams, key: string) =>
   (params.get(key) ?? '')
@@ -30,20 +34,16 @@ const labelsFor = (facet: FilterKey, filters: JobFilters) => {
 const JobsPage = () => {
   const [params, setParams] = useSearchParams()
   const sort = sortFrom(params.get('sort'))
-  const filters = useMemo<JobFilters>(
-    () => ({
-      category: readList(params, 'category') as JobCategory[],
-      skills: readList(params, 'skills'),
-      careerYears: readList(params, 'careerYears') as CareerYears[],
-      location: readList(params, 'location'),
-      employmentType: readList(params, 'employmentType') as EmploymentType[],
-    }),
-    [params],
-  )
+  const filters: JobFilters = {
+    category: readList(params, 'category') as JobCategory[],
+    skills: readList(params, 'skills'),
+    careerYears: readList(params, 'careerYears') as CareerYears[],
+    location: readList(params, 'location'),
+    employmentType: readList(params, 'employmentType') as EmploymentType[],
+  }
   const [facet, setFacet] = useState<FilterKey | null>(null)
   const [sortOpen, setSortOpen] = useState(false)
-  const [scrolled, setScrolled] = useState(false)
-  const loader = useRef<HTMLDivElement>(null)
+  const columns = useMedia(WIDE) ? 4 : 2
   const [draft, setDraft] = useState<JobFilters>(filters)
   const listQuery = usePostingPages(['postings', params.toString()], withDeadlineWindow({ ...filters, sort, limit: JOB_PAGE_SIZE }))
   const countQuery = usePostingCount(['posting-count', sort, draft], withDeadlineWindow({ ...draft, sort, limit: 1 }), facet !== null)
@@ -92,33 +92,6 @@ const JobsPage = () => {
     setParams(query, { preventScrollReset: true })
     setSortOpen(false)
   }
-  useEffect(() => onFirstScroll(window, () => setScrolled(true)), [])
-  useEffect(() => {
-    if (items.length === 0) return
-    let live = true
-    void document.fonts.ready.then(() => {
-      if (live && document.documentElement.scrollHeight <= window.innerHeight) setScrolled(true)
-    })
-    return () => {
-      live = false
-    }
-  }, [items.length])
-  useEffect(() => {
-    const node = loader.current
-    if (!node || !hasNextPage || !scrolled) return
-    if (typeof IntersectionObserver === 'undefined') {
-      const onScroll = () => {
-        if (!isFetchingNextPage && node.getBoundingClientRect().top < window.innerHeight + LOAD_MORE_MARGIN) void fetchNextPage()
-      }
-      window.addEventListener('scroll', onScroll, { passive: true })
-      return () => window.removeEventListener('scroll', onScroll)
-    }
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry?.isIntersecting && !isFetchingNextPage) void fetchNextPage()
-    })
-    observer.observe(node)
-    return () => observer.disconnect()
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage, items.length, scrolled])
   return (
     <main className="page jobs-page">
       <header className="head">
@@ -201,16 +174,29 @@ const JobsPage = () => {
         />
       ) : null}
       <div className="job-grid">
-        {items.map((posting) => (
-          <PostingCard key={posting.id} posting={posting} />
-        ))}
+        <LegendList
+          useWindowScroll
+          recycleItems
+          data={items}
+          numColumns={columns}
+          columnWrapperStyle={{ columnGap: 20, rowGap: 32 }}
+          estimatedItemSize={JOB_CARD_HEIGHT}
+          keyExtractor={(posting) => posting.id}
+          renderItem={({ item }) => <PostingCard posting={item} />}
+          onEndReachedThreshold={1.5}
+          onEndReached={() => {
+            if (hasNextPage && !isFetchingNextPage) void fetchNextPage()
+          }}
+          ListFooterComponent={
+            hasNextPage ? (
+              <div className="jobs-loader c1 t3">
+                <span className="jobs-spin" />
+                {LOADING_MORE}
+              </div>
+            ) : null
+          }
+        />
       </div>
-      {hasNextPage ? (
-        <div ref={loader} className="jobs-loader c1 t3">
-          <span className="jobs-spin" />
-          {LOADING_MORE}
-        </div>
-      ) : null}
     </main>
   )
 }

@@ -1,7 +1,9 @@
 import { CAREER_STATUSES, HUB_CATEGORIES, TENURES, type JobCategory } from '@push/api-client'
+import { LegendList } from '@legendapp/list/react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
+import { NARROW, useMedia } from '../../shared/lib/use-media'
 import { Icon } from '../../shared/ui/icon'
 import Skeleton from '../../shared/ui/skeleton'
 import StateBlock, { ErrorState } from '../../shared/ui/state-block'
@@ -11,7 +13,10 @@ import ProfileCard from './profile-card'
 import { useProfilePages } from '../../entities/profile'
 
 
+const HUB_CARD_HEIGHT = 120
+
 const HubPage = () => {
+  const columns = useMedia(NARROW) ? 1 : 3
   const [categories, setCategories] = useState<JobCategory[]>([])
   const [applied, setApplied] = useState<HubDraft>({})
   const [draft, setDraft] = useState<HubDraft>({})
@@ -80,9 +85,20 @@ const HubPage = () => {
           {summary ? <span className="b2 t3">{summary}</span> : null}
         </div>
         <div className="hub-grid">
-          {items.map((profile) => (
-            <ProfileCard key={profile.userId} profile={profile} />
-          ))}
+          <LegendList
+            useWindowScroll
+            recycleItems
+            data={items}
+            numColumns={columns}
+            columnWrapperStyle={{ gap: 16 }}
+            estimatedItemSize={HUB_CARD_HEIGHT}
+            keyExtractor={(profile) => profile.userId}
+            renderItem={({ item }) => <ProfileCard profile={item} />}
+            onEndReachedThreshold={1.5}
+            onEndReached={() => {
+              if (listQuery.hasNextPage && !listQuery.isFetchingNextPage) void listQuery.fetchNextPage()
+            }}
+          />
         </div>
         {listQuery.isError && items.length === 0 ? <ErrorState title={HUB_ERROR} onRetry={() => void listQuery.refetch()} /> : null}
         {listQuery.isLoading ? <Skeleton rows={5} /> : null}
@@ -99,11 +115,6 @@ const HubPage = () => {
           />
         ) : null}
       </section>
-      {listQuery.hasNextPage ? (
-        <button type="button" className="more" disabled={listQuery.isFetchingNextPage} onClick={() => void listQuery.fetchNextPage()}>
-          더 보기
-        </button>
-      ) : null}
     </main>
   )
 }
