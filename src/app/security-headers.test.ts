@@ -40,10 +40,11 @@ describe('security headers on every page', () => {
     for (const hash of inlineScriptHashes()) expect(scripts).toContain(hash)
   })
 
-  it('lets the Toss Payments SDK load and talk to Toss, and no other third-party script', () => {
+  it('lets the Toss Payments SDK and its payment window load from Toss hosts only', () => {
     const scripts = csp.get('script-src') ?? []
-    expect(scripts).toContain('https://js.tosspayments.com')
-    expect(scripts.filter((source) => source.startsWith('https://'))).toEqual(['https://js.tosspayments.com'])
+    // The SDK loads its payment window chunks from Toss hosts into this page (CHUNK_LOAD_FAILED otherwise).
+    expect(scripts.filter((source) => source.startsWith('https://'))).toEqual(['https://*.tosspayments.com', 'https://*.toss.im'])
+    expect(csp.get('style-src')).toEqual(expect.arrayContaining(['https://*.tosspayments.com', 'https://*.toss.im']))
     expect(csp.get('frame-src')).toEqual(['https://*.tosspayments.com', 'https://*.toss.im'])
     expect(csp.get('connect-src')).toEqual(expect.arrayContaining(['https://*.tosspayments.com', 'https://*.toss.im']))
     expect(csp.get('form-action')).toEqual(["'self'", 'https://*.tosspayments.com', 'https://*.toss.im'])
