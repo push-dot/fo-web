@@ -34,8 +34,8 @@ afterEach(() => {
 })
 
 describe('ms= switches', () => {
-  it('knows the 52 switches of mock-needs-v2 plus payments-disabled and ignores unknown names', () => {
-    expect(MOCK_SWITCHES).toHaveLength(53)
+  it('knows the 52 switches of mock-needs-v2 plus payments-disabled, chat-multiple and chat-sections, and ignores unknown names', () => {
+    expect(MOCK_SWITCHES).toHaveLength(55)
     using('personal', 'nope,docs-empty')
   })
 
@@ -239,15 +239,22 @@ describe('ms= switches', () => {
     for await (const event of readEvents<{ type: string; awaiting?: string }>(response.body!)) {
       types.push('awaiting' in event && event.awaiting ? `${event.type}:${event.awaiting}` : event.type)
     }
-    expect(types).toEqual(['tool', 'tool', 'token', 'approval', 'done:approval'])
+    expect(types).toEqual(['tool', 'tool', 'token', 'a2ui', 'done:approval'])
     const list = await read<{ data: { id: string; title: string }[] }>('/conversations?audience=EMPLOYER')
     expect(list.body.data[0]).toMatchObject({ id, title: '서류 통과 지원자 면접 단계로' })
-    await call(`/conversations/${id}/approvals/ap-stage`, 'POST', { optionId: 'approve' })
+    const turns = await read<{ data: { events: { type: string; surfaceId?: string }[] }[] }>(`/conversations/${id}/turns`)
+    const surfaceId = turns.body.data[0]!.events.find((event) => event.type === 'a2ui')!.surfaceId!
+    expect((await call(`/conversations/${id}/approvals/${surfaceId}`, 'POST', { optionId: 'approve' })).status).toBe(200)
     const follow = await call(`/conversations/${id}/messages/stream/active`)
     const after: string[] = []
     for await (const event of readEvents<{ type: string }>(follow.body!)) after.push(event.type)
     expect(after.at(-1)).toBe('done')
     expect((await call(`/conversations/${id}/messages/stream/active`)).status).toBe(204)
+    // push-be bakes the answer into the replayed surface, and a second answer is refused.
+    const replayed = await read<{ data: { events: { type: string; messages?: { updateDataModel?: { value: unknown } }[] }[] }[] }>(`/conversations/${id}/turns`)
+    const frame = replayed.body.data.flatMap((turn) => turn.events).find((event) => event.type === 'a2ui')
+    expect(frame?.messages?.[2]?.updateDataModel?.value).toMatchObject({ open: false, picked: ['approve'] })
+    expect((await call(`/conversations/${id}/approvals/${surfaceId}`, 'POST', { optionId: 'approve' })).status).toBe(409)
     setMockPersona(null)
   })
 
@@ -264,7 +271,7 @@ describe('ms= switches', () => {
     const turns = await read<{ data: { userMessageId: string | null; assistantMessageId: string | null; events: { type: string }[] }[] }>(`/conversations/${id}/turns`)
     expect(turns.body.data).toHaveLength(1)
     expect(turns.body.data[0]!.userMessageId).not.toBeNull()
-    expect(turns.body.data[0]!.events.map((event) => event.type)).toEqual(['tool', 'tool', 'token', 'approval'])
+    expect(turns.body.data[0]!.events.map((event) => event.type)).toEqual(['tool', 'tool', 'token', 'a2ui'])
     setMockPersona(null)
   })
 
