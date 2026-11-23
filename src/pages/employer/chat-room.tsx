@@ -108,7 +108,7 @@ const ChatRoom = ({ id, screen }: { id?: string; screen: 'list' | 'new' | 'threa
   const items = threadItems(storedMessages, storedTurns, live)
   const trail = applicationTrail(items)
   const lastItem = items.at(-1)
-  // Only the last turn's newest approval or choice surface can be answered; every other surface is inert.
+  // Only the last turn's newest approval or choice surface can be answered; every other surface cannot answer.
   const waiting =
     lastItem?.kind === 'turn'
       ? lastItem.live
@@ -128,10 +128,8 @@ const ChatRoom = ({ id, screen }: { id?: string; screen: 'list' | 'new' | 'threa
     current.current = { sending, intent, applicationId, last: trail.last, toast }
   })
   const { send, answer, stop } = session
-  // What the member types while a surface waits is the answer: the surface closes with no pick.
-  const closeWaiting = () => {
-    if (waiting && awaiting) surfaces.patch(waiting, { open: false, picked: [] })
-  }
+  // What the member types while a surface waits is the answer: the session closes it with no pick once the send is taken.
+  const closes = waiting && awaiting ? waiting : undefined
   useEffect(() => {
     route.current = (action) =>
       routeSurfaceAction(action, {
@@ -155,12 +153,12 @@ const ChatRoom = ({ id, screen }: { id?: string; screen: 'list' | 'new' | 'threa
       const now = current.current
       if (now.sending) return
       if (nextIntent) setIntent(nextIntent)
-      closeWaiting()
       send({
         text: value,
         intent: nextIntent ?? now.intent,
         applicationId: now.applicationId || now.last || '',
         file: null,
+        closes,
       })
     },
     focus: () => document.getElementById('chat-input')?.focus(),
@@ -173,8 +171,7 @@ const ChatRoom = ({ id, screen }: { id?: string; screen: 'list' | 'new' | 'threa
     const value = text.trim()
     if (!value || sending) return
     setText('')
-    closeWaiting()
-    send({ text: value, intent, applicationId, file } satisfies Outgoing)
+    send({ text: value, intent, applicationId, file, closes } satisfies Outgoing)
   }
 
   const composer = (

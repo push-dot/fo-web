@@ -31,7 +31,14 @@ import {
 import { conversationsAttach, conversationsCreateEmployer, chatTurnDeps } from './employer-chat'
 import { createLiveTurnStore } from './live-turn-store'
 
-export type Outgoing = { text: string; intent: ChatIntent; applicationId: string; file: File | null }
+export type Outgoing = {
+  text: string
+  intent: ChatIntent
+  applicationId: string
+  file: File | null
+  /** The waiting surface this message answers: closed with no pick once the server takes the message, not before. */
+  closes?: string
+}
 
 /** `held`: stopped while the conversation was being made, so the thread opens with the question unsent. */
 type Handoff = Outgoing & { held?: boolean }
@@ -245,7 +252,10 @@ export const useChatSession = ({ id, people, accessMode, messages, running, comp
           payload,
           (event) => {
             // The job names the conversation when it starts; the list should not wait for the end of a long run.
-            if (first) void queryClient.invalidateQueries({ queryKey: ['employer-conversations'] })
+            if (first) {
+              void queryClient.invalidateQueries({ queryKey: ['employer-conversations'] })
+              if (out.closes) surfaces.patch(out.closes, { open: false, picked: [] })
+            }
             first = false
             track.onEvent(event)
           },
