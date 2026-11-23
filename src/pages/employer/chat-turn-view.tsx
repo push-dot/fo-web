@@ -5,13 +5,11 @@ import {
   type ThreadItem,
   type TurnBlock,
 } from '../../features/employer-chat'
+import { SurfaceView } from '../../shared/a2ui'
 import { Icon } from '../../shared/ui/icon'
-import { ChatActionsContext, useChatActions } from './chat-actions'
+import { useChatActions } from './chat-actions'
 import ChatAnswer from './chat-answer'
-import ChatApprovalCard from './chat-approval-card'
-import ChatChoiceCard from './chat-choice-card'
 import ChatDraftCard from './chat-draft-card'
-import ChatPlanCard from './chat-plan-card'
 import ChatQueueCard from './chat-queue-card'
 import ChatToolRow from './chat-tool-row'
 import {
@@ -26,6 +24,23 @@ import {
 } from './chat-copy'
 
 type TurnItem = Extract<ThreadItem, { kind: 'turn' }>
+type SurfaceBlock = Extract<TurnBlock, { kind: 'surface' }>
+
+const isPlan = (block: TurnBlock | undefined) => block?.kind === 'surface' && block.card === 'plan'
+
+/** A Bot card. Only the newest waiting surface can answer, and none while a run or an answer is in flight; the rest stay usable. */
+const ChatSurface = ({ block }: { block: SurfaceBlock }) => {
+  const { surfaces, waiting, busy } = useChatActions()
+  if (!surfaces) return null
+  return (
+    <SurfaceView
+      host={surfaces}
+      surfaceId={block.surfaceId}
+      messages={block.messages}
+      answerable={!busy && block.surfaceId === waiting}
+    />
+  )
+}
 
 const draftOf = (block: TurnBlock | undefined) =>
   block?.kind === 'tool' && block.draft ? (
@@ -46,7 +61,7 @@ const Block = ({ block, previous, next, live }: BlockProps) => {
         <ChatAnswer
           text={block.text}
           live={live}
-          after={previous?.kind === 'plan' ? 'plan' : 'start'}
+          after={isPlan(previous) ? 'plan' : 'start'}
           insert={draftOf(previous)}
         />
       )
@@ -58,12 +73,8 @@ const Block = ({ block, previous, next, live }: BlockProps) => {
           {next?.kind === 'text' ? null : draftOf(block)}
         </>
       )
-    case 'approval':
-      return <ChatApprovalCard approval={block} />
-    case 'choice':
-      return <ChatChoiceCard choice={block} />
-    case 'plan':
-      return <ChatPlanCard plan={block} />
+    case 'surface':
+      return <ChatSurface block={block} />
   }
 }
 
@@ -82,16 +93,10 @@ const ChatTurnView = ({ item, applicationId }: { item: TurnItem; applicationId?:
       .then(actions.copied, () => undefined)
   }
   return (
-    <ChatActionsContext.Provider
-      value={{ ...actions, picked: { ...item.picked, ...actions.picked } }}
-    >
+    <>
       {blocks.map((block, index) => (
         <Block
-          key={
-            block.kind === 'approval' || block.kind === 'choice' || block.kind === 'plan'
-              ? block.id
-              : block.key
-          }
+          key={block.key}
           block={block}
           previous={blocks[index - 1]}
           next={blocks[index + 1]}
@@ -117,7 +122,7 @@ const ChatTurnView = ({ item, applicationId }: { item: TurnItem; applicationId?:
           {WRITING}
         </span>
       ) : null}
-      {!running && blocks.some((block) => block.kind === 'plan') ? (
+      {!running && blocks.some(isPlan) ? (
         <div className="chat-follow">
           <button
             type="button"
@@ -150,7 +155,7 @@ const ChatTurnView = ({ item, applicationId }: { item: TurnItem; applicationId?:
           </button>
         </div>
       ) : null}
-    </ChatActionsContext.Provider>
+    </>
   )
 }
 

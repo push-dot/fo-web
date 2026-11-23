@@ -1,4 +1,8 @@
-import { ApiError, type StreamEvent } from '@push/api-client'
+import { ApiError, type A2uiFrame, type StreamEvent } from '@push/api-client'
+import approvalTool from '@push/api-client/a2ui-fixtures/v1.0/approval-tool.json'
+import approvalToolAnswered from '@push/api-client/a2ui-fixtures/v1.0/approval-tool-answered.json'
+import choiceSingle from '@push/api-client/a2ui-fixtures/v1.0/choice-single.json'
+import planFeedback from '@push/api-client/a2ui-fixtures/v1.0/plan-feedback.json'
 import { describe, expect, it, vi } from 'vitest'
 import { chatGateFrom } from './chat-gate'
 import {
@@ -10,8 +14,11 @@ import {
   runTurn,
   storedTurn,
   turnText,
+  waitingSurface,
   type TurnDeps,
 } from './chat-turn'
+
+const surfaceFrame = (fixture: unknown) => fixture as A2uiFrame
 
 const frames = async function* (...events: StreamEvent[]) {
   yield* events
@@ -268,8 +275,10 @@ describe('answerApproval', () => {
         .mockImplementation(() => frames()),
     })
     const { events, onEvent } = collect()
-    await answerApproval(deps, 'c1', 'a1', 'approve', onEvent)
-    expect(deps.resolve).toHaveBeenCalledWith('c1', 'a1', 'approve')
+    const surfaces = { patch: vi.fn() }
+    await answerApproval(deps, 'c1', 'a1', { optionId: 'approve' }, onEvent, undefined, undefined, surfaces)
+    expect(deps.resolve).toHaveBeenCalledWith('c1', 'a1', 'approve', undefined)
+    expect(surfaces.patch.mock.calls).toEqual([['a1', { open: false, picked: ['approve'] }]])
     expect(deps.follow).toHaveBeenCalledWith('c1', undefined, undefined)
     expect(events).toHaveLength(1)
   })
@@ -277,14 +286,34 @@ describe('answerApproval', () => {
   it('passes the abort signal to the resumed job', async () => {
     const controller = new AbortController()
     const deps = depsOf({ resolve: vi.fn(async () => ({ jobId: 'j2' })) })
-    await answerApproval(deps, 'c1', 'a1', 'approve', () => undefined, controller.signal)
+    await answerApproval(deps, 'c1', 'a1', { optionId: 'approve' }, () => undefined, controller.signal)
     expect(deps.follow).toHaveBeenCalledWith('c1', undefined, controller.signal)
   })
 
   it('stops after resolving when no job was queued', async () => {
     const deps = depsOf()
-    await answerApproval(deps, 'c1', 'a1', 'reject', () => undefined)
+    await answerApproval(deps, 'c1', 'a1', { optionId: 'reject' }, () => undefined)
     expect(deps.follow).not.toHaveBeenCalled()
+  })
+
+  it('sends every picked id of a multiple answer and closes the surface on all of them', async () => {
+    const deps = depsOf()
+    const surfaces = { patch: vi.fn() }
+    await answerApproval(deps, 'c1', 's1', { optionId: 'submit', optionIds: ['submit', 'resume'] }, () => undefined, undefined, undefined, surfaces)
+    expect(deps.resolve).toHaveBeenCalledWith('c1', 's1', 'submit', ['submit', 'resume'])
+    expect(surfaces.patch).toHaveBeenCalledWith('s1', { open: false, picked: ['submit', 'resume'] })
+  })
+
+  it('leaves the surface open when the server refuses the answer', async () => {
+    const surfaces = { patch: vi.fn() }
+    const deps = depsOf({
+      resolve: vi.fn(async () => {
+        throw new ApiError('already', 'APPROVAL_ALREADY_RESOLVED', 409)
+      }),
+    })
+    await expect(answerApproval(deps, 'c1', 'a1', { optionId: 'approve' }, () => undefined, undefined, undefined, surfaces)).rejects.toThrow()
+    expect(deps.resolve).toHaveBeenCalledOnce()
+    expect(surfaces.patch).not.toHaveBeenCalled()
   })
 })
 
@@ -310,23 +339,7 @@ describe('applyTurnEvent', () => {
         result: { draft },
       },
       { type: 'token', text: '저장했어요' },
-      {
-        type: 'approval',
-        id: 'a1',
-        kind: 'TOOL_ACTION',
-        title: '3명을 면접 단계로 옮길까요?',
-        foot: '알림이 가요.',
-        args: {
-          rows: [
-            { name: '김태윤', initial: '태윤', from: '서류 통과', to: '면접' },
-            { name: '이름 없음' },
-          ],
-        },
-        options: [
-          { id: 'reject', label: '취소' },
-          { id: 'approve', label: '옮기기' },
-        ],
-      },
+      surfaceFrame(approvalTool),
       { type: 'done', operation: null, awaiting: 'approval' },
     ]
     const turn = events.reduce(applyTurnEvent, EMPTY_TURN)
@@ -353,15 +366,11 @@ describe('applyTurnEvent', () => {
       },
       { kind: 'text', key: 'text-2', text: '저장했어요' },
       {
-        kind: 'approval',
-        id: 'a1',
-        title: '3명을 면접 단계로 옮길까요?',
-        foot: '알림이 가요.',
-        rows: [{ name: '김태윤', initial: '태윤', from: '서류 통과', to: '면접' }],
-        options: [
-          { id: 'reject', label: '취소' },
-          { id: 'approve', label: '옮기기' },
-        ],
+        kind: 'surface',
+        key: approvalTool.surfaceId,
+        surfaceId: approvalTool.surfaceId,
+        card: 'approval',
+        messages: approvalTool.messages,
       },
     ])
   })
@@ -384,46 +393,24 @@ describe('applyTurnEvent', () => {
     ])
   })
 
-  it('ignores a repeated approval or choice frame', () => {
-    const approval: StreamEvent = {
-      type: 'approval',
-      id: 'a1',
-      kind: 'TOOL_ACTION',
-      title: 't',
-      options: [{ id: 'approve', label: '실행' }],
-    }
-    const choice: StreamEvent = {
-      type: 'choice',
-      id: 'need',
-      title: '누구예요?',
-      recommended: '1',
-      options: [{ id: '1', label: '결제' }],
-    }
-    const turn = [approval, approval, choice, choice].reduce(applyTurnEvent, EMPTY_TURN)
-    expect(turn.blocks.map((block) => block.kind)).toEqual(['approval', 'choice'])
+  it('upserts a surface by surfaceId: a later frame replaces it in place', () => {
+    const turn = [
+      surfaceFrame(approvalTool),
+      surfaceFrame(planFeedback),
+      surfaceFrame(approvalToolAnswered),
+    ].reduce(applyTurnEvent, EMPTY_TURN)
+    expect(turn.blocks.map((block) => (block.kind === 'surface' ? block.card : block.kind))).toEqual(['approval', 'plan'])
+    const [first] = turn.blocks
+    expect(first?.kind === 'surface' ? first.messages : null).toBe(approvalToolAnswered.messages)
   })
 
-  it('reads approval rows from the event, and keeps args.rows for an older event', () => {
-    const base = {
-      type: 'approval' as const,
-      id: 'a1',
-      kind: 'TOOL_ACTION' as const,
-      title: '단계를 바꿔요',
-      options: [{ id: 'approve', label: '옮기기' }],
-    }
-    const fromEvent = applyTurnEvent(EMPTY_TURN, {
-      ...base,
-      rows: [{ name: '김태윤', initial: '태윤', from: '서류 통과', to: '면접' }],
-      args: { rows: [{ name: '옛 이름', from: '지원함', to: '불합격' }] },
-    })
-    const eventCard = fromEvent.blocks[0]
-    expect(eventCard?.kind === 'approval' ? eventCard.rows : []).toEqual([{ name: '김태윤', initial: '태윤', from: '서류 통과', to: '면접' }])
-    const fromArgs = applyTurnEvent(EMPTY_TURN, {
-      ...base,
-      args: { rows: [{ name: '이서연', from: '서류 통과', to: '면접' }] },
-    })
-    const argsCard = fromArgs.blocks[0]
-    expect(argsCard?.kind === 'approval' ? argsCard.rows : []).toEqual([{ name: '이서연', initial: '이서연', from: '서류 통과', to: '면접' }])
+  it('waits on the newest approval or choice surface, not a plan', () => {
+    const turn = [surfaceFrame(approvalTool), surfaceFrame(choiceSingle), surfaceFrame(planFeedback)].reduce(
+      applyTurnEvent,
+      EMPTY_TURN,
+    )
+    expect(waitingSurface(turn)?.surfaceId).toBe(choiceSingle.surfaceId)
+    expect(waitingSurface(applyTurnEvent(EMPTY_TURN, surfaceFrame(planFeedback)))).toBeUndefined()
   })
 
   it('shows the queue position until the job starts', () => {
@@ -438,14 +425,14 @@ describe('applyTurnEvent', () => {
 })
 
 describe('storedTurn', () => {
-  it('replays a stored job into ordered blocks and keeps the answered card', () => {
-    const { turn, picked } = storedTurn({
+  it('replays a stored job into ordered blocks with the answer push-be baked into the surface', () => {
+    const { turn } = storedTurn({
       jobId: 'job-1',
       status: 'DONE',
       createdAt: '',
       userMessageId: 'm1',
       assistantMessageId: 'm2',
-      answer: { approvalId: 'need', optionId: '2' },
+      answer: null,
       events: [
         { type: 'token', text: '먼저 찾아볼게요.' },
         {
@@ -455,19 +442,10 @@ describe('storedTurn', () => {
           summary: '회사 정보 검색',
           resultLine: '뉴스 4건',
         },
-        {
-          type: 'choice',
-          id: 'need',
-          title: '누가 필요해요?',
-          options: [
-            { id: '1', label: '한 명' },
-            { id: '2', label: '두 명' },
-          ],
-        },
+        surfaceFrame(approvalToolAnswered),
       ],
     })
-    expect(turn.blocks.map((block) => block.kind)).toEqual(['text', 'tool', 'choice'])
-    expect(picked).toEqual({ need: '2' })
+    expect(turn.blocks.map((block) => block.kind)).toEqual(['text', 'tool', 'surface'])
   })
 })
 
@@ -491,28 +469,5 @@ describe('cancelTurn', () => {
       }),
     })
     await expect(cancelTurn(down, 'c1')).rejects.toMatchObject({ status: 500 })
-  })
-})
-
-describe('approval row colour', () => {
-  const rowsOf = (color: unknown) => {
-    const turn = applyTurnEvent(EMPTY_TURN, {
-      type: 'approval',
-      id: 'a1',
-      kind: 'TOOL_ACTION',
-      title: '단계를 바꿔요',
-      summary: '단계를 바꿔요',
-      toolName: 'change_applicant_stage',
-      args: { rows: [{ name: '김태윤', initial: '태윤', from: '서류', to: '면접', color }] },
-      options: [{ id: 'approve', label: '실행' }],
-    } as StreamEvent)
-    const card = turn.blocks[0]
-    return card?.kind === 'approval' ? card.rows : []
-  }
-
-  it('keeps a hex colour and drops anything that could break out of the style attribute', () => {
-    expect(rowsOf('#3B5BDB')[0]?.color).toBe('#3B5BDB')
-    expect(rowsOf('red; background:url(x)')[0]?.color).toBeUndefined()
-    expect(rowsOf('url(javascript:x)')[0]?.color).toBeUndefined()
   })
 })

@@ -1,5 +1,6 @@
 import {
   ApiError,
+  type A2uiAnswerContext,
   type AccessMode,
   type ConversationTurn,
   type Message,
@@ -9,6 +10,7 @@ import { useQueryClient, type InfiniteData } from '@tanstack/react-query'
 import { useEffect, useRef, useState, type Dispatch, type SetStateAction } from 'react'
 import { useNavigate } from 'react-router-dom'
 
+import type { SurfaceHost } from '../../shared/a2ui'
 import { withCleanup } from '../../shared/lib/with-cleanup'
 import type { ChatIntent } from '../../shared/model/employer-chat'
 import { acceptedFailure, approvalFailureFrom, chatGateFrom, composerAfterVanish, questionForComposer, type ApprovalFailure, type ChatBlock } from './chat-gate'
@@ -29,7 +31,14 @@ import {
 import { conversationsAttach, conversationsCreateEmployer, chatTurnDeps } from './employer-chat'
 import { createLiveTurnStore } from './live-turn-store'
 
-export type Outgoing = { text: string; intent: ChatIntent; applicationId: string; file: File | null }
+export type Outgoing = {
+  text: string
+  intent: ChatIntent
+  applicationId: string
+  file: File | null
+  /** The waiting surface this message answers: closed with no pick once the server takes the message, not before. */
+  closes?: string
+}
 
 /** `held`: stopped while the conversation was being made, so the thread opens with the question unsent. */
 type Handoff = Outgoing & { held?: boolean }
@@ -65,10 +74,9 @@ type Options = {
     setApplicationId: (id: string) => void
   }
   copy: ChatSessionCopy
+  /** The Bot surfaces of this screen: an answer closes its surface once the server takes it. */
+  surfaces: SurfaceHost
 }
-
-const without = (record: Record<string, string>, key: string) =>
-  Object.fromEntries(Object.entries(record).filter(([entry]) => entry !== key))
 
 const handoffFor = (out: Outgoing, held: boolean): Handoff => (held ? { ...out, held } : out)
 
@@ -79,14 +87,13 @@ export const announcedText = (turn: ChatTurn, approvalNeeded: string) =>
   turnText(turn) || (turn.awaiting === 'approval' ? approvalNeeded : '')
 
 /** The run / follow / answer flow of one agent screen: the stream, the stop, the gates and what the composer gets back. */
-export const useChatSession = ({ id, people, accessMode, messages, running, composer, copy }: Options) => {
+export const useChatSession = ({ id, people, accessMode, messages, running, composer, copy, surfaces }: Options) => {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const [gate, setGate] = useState<ChatBlock | null>(null)
   const [alert, setAlert] = useState<string | null>(null)
   const [answerFailure, setAnswerFailure] = useState<ApprovalFailure | null>(null)
   const [shell, setShell] = useState<LiveShell | null>(null)
-  const [picked, setPicked] = useState<Record<string, string>>({})
   const [sending, setSending] = useState(false)
   const [halting, setHalting] = useState(false)
   const [sent, setSent] = useState(0)
@@ -191,7 +198,6 @@ export const useChatSession = ({ id, people, accessMode, messages, running, comp
     setGate(null)
     setAlert(null)
     setAnswerFailure(null)
-    setPicked({})
     startLive(
       {
         text: out.text,
@@ -246,7 +252,10 @@ export const useChatSession = ({ id, people, accessMode, messages, running, comp
           payload,
           (event) => {
             // The job names the conversation when it starts; the list should not wait for the end of a long run.
-            if (first) void queryClient.invalidateQueries({ queryKey: ['employer-conversations'] })
+            if (first) {
+              void queryClient.invalidateQueries({ queryKey: ['employer-conversations'] })
+              if (out.closes) surfaces.patch(out.closes, { open: false, picked: [] })
+            }
             first = false
             track.onEvent(event)
           },
@@ -345,11 +354,10 @@ export const useChatSession = ({ id, people, accessMode, messages, running, comp
     // Keyed on the job: a job is followed once, again only after a stop that did not reach push-be.
   }, [running?.jobId, sending, halting])
 
-  const answer = async (cardId: string, optionId: string) => {
+  const answer = async (surfaceId: string, body: A2uiAnswerContext) => {
     if (sending || !id) return
     setSending(true)
     setAnswerFailure(null)
-    setPicked((current) => ({ ...current, [cardId]: optionId }))
     store.begin(EMPTY_TURN)
     setShell((current) => current ?? { text: '', attachments: [], known: knownIds() })
     const controller = new AbortController()
@@ -360,19 +368,16 @@ export const useChatSession = ({ id, people, accessMode, messages, running, comp
         await answerApproval(
           chatTurnDeps,
           id,
-          cardId,
-          optionId,
+          surfaceId,
+          body,
           track.onEvent,
           controller.signal,
           watch,
+          surfaces,
         )
         track.finished()
       } catch (error) {
-        if (!controller.signal.aborted) {
-          const failure = approvalFailureFrom(error)
-          setAnswerFailure(failure)
-          if (failure === 'failed') setPicked((current) => without(current, cardId))
-        }
+        if (!controller.signal.aborted) setAnswerFailure(approvalFailureFrom(error))
       }
     }, async () => {
       await refresh()
@@ -404,11 +409,10 @@ export const useChatSession = ({ id, people, accessMode, messages, running, comp
 
   return {
     send: (out: Outgoing) => latest.current.send(out),
-    answer: (cardId: string, optionId: string) => void latest.current.answer(cardId, optionId),
+    answer: (surfaceId: string, body: A2uiAnswerContext) => void latest.current.answer(surfaceId, body),
     stop: () => latest.current.stop(),
     store,
     shell,
-    picked,
     sending,
     sent,
     gate,

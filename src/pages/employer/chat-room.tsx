@@ -1,6 +1,6 @@
 import { ApiError } from '@push/api-client'
 import { useEffect, useRef, useState, useSyncExternalStore, type FormEvent } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 
 import { useEmployerApplicants } from '../../entities/application'
 import { usePaymentsOpen } from '../../entities/billing'
@@ -15,13 +15,16 @@ import {
   applicationTrail,
   chatRouteState,
   EMPTY_TURN,
+  routeSurfaceAction,
   threadItems,
   turnRunning,
   useAccessMode,
   useChatSession,
+  waitingSurface,
   type LiveTurn,
   type Outgoing,
 } from '../../features/employer-chat'
+import { createSurfaceHost, type SurfaceAction } from '../../shared/a2ui'
 import { pdfLocked, type ChatIntent } from '../../shared/model/employer-chat'
 import { PLAN_NAME } from '../../shared/model/employer-plan'
 import { useToast } from '../../shared/ui/toast'
@@ -29,7 +32,7 @@ import { ChatActionsContext, type ChatActions, type ChatPerson } from './chat-ac
 import { ChatSay } from './chat-answer'
 import ChatApp from './chat-app'
 import ChatComposer from './chat-composer'
-import { APPROVAL_NEEDED, COPIED, DRAFT_REDO_ASK, PDF_NOTE } from './chat-copy'
+import { APPROVAL_NEEDED, COPIED, DRAFT_REDO_ASK, PDF_NOTE, RETRY_SAVE_ASK } from './chat-copy'
 import ChatLimitCard from './chat-limit-card'
 import ChatLock from './chat-lock'
 import ChatStarter from './chat-starter'
@@ -48,7 +51,11 @@ import {
 /** The agent screen: the starter (no `id`) or one conversation, both on the same composer and stream. */
 const ChatRoom = ({ id, screen }: { id?: string; screen: 'list' | 'new' | 'thread' }) => {
   const location = useLocation()
+  const navigate = useNavigate()
   const toast = useToast()
+  // Every Bot surface of this screen in one official processor; its actions go to the latest handlers below.
+  const route = useRef<(action: SurfaceAction) => void>(() => undefined)
+  const [surfaces] = useState(() => createSurfaceHost((action) => route.current(action)))
   const routed = chatRouteState(location.state)
   const { plan, settled } = useEmployerPlan()
   const admin = useMyCompany().data?.role === 'ADMIN'
@@ -90,20 +97,27 @@ const ChatRoom = ({ id, screen }: { id?: string; screen: 'list' | 'new' | 'threa
       streamError: (error) => streamErrorText(error, payable),
       stopFailed: stopFailedText,
     },
+    surfaces,
   })
-  const { store, shell, picked, sending, gate } = session
+  const { store, shell, sending, gate } = session
 
-  // The live turn's blocks stream through the store; the room only learns that one exists and which card it waits on.
+  // The live turn's blocks stream through the store; the room only learns that one exists and which surface it waits on.
   const hasTurn = useSyncExternalStore(store.subscribe, store.has)
-  const liveApproval = useSyncExternalStore(store.subscribe, store.approvalId)
+  const liveSurface = useSyncExternalStore(store.subscribe, store.surfaceId)
   const live: LiveTurn | null = shell && { ...shell, turn: hasTurn ? EMPTY_TURN : null }
   const items = threadItems(storedMessages, storedTurns, live)
   const trail = applicationTrail(items)
   const lastItem = items.at(-1)
-  const lastBlock = lastItem?.kind === 'turn' && !lastItem.live ? lastItem.turn.blocks.at(-1) : undefined
-  const cardId = lastItem?.kind === 'turn' ? (lastItem.live ? liveApproval : lastBlock?.kind === 'approval' ? lastBlock.id : undefined) : undefined
-  const awaiting =
-    lastItem?.kind === 'turn' && Boolean(cardId) && !{ ...lastItem.picked, ...picked }[cardId ?? '']
+  // Only the last turn's newest approval or choice surface can be answered; every other surface cannot answer.
+  const waiting =
+    lastItem?.kind === 'turn'
+      ? lastItem.live
+        ? liveSurface
+        : waitingSurface(lastItem.turn)?.surfaceId
+      : undefined
+  const awaiting = useSyncExternalStore(surfaces.subscribe, () =>
+    waiting ? surfaces.read(waiting, 'open') === true : false,
+  )
   const title = conversations.data?.data.find((item) => item.id === id)?.title
   const pdfDisabled = !settled || pdfLocked(plan)
   const planName = plan ? PLAN_NAME[plan] : null
@@ -114,9 +128,26 @@ const ChatRoom = ({ id, screen }: { id?: string; screen: 'list' | 'new' | 'threa
     current.current = { sending, intent, applicationId, last: trail.last, toast }
   })
   const { send, answer, stop } = session
+  // What the member types while a surface waits is the answer: the session closes it with no pick once the send is taken.
+  const closes = waiting && awaiting ? waiting : undefined
+  useEffect(() => {
+    route.current = (action) =>
+      routeSurfaceAction(action, {
+        waiting,
+        answer,
+        openPosting: (postingId) => navigate(`/postings/${postingId}`),
+        openPlan: () => navigate('/employer/plans'),
+        change: () => document.getElementById('chat-input')?.focus(),
+        // apply, convert, view, open_review and share are personal-side paths: the employer web has none.
+        result: {
+          retry_save: () => send({ text: RETRY_SAVE_ASK, intent: current.current.intent, applicationId: '', file: null }),
+        },
+      })
+  })
   const actions: ChatActions = {
     busy: sending,
-    picked,
+    surfaces,
+    waiting,
     people,
     send: (value, nextIntent) => {
       const now = current.current
@@ -127,9 +158,9 @@ const ChatRoom = ({ id, screen }: { id?: string; screen: 'list' | 'new' | 'threa
         intent: nextIntent ?? now.intent,
         applicationId: now.applicationId || now.last || '',
         file: null,
+        closes,
       })
     },
-    answer,
     focus: () => document.getElementById('chat-input')?.focus(),
     redraft: () => send({ text: DRAFT_REDO_ASK, intent: 'posting', applicationId: '', file: null }),
     copied: () => current.current.toast.show(COPIED),
@@ -140,7 +171,7 @@ const ChatRoom = ({ id, screen }: { id?: string; screen: 'list' | 'new' | 'threa
     const value = text.trim()
     if (!value || sending) return
     setText('')
-    send({ text: value, intent, applicationId, file } satisfies Outgoing)
+    send({ text: value, intent, applicationId, file, closes } satisfies Outgoing)
   }
 
   const composer = (

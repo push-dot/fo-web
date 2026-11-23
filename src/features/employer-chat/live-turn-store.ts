@@ -1,5 +1,5 @@
 import type { StreamEvent } from '@push/api-client'
-import { applyTurnEvent, EMPTY_TURN, type ChatTurn } from './chat-turn'
+import { applyTurnEvent, EMPTY_TURN, waitingSurface, type ChatTurn } from './chat-turn'
 
 type Frame = (run: () => void) => () => void
 
@@ -10,12 +10,6 @@ const nextFrame: Frame = (run) => {
   }
   const handle = setTimeout(run, 16)
   return () => clearTimeout(handle)
-}
-
-/** The card the turn waits on: the last block, when it is an approval. */
-export const lastApprovalId = (turn: ChatTurn | null) => {
-  const last = turn?.blocks.at(-1)
-  return last?.kind === 'approval' ? last.id : undefined
 }
 
 /**
@@ -66,7 +60,7 @@ export const createLiveTurnStore = (frame: Frame = nextFrame) => {
     },
     turn: () => turn,
     has: () => turn !== null,
-    approvalId: () => lastApprovalId(turn),
+    surfaceId: () => waitingSurface(turn)?.surfaceId,
   }
 }
 

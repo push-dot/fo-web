@@ -1,0 +1,21 @@
+/* The official basic components (Column, Row, …) read --a2ui-* variables. They follow the app's tokens here, so light
+   and dark switch with the app. The Push components and Text/List are styled in styles.css (.a2-*). */
+.a2-sf {
+  --a2ui-color-background: var(--bg);
+  --a2ui-color-on-background: var(--t1);
+  --a2ui-color-surface: var(--bg);
+  --a2ui-color-on-surface: var(--t1);
+  --a2ui-color-primary: var(--ac);
+  --a2ui-color-on-primary: var(--onFill);
+  --a2ui-color-secondary: var(--fill);
+  --a2ui-color-on-secondary: var(--t1);
+  --a2ui-color-border: var(--line);
+  --a2ui-color-input: var(--bg);
+  --a2ui-color-on-input: var(--t1);
+  --a2ui-border-radius: 12px;
+  --a2ui-font-family-title: inherit;
+  --a2ui-font-size: 15px;
+  --a2ui-grid-base: 8px;
+  --a2ui-column-gap: 10px;
+  --a2ui-row-gap: 8px;
+}
