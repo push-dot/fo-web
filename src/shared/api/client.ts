@@ -1,4 +1,5 @@
 import { absoluteUrl, ApiError, createApi, createClient, createRefresher, type RefresherConfig, type Session } from '@push/api-client'
+import { A2UI_VERSION } from '../a2ui/version'
 import { cookieFetch, cookieSession, refreshFromCookie } from '../auth/cookie-session'
 import { readAccessToken, sessionStore } from '../auth/session'
 import { accessToken } from '../auth/token-source'
@@ -69,6 +70,8 @@ export const restoreSession = async () => {
 
 export const http = createClient({
   baseUrl: apiBaseUrl,
+  // Every request that returns Bot frames names the A2UI version web draws; the server reads none as v0.9.1.
+  a2uiVersion: A2UI_VERSION,
   getToken: () => accessToken({ webView: isWebView(), injected: pushEnv().token, session: readAccessToken() }),
   refresh: refreshSession,
   fetch: mockTransport ? mockFetch : cookieSession ? cookieFetch((input, init) => fetch(input, init)) : undefined,

@@ -18,7 +18,8 @@ export const AWAITING_PLACEHOLDER = '승인하거나 취소하면 이어서 할�
 
 export const APPROVAL_NEEDED = '승인이 필요해요'
 export const APPROVAL_WAITING = '기다리는 중'
-export const CHOICE_FOOT = '번호를 누르거나 바로 말해도 돼요 · ↑↓ Enter'
+/** The chat message a failed save's 다시 저장하기 sends (push-be a2ui README, result_action retry_save). */
+export const RETRY_SAVE_ASK = '내 서류에 저장해 줘'
 export const CHECK_POINT = '확인할 점'
 export const WRITING = '답변 쓰는 중'
 export const TOOL_STOPPED = '멈췄어요'

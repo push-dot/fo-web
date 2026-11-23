@@ -26,7 +26,7 @@ export type LiveTurn = {
 
 export type ThreadItem =
   | { kind: 'user'; key: string; text: string; attachments: Attachment[] }
-  | { kind: 'turn'; key: string; turn: ChatTurn; picked: Record<string, string>; live: boolean }
+  | { kind: 'turn'; key: string; turn: ChatTurn; live: boolean }
   | { kind: 'reply'; key: string; text: string }
 
 /**
@@ -80,7 +80,7 @@ export const threadItems = (
         ]
       : []),
     ...(live.turn
-      ? [{ kind: 'turn' as const, key: 'live-turn', turn: live.turn, picked: {}, live: true }]
+      ? [{ kind: 'turn' as const, key: 'live-turn', turn: live.turn, live: true }]
       : []),
   ]
 }

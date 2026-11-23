@@ -14,9 +14,7 @@ type TurnRowProps = { item: TurnItem; applicationId?: string }
 const TurnRow = memo(
   ({ item, applicationId }: TurnRowProps) => <ChatTurnView item={item} applicationId={applicationId} />,
   (prev, next) =>
-    prev.item.turn === next.item.turn &&
-    prev.item.picked === next.item.picked &&
-    prev.applicationId === next.applicationId,
+    prev.item.turn === next.item.turn && prev.applicationId === next.applicationId,
 )
 
 /** The turn streaming now: the only row that follows the store, so a token redraws this row and nothing else. */

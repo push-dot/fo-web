@@ -1,4 +1,5 @@
 import { createContext, useContext } from 'react'
+import type { SurfaceHost } from '../../shared/a2ui'
 import type { ChatIntent } from '../../shared/model/employer-chat'
 
 export type ChatPerson = {
@@ -10,10 +11,12 @@ export type ChatPerson = {
 
 export type ChatActions = {
   busy: boolean
-  picked: Record<string, string>
+  /** The Bot surfaces of the screen; null outside a chat room. */
+  surfaces: SurfaceHost | null
+  /** The newest waiting surface: the only one that takes input. */
+  waiting: string | undefined
   people: ChatPerson[]
   send: (text: string, intent?: ChatIntent) => void
-  answer: (cardId: string, optionId: string) => void
   focus: () => void
   redraft: () => void
   copied: () => void
@@ -21,10 +24,10 @@ export type ChatActions = {
 
 const idle: ChatActions = {
   busy: true,
-  picked: {},
+  surfaces: null,
+  waiting: undefined,
   people: [],
   send: () => undefined,
-  answer: () => undefined,
   focus: () => undefined,
   redraft: () => undefined,
   copied: () => undefined,

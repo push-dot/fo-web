@@ -1,3 +1,4 @@
+// @vitest-environment happy-dom
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { MemoryRouter } from 'react-router-dom'
@@ -12,10 +13,10 @@ import ChatUser from './chat-user'
 
 const actions = (people: ChatActions['people']): ChatActions => ({
   busy: false,
-  picked: {},
+  surfaces: null,
+  waiting: undefined,
   people,
   send: () => undefined,
-  answer: () => undefined,
   focus: () => undefined,
   redraft: () => undefined,
   copied: () => undefined,
@@ -90,7 +91,6 @@ describe('chat rows', () => {
             kind: 'turn',
             key: 't',
             live: false,
-            picked: {},
             turn: {
               blocks: [{ kind: 'text', key: 'text-0', text: '여기까지' }],
               awaiting: null,

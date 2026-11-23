@@ -1,13 +1,17 @@
 import {
   ApiError,
+  type A2uiAnswerContext,
+  type A2uiFrame,
+  type A2uiKind,
+  type A2uiMessage,
   type AccessMode,
   type ApprovalResolution,
   type ChatIntent,
   type ConversationTurn,
   type StreamEvent,
-  type StreamOption,
   type ToolRunState,
 } from '@push/api-client'
+import type { SurfaceHost } from '../../shared/a2ui'
 import { toPostingDraft, type PostingDraft } from '../../shared/model/employer-chat'
 import { DRAFT_TOOL, PENDING_TOOL_STATES } from './constants'
 
@@ -25,6 +29,7 @@ export type TurnDeps = {
     id: string,
     approvalId: string,
     optionId: string,
+    optionIds?: string[],
   ) => Promise<Pick<ApprovalResolution, 'jobId'>>
   cancel: (id: string) => Promise<unknown>
 }
@@ -46,32 +51,16 @@ export type TurnTool = {
   postingId?: string
 }
 
-export type MoveRow = { name: string; initial: string; color?: string; from: string; to: string }
-
-export type TurnApproval = {
-  kind: 'approval'
-  id: string
-  title: string
-  options: StreamOption[]
-  rows: MoveRow[]
-  foot?: string
+/** A Bot card: an A2UI surface, upserted by surfaceId. `messages` is the latest full snapshot. */
+export type TurnSurface = {
+  kind: 'surface'
+  key: string
+  surfaceId: string
+  card: A2uiKind
+  messages: A2uiMessage[]
 }
 
-export type TurnChoice = {
-  kind: 'choice'
-  id: string
-  title?: string
-  options: StreamOption[]
-  recommended?: string
-}
-
-export type TurnPlan = {
-  kind: 'plan'
-  id: string
-  rows: { tag: string; label: string; note: string }[]
-}
-
-export type TurnBlock = TurnText | TurnTool | TurnApproval | TurnChoice | TurnPlan
+export type TurnBlock = TurnText | TurnTool | TurnSurface
 
 export type ChatTurn = {
   blocks: TurnBlock[]
@@ -90,41 +79,6 @@ const recordOf = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
     ? (value as Record<string, unknown>)
     : {}
-
-const text = (value: unknown) => (typeof value === 'string' ? value : undefined)
-
-// The row colour goes into a style attribute: only a hex colour passes, anything else falls back to the name's brand colour.
-const HEX_COLOR = /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i
-const hexColor = (value: unknown) => {
-  const color = text(value)
-  return color && HEX_COLOR.test(color) ? color : undefined
-}
-
-const moveRows = (rows: unknown): MoveRow[] => {
-  if (!Array.isArray(rows)) return []
-  return rows.flatMap((row) => {
-    const item = recordOf(row)
-    const [name, initial, from, to] = [
-      text(item.name),
-      text(item.initial),
-      text(item.from),
-      text(item.to),
-    ]
-    if (!name || !from || !to) return []
-    return [
-      {
-        name,
-        initial: initial ?? name,
-        from,
-        to,
-        ...(hexColor(item.color) ? { color: hexColor(item.color) } : {}),
-      },
-    ]
-  })
-}
-
-/** push-be sends the people on the event. Older streams only put them on args.rows. */
-const approvalRows = (event: { rows?: unknown; args?: unknown }) => moveRows(event.rows ?? recordOf(event.args).rows)
 
 const toolBlock = (event: Extract<StreamEvent, { type: 'tool' }>, key: string): TurnTool => {
   const result = recordOf(event.result)
@@ -161,8 +115,27 @@ const appendText = (blocks: TurnBlock[], value: string): TurnBlock[] => {
   return [...blocks, { kind: 'text', key: `text-${blocks.length}`, text: value }]
 }
 
-const hasCard = (blocks: TurnBlock[], kind: 'approval' | 'choice', id: string) =>
-  blocks.some((block) => block.kind === kind && block.id === id)
+// A later frame of the same surface updates it in place; a new one goes at the end.
+const upsertSurface = (blocks: TurnBlock[], event: A2uiFrame): TurnBlock[] => {
+  const block: TurnSurface = {
+    kind: 'surface',
+    key: event.surfaceId,
+    surfaceId: event.surfaceId,
+    card: event.kind,
+    messages: event.messages,
+  }
+  const index = blocks.findIndex((item) => item.kind === 'surface' && item.surfaceId === event.surfaceId)
+  return index < 0 ? [...blocks, block] : blocks.map((item, i) => (i === index ? block : item))
+}
+
+/** The surface a turn waits on: its newest approval or choice surface. */
+export const waitingSurface = (turn: ChatTurn | null) =>
+  [...(turn?.blocks ?? [])]
+    .reverse()
+    .find(
+      (block): block is TurnSurface =>
+        block.kind === 'surface' && (block.card === 'approval' || block.card === 'choice'),
+    )
 
 const queuedAhead = (event: Extract<StreamEvent, { type: 'status' }>, current: number | null) => {
   if (event.text !== 'queued') return null
@@ -189,39 +162,8 @@ export const applyTurnEvent = (turn: ChatTurn, event: StreamEvent): ChatTurn => 
       return { ...turn, queued: null, blocks: appendText(turn.blocks, event.text) }
     case 'tool':
       return { ...turn, queued: null, blocks: upsertTool(turn.blocks, event) }
-    case 'approval':
-      if (hasCard(turn.blocks, 'approval', event.id)) return turn
-      return {
-        ...turn,
-        blocks: [
-          ...turn.blocks,
-          {
-            kind: 'approval',
-            id: event.id,
-            title: event.title,
-            options: event.options,
-            rows: approvalRows(event),
-            ...(event.foot ? { foot: event.foot } : {}),
-          },
-        ],
-      }
-    case 'choice':
-      if (hasCard(turn.blocks, 'choice', event.id)) return turn
-      return {
-        ...turn,
-        blocks: [
-          ...turn.blocks,
-          {
-            kind: 'choice',
-            id: event.id,
-            options: event.options,
-            ...(event.title ? { title: event.title } : {}),
-            ...(event.recommended ? { recommended: event.recommended } : {}),
-          },
-        ],
-      }
-    case 'plan':
-      return { ...turn, blocks: [...turn.blocks, { kind: 'plan', id: event.id, rows: event.rows }] }
+    case 'a2ui':
+      return { ...turn, queued: null, blocks: upsertSurface(turn.blocks, event) }
     case 'done':
       return { ...turn, queued: null, awaiting: event.awaiting ?? null }
     case 'cancelled':
@@ -232,23 +174,14 @@ export const applyTurnEvent = (turn: ChatTurn, event: StreamEvent): ChatTurn => 
   }
 }
 
-const storedAnswers = (turn: ConversationTurn): Record<string, string> => {
-  const picked: Record<string, string> = {}
-  for (const event of turn.events) {
-    if ((event.type === 'approval' || event.type === 'choice') && event.resolution?.optionId)
-      picked[event.id] = event.resolution.optionId
-  }
-  if (turn.answer?.optionId) picked[turn.answer.approvalId] = turn.answer.optionId
-  return picked
-}
-
 const STATUS_END: Partial<Record<ConversationTurn['status'], 'stopped' | 'failed'>> = {
   CANCELLED: 'stopped',
   FAILED: 'failed',
 }
 
 /**
- * A job from GET .../turns replayed into the same blocks a live stream builds, with the cards it already answered.
+ * A job from GET .../turns replayed into the same blocks a live stream builds. push-be bakes each answer into its
+ * surface's data model (/open false, /picked).
  * The job status also ends it: a job can close without a cancelled or error row (cancelled while still queued).
  */
 export const storedTurn = (turn: ConversationTurn) => {
@@ -257,7 +190,7 @@ export const storedTurn = (turn: ConversationTurn) => {
     EMPTY_TURN,
   )
   const ended = STATUS_END[turn.status]
-  return { turn: ended ? end(replayed, ended) : replayed, picked: storedAnswers(turn) }
+  return { turn: ended ? end(replayed, ended) : replayed }
 }
 
 export const turnRunning = (turn: ConversationTurn) =>
@@ -387,16 +320,23 @@ export const resumeStoredTurn = (
   watch?: TurnWatch,
 ) => followTurn(deps, id, undefined, onEvent, signal, watch)
 
+/**
+ * Answers a surface: POST .../approvals/{surfaceId} with the body PushChoice built, then follows the job it resumes.
+ * push-be sends no answered frame, so once the server takes the answer the surface is closed on the pick here,
+ * until a refetch brings the snapshot push-be baked.
+ */
 export const answerApproval = async (
   deps: TurnDeps,
   id: string,
   approvalId: string,
-  optionId: string,
+  body: A2uiAnswerContext,
   onEvent: (event: StreamEvent) => void,
   signal?: AbortSignal,
   watch?: TurnWatch,
+  surfaces?: Pick<SurfaceHost, 'patch'>,
 ) => {
-  const { jobId } = await deps.resolve(id, approvalId, optionId)
+  const { jobId } = await deps.resolve(id, approvalId, body.optionId, body.optionIds)
+  surfaces?.patch(approvalId, { open: false, picked: body.optionIds ?? [body.optionId] })
   if (jobId) await finish(deps, id, { ended: false, pollFailed: false }, onEvent, signal, watch)
 }
 
