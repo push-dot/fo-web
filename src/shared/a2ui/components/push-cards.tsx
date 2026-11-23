@@ -14,6 +14,7 @@ export const PushTodoView = ({ props }: ViewProps<PushTodoProps>) => (
         <span className="a2-tm" aria-hidden="true">
           {item.state === 'done' ? <CheckMark /> : item.state === 'running' ? <i /> : index + 1}
         </span>
+        <span className="sr-only">{A2UI_COPY.todoState[item.state]}</span>
         <span className="a2-tx">{item.text}</span>
       </li>
     ))}
@@ -41,6 +42,7 @@ export const PushDiffView = ({ props, context }: ViewProps<PushDiffProps>) => (
             <span className="a2-sg" aria-hidden="true">
               {mark}
             </span>
+            {line.sign ? <span className="sr-only">{A2UI_COPY.diffSign[line.sign]}</span> : null}
             <span className="a2-tx">{line.text}</span>
           </div>
         )
@@ -266,8 +268,9 @@ export const PushJobCardView = ({ props, context }: ViewProps<PushJobCardProps>)
           <span aria-hidden="true">{props.company.slice(0, 1)}</span>
         )}
         {props.bookmarked ? (
-          <span className="a2-bm" aria-label={A2UI_COPY.bookmarked}>
+          <span className="a2-bm">
             <Icon name="bookmark" size={16} filled />
+            <span className="sr-only">{A2UI_COPY.bookmarked}</span>
           </span>
         ) : null}
       </span>

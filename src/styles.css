@@ -1155,7 +1155,7 @@ button.shortcut{border:0;cursor:pointer;font:inherit}
 .browser .a2-bts{display:flex;gap:8px}
 .browser .a2-bt{flex:1;display:flex;align-items:center;justify-content:center;min-height:40px;padding:0 16px;border-radius:12px;font-size:14px;line-height:20px;font-weight:700;text-align:center}
 .browser .a2-sf .a2-bt{text-align:center}
-.browser .a2-bt.pri{background:var(--ac);color:#FFFFFF}.browser .a2-bt.sec{background:var(--fill);color:var(--t1)}
+.browser .a2-bt.pri{background:var(--ac);color:var(--onFill)}.browser .a2-bt.sec{background:var(--fill);color:var(--t1)}
 .browser .a2-bt:disabled{cursor:default}
 .browser .a2-choice:not(.done) .a2-bt:disabled{opacity:.45}
 /* answered: the pick keeps its look, the rest fade */
@@ -1172,7 +1172,7 @@ button.shortcut{border:0;cursor:pointer;font:inherit}
 .browser .a2-op.multi .a2-mk{border-radius:4px}
 .browser .a2-mk svg{width:12px;height:12px;display:none;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
 .browser .a2-op.sel .a2-mk{border-color:var(--ac);background:var(--ac)}.browser .a2-op.sel .a2-mk svg{display:block}
-.browser .a2-badge{flex:none;padding:2px 6px;border-radius:6px;background:var(--ac);color:#FFFFFF;font-size:12px;line-height:16px;font-weight:700}
+.browser .a2-badge{flex:none;padding:2px 6px;border-radius:6px;background:var(--ac);color:var(--onFill);font-size:12px;line-height:16px;font-weight:700}
 /* PushTodo */
 .browser .a2-td{display:flex;flex-direction:column;gap:10px;margin:0;padding:0;list-style:none}
 .browser .a2-ti{display:flex;align-items:center;gap:10px;font-size:15px;line-height:22px}
@@ -1181,7 +1181,7 @@ button.shortcut{border:0;cursor:pointer;font:inherit}
 .browser .a2-ti.done .a2-tm{background:var(--green);color:var(--bg)}
 .browser .a2-ti.done .a2-tx{color:var(--t2);text-decoration:line-through}
 .browser .a2-ti.running .a2-tm{background:var(--ac);animation:a2-blink 1s infinite}
-.browser .a2-ti.running .a2-tm i{width:6px;height:6px;border-radius:3px;background:#FFFFFF}
+.browser .a2-ti.running .a2-tm i{width:6px;height:6px;border-radius:3px;background:var(--onFill)}
 .browser .a2-ti.running .a2-tx{font-weight:600}
 @keyframes a2-blink{50%{opacity:.35}}
 /* PushDiff */
@@ -1217,7 +1217,7 @@ button.shortcut{border:0;cursor:pointer;font:inherit}
 .browser .a2-ib{width:36px;height:36px;flex:none;display:flex;align-items:center;justify-content:center;border-radius:18px;color:var(--t2)}
 /* PushJobCard */
 .browser .a2-jc{width:169px;display:flex;flex-direction:column;gap:2px}
-.browser .a2-ph{position:relative;height:115px;margin-bottom:8px;display:flex;align-items:center;justify-content:center;border-radius:14px;overflow:hidden;color:rgba(255,255,255,.92);font-size:44px;font-weight:800}
+.browser .a2-ph{position:relative;height:115px;margin-bottom:8px;display:flex;align-items:center;justify-content:center;border-radius:14px;overflow:hidden;color:var(--onFill);font-size:44px;font-weight:800}
 .browser .a2-ph img{width:100%;height:100%;object-fit:cover}
 .browser .a2-bm{position:absolute;right:8px;bottom:8px;width:30px;height:30px;display:flex;align-items:center;justify-content:center;border-radius:15px;background:var(--bookmarkGlass);color:var(--acText)}
 .browser .a2-jt{font-size:16px;line-height:24px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}

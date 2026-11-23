@@ -46,10 +46,25 @@ afterEach(() => {
   document.body.innerHTML = ''
 })
 
-const draw = async (name: string) => {
+/** A one-surface frame of the Push catalog: `components` as given, the data model as `value`. */
+const made = (components: Record<string, unknown>[], value: Record<string, unknown> = {}): A2uiFrame => {
+  const surfaceId = 'made'
+  const catalogId = 'https://push.app/a2ui/catalogs/push/v1/catalog.json'
+  return {
+    ...frame('todo'),
+    surfaceId,
+    messages: [
+      { version: '1.0', createSurface: { surfaceId, catalogId } },
+      { version: '1.0', updateComponents: { surfaceId, components } },
+      { version: '1.0', updateDataModel: { surfaceId, path: '/', value } },
+    ] as A2uiFrame['messages'],
+  }
+}
+
+const draw = async (from: string | A2uiFrame) => {
   const actions: SurfaceAction[] = []
   const host = createSurfaceHost((action) => void actions.push(action))
-  const { surfaceId, messages } = frame(name)
+  const { surfaceId, messages } = typeof from === 'string' ? frame(from) : from
   host.upsert(surfaceId, messages)
   const surface = host.get(surfaceId)
   if (!surface) throw new Error(`${name} made no surface`)
@@ -183,6 +198,76 @@ describe('PushChoice', () => {
     view.host.upsert(view.surfaceId, frame('choice-single-answered').messages)
     expect(view.host.read(view.surfaceId, 'open')).toBe(false)
     expect(view.host.read(view.surfaceId, 'picked')).toEqual(['ready'])
+  })
+})
+
+describe('frame data', () => {
+  it('ids named like Object.prototype keys answer like any other id', async () => {
+    const view = await draw(
+      made(
+        [
+          {
+            id: 'root',
+            component: 'PushChoice',
+            questions: [
+              {
+                id: 'constructor',
+                choices: [
+                  { id: 'toString', label: '첫째' },
+                  { id: 'b', label: '둘째' },
+                ],
+                multiple: true,
+              },
+            ],
+            answer: 'pick',
+            submit: { label: '보내기', labels: {} },
+            open: { '@path': '/open' },
+            picked: { '@path': '/picked' },
+            selected: { '@path': '/selected' },
+          },
+        ],
+        { open: true, picked: [], selected: {} },
+      ),
+    )
+    expect(view.el.querySelector('[role="group"]')?.getAttribute('aria-label')).toBe('질문')
+    await view.click(view.input('첫째'))
+    expect(view.host.read(view.surfaceId, 'selected')).toEqual({ constructor: ['toString'] })
+    await view.click(view.button('보내기'))
+    expect(view.actions.at(-1)?.context).toEqual({ optionId: 'toString' })
+  })
+
+  it('a prop the backend adds later is ignored and the card still draws', async () => {
+    const extra = made([
+      { id: 'root', component: 'PushTodo', items: [{ text: '이력서 읽기', state: 'done', eta: 3 }], tone: 'new' },
+    ])
+    expect(new MessageProcessor([PUSH_CATALOG]).processMessagesWithErrors(extra.messages)).toEqual([])
+    expect((await draw(extra)).el.textContent).toContain('이력서 읽기')
+  })
+
+  it('text from a surface is literal: no Markdown and no HTML', async () => {
+    const raw = '**bold** _it_ <img src=x onerror=alert(1)>'
+    const view = await draw(made([{ id: 'root', component: 'Text', text: raw }]))
+    expect(view.el.textContent).toContain(raw)
+    expect(view.el.querySelector('img, strong, em, b, i')).toBeNull()
+  })
+
+  it('PushJobCard drops a javascript: image URL', async () => {
+    const card = (imageUrl: string) =>
+      made([{ id: 'root', component: 'PushJobCard', postingId: 'p1', company: '모아', title: '백엔드', imageUrl }])
+    expect((await draw(card('javascript:alert(1)'))).el.querySelector('img')).toBeNull()
+    act(() => root?.unmount())
+    expect((await draw(card('https://cdn.push.app/a.png'))).el.querySelector('img')?.getAttribute('src')).toBe(
+      'https://cdn.push.app/a.png',
+    )
+  })
+
+  it('the diff sign and the to-do state have text for screen readers', async () => {
+    expect((await draw('diff')).el.querySelector('.sr-only')?.textContent).toMatch(/추가|삭제/)
+    act(() => root?.unmount())
+    const todo = await draw('todo')
+    const states = [...todo.el.querySelectorAll('.a2-ti .sr-only')].map((item) => item.textContent)
+    expect(states.length).toBeGreaterThan(0)
+    expect(states.every((item) => ['완료', '진행 중', '대기'].includes(item ?? ''))).toBe(true)
   })
 })
 
