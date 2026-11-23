@@ -1,7 +1,7 @@
 import { answerBody, type A2uiAnswerContext } from '@push/api-client'
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import { A2UI_ACTION, A2UI_COPY } from '../constants'
-import { CheckMark, dispatch, type ViewProps } from './view'
+import { CheckMark, dispatch, SurfaceAnswerable, type ViewProps } from './view'
 
 type Choice = { id: string; label: string; desc?: string; recommended?: boolean; change?: boolean }
 type Question = {
@@ -28,13 +28,17 @@ export type PushChoiceProps = {
 
 const answerable = (question: Question) => question.answerable !== false
 
+// Ids come from the frame: an id like `constructor` must not read Object.prototype.
+const ownValue = <T,>(record: Record<string, T> | undefined, id: string) =>
+  record && Object.hasOwn(record, id) ? record[id] : undefined
+
 /** The picks of every answerable question, in question order and each in choice order. */
 export const allPicks = (questions: Question[], selected: Selected) =>
   questions
     .filter(answerable)
     .flatMap((question) =>
       question.choices
-        .filter((choice) => selected[question.id]?.includes(choice.id))
+        .filter((choice) => (ownValue(selected, question.id) ?? []).includes(choice.id))
         .map((choice) => choice.id),
     )
 
@@ -62,6 +66,9 @@ export const PushChoiceView = ({ props, context }: ViewProps<PushChoiceProps>) =
   const [step, setStep] = useState(0)
   const [own, setOwn] = useState<Selected>({})
   const open = props.open === true
+  // Open but not the surface that may answer now: drawn as answered, with its answer controls disabled.
+  const active = useContext(SurfaceAnswerable)
+  const live = open && active
   const picked = props.picked ?? []
   const selected = props.selected ?? own
   const write = props.setSelected ?? setOwn
@@ -73,7 +80,7 @@ export const PushChoiceView = ({ props, context }: ViewProps<PushChoiceProps>) =
   const send = (body: A2uiAnswerContext) => dispatch(context, A2UI_ACTION.answer, body)
   const pick = (ids: string[]) => send(answerBody('pick', ids))
   const sel = (id: string) => (picked.includes(id) ? ' sel' : '')
-  const done = open ? '' : ' done'
+  const done = live ? '' : ' done'
 
   if (props.form === 'buttons') {
     return (
@@ -83,8 +90,8 @@ export const PushChoiceView = ({ props, context }: ViewProps<PushChoiceProps>) =
             key={choice.id}
             type="button"
             className={`a2-bt ${index === question.choices.length - 1 ? 'pri' : 'sec'}${sel(choice.id)}`}
-            disabled={!open}
-            aria-pressed={open ? undefined : picked.includes(choice.id)}
+            disabled={!live}
+            aria-pressed={live ? undefined : picked.includes(choice.id)}
             onClick={() => pick([choice.id])}
           >
             {choice.label}
@@ -110,7 +117,7 @@ export const PushChoiceView = ({ props, context }: ViewProps<PushChoiceProps>) =
       <button
         type="button"
         className="a2-lk"
-        disabled={!open}
+        disabled={!live}
         onClick={() => dispatch(context, A2UI_ACTION.change, { optionId: choice.id })}
       >
         {A2UI_COPY.change}
@@ -128,8 +135,8 @@ export const PushChoiceView = ({ props, context }: ViewProps<PushChoiceProps>) =
               <button
                 type="button"
                 className={`a2-op${sel(choice.id)}`}
-                disabled={!open || !answerable(question)}
-                aria-pressed={open ? undefined : picked.includes(choice.id)}
+                disabled={!live || !answerable(question)}
+                aria-pressed={live ? undefined : picked.includes(choice.id)}
                 onClick={() => pick([choice.id])}
               >
                 <span className="a2-mk" aria-hidden="true">
@@ -142,16 +149,16 @@ export const PushChoiceView = ({ props, context }: ViewProps<PushChoiceProps>) =
             </div>
           ))}
         </div>
-        {open ? <span className="a2-cp">{A2UI_COPY.sayInstead}</span> : null}
+        {live ? <span className="a2-cp">{A2UI_COPY.sayInstead}</span> : null}
       </div>
     )
   }
 
-  const current = selected[question.id] ?? []
+  const current = ownValue(selected, question.id) ?? []
   const picks = allPicks(props.questions, selected)
   const final = at === last
   const submitLabel =
-    (current.length === 1 && !question.multiple && props.submit?.labels?.[current[0] ?? '']) ||
+    (current.length === 1 && !question.multiple && ownValue(props.submit?.labels, current[0] ?? '')) ||
     props.submit?.label ||
     A2UI_COPY.next
   const submitBody = () =>
@@ -163,7 +170,7 @@ export const PushChoiceView = ({ props, context }: ViewProps<PushChoiceProps>) =
   return (
     <div className={`a2-choice${done}`}>
       {head}
-      <div className="a2-ops" role="group" aria-label={question.title}>
+      <div className="a2-ops" role="group" aria-label={question.title ?? A2UI_COPY.question}>
         {question.choices.map((choice) => {
           const on = open ? current.includes(choice.id) : picked.includes(choice.id)
           return (
@@ -176,7 +183,7 @@ export const PushChoiceView = ({ props, context }: ViewProps<PushChoiceProps>) =
                     name={name}
                     value={choice.id}
                     checked={on}
-                    disabled={!open}
+                    disabled={!live}
                     onChange={() =>
                       write({ ...selected, [question.id]: toggle(question, current, choice.id) })
                     }
@@ -202,7 +209,7 @@ export const PushChoiceView = ({ props, context }: ViewProps<PushChoiceProps>) =
           <button
             type="button"
             className={`a2-bt sec${sel(props.secondary.id)}`}
-            disabled={!open}
+            disabled={!live}
             onClick={() => pick([props.secondary?.id ?? ''])}
           >
             {props.secondary.label}
@@ -213,7 +220,7 @@ export const PushChoiceView = ({ props, context }: ViewProps<PushChoiceProps>) =
             type="button"
             className={`a2-bt pri${!open && submitted ? ' sel' : ''}`}
             // A pick answer needs at least one id; a submit answer always has "submit".
-            disabled={!open || (props.answer === 'pick' && picks.length === 0)}
+            disabled={!live || (props.answer === 'pick' && picks.length === 0)}
             onClick={() => send(submitBody())}
           >
             {submitLabel}
@@ -222,7 +229,7 @@ export const PushChoiceView = ({ props, context }: ViewProps<PushChoiceProps>) =
           <button
             type="button"
             className="a2-bt pri"
-            disabled={!open}
+            disabled={!live}
             onClick={() => setStep(at + 1)}
           >
             {A2UI_COPY.next}

@@ -28,7 +28,7 @@ type SurfaceBlock = Extract<TurnBlock, { kind: 'surface' }>
 
 const isPlan = (block: TurnBlock | undefined) => block?.kind === 'surface' && block.card === 'plan'
 
-/** A Bot card. Only the newest waiting surface takes input, and none while a run or an answer is in flight. */
+/** A Bot card. Only the newest waiting surface can answer, and none while a run or an answer is in flight; the rest stay usable. */
 const ChatSurface = ({ block }: { block: SurfaceBlock }) => {
   const { surfaces, waiting, busy } = useChatActions()
   if (!surfaces) return null
@@ -37,7 +37,7 @@ const ChatSurface = ({ block }: { block: SurfaceBlock }) => {
       host={surfaces}
       surfaceId={block.surfaceId}
       messages={block.messages}
-      inert={busy || block.surfaceId !== waiting}
+      answerable={!busy && block.surfaceId === waiting}
     />
   )
 }

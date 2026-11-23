@@ -10,6 +10,9 @@ export const A2UI_COPY = {
   upgrade: 'ULTRA로 업그레이드',
   share: '공유하기',
   bookmarked: '북마크함',
+  diffSign: { '+': '추가', '-': '삭제' },
+  todoState: { done: '완료', running: '진행 중', waiting: '대기' },
+  question: '질문',
 } as const
 
 /** Example bars of a locked PushFit: never the real scores. */

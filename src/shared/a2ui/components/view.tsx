@@ -1,5 +1,5 @@
 import type { ComponentContext } from '@a2ui/web_core/v0_9'
-import type { ReactNode } from 'react'
+import { createContext, type ReactNode } from 'react'
 
 /** What a Push component view gets: its resolved props (bindings already read), the context and the child builder. */
 export type ViewProps<P> = {
@@ -17,3 +17,6 @@ export const CheckMark = () => (
     <path d="M5 12.5l4.5 4.5L19 7.5" />
   </svg>
 )
+
+/** Whether this surface is the one that may answer now: an older or busy one still draws, but its answer controls are disabled. */
+export const SurfaceAnswerable = createContext(true)
