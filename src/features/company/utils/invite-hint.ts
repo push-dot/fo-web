@@ -1,4 +1,4 @@
-import { canInvite, seatLimit, type EmployerPlanId } from '../../../shared/model/employer-plan'
+import { canInvite, seatLimit, type EmployerPlanId } from '../../billing'
 import { INVITE_ADMIN_ONLY, INVITE_BASIC, inviteLimitCopy } from '../constants'
 
 export const inviteHint = (plan: EmployerPlanId, used: number, isAdmin: boolean): string | null => {

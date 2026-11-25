@@ -82,3 +82,12 @@ export const FIT_NOTE =
   '적합도는 앱에서 계산한 점수예요. 자세한 항목과 고칠 점은 앱의 에이전트에서 볼 수 있어요.'
 
 export const ACTIVITY_LOAD_ERROR = '목록을 불러오지 못했어요.'
+
+export const BLOCKED_APPLICATION_STAGES = ['REJECTED', 'ACCEPTED', 'WITHDRAWN'] as const
+
+export const EMPLOYER_STAGE_ACTIONS = [
+  { label: '서류 통과', stage: 'SCREENING' },
+  { label: '면접', stage: 'INTERVIEW' },
+  { label: '합격', stage: 'OFFER' },
+  { label: '불합격', stage: 'REJECTED' },
+] as const

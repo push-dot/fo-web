@@ -3,7 +3,7 @@ import { ApiError, PAYMENTS_CLOSED, ledgerDate, planActionError, PlanCard, PlanU
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 
-import { EMPLOYER_PLAN_CARDS, canChangeEmployerPlan, paymentsOpen, planPrices, showEmployerCheckout } from '../../shared/model/employer-plans'
+import { EMPLOYER_PLAN_CARDS, canChangeEmployerPlan, paymentsOpen, planPrices, showEmployerCheckout } from '../../features/billing'
 import { PLAN_BLURB, PLAN_FEATURES, PLAN_LEAD, PLAN_MANAGE_TITLE, PLAN_NOTE, PLAN_PAY_FAILED_TITLE, PLAN_SECURE, PLAN_TERMS, PLAN_TERMS_TITLE, PLAN_UNSUBSCRIBE, PLAN_UNSUBSCRIBE_DONE, PLAN_UNSUBSCRIBE_FAILED, PLAN_VIEWER_TITLE, PLANS_LOADING, PLANS_PERSONAL, PLANS_TITLE, planEndsOn, planMonthly, planPayFailedBody, planRenews, planSwitchLabel, planUsedPercent, planViewerBody } from './constants'
 import { MySide } from '../../features/profile'
 import { useMyCompany, useCompanyMembers } from '../../features/company'

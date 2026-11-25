@@ -5,5 +5,7 @@ export default [
   ...web({
     uiFiles: ['src/pages/**', 'src/features/*/components/**', 'src/shared/ui/**'],
     infraModules: ['@push/api-client'],
+    openFiles: ['src/shared/api/mock/**', 'src/shared/api/*.test.ts'],
+    open: ['constants', 'utils/'],
   }),
 ]

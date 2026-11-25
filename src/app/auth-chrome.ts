@@ -1,4 +1,4 @@
-import { INVITE_PATH } from '../shared/model/constants'
+import { INVITE_PATH } from '../features/auth'
 
 const AUTH_PATHS = new Set(['/login', '/signup', '/auth/callback', '/auth/verify', '/auth/reset', '/employer/verify'])
 

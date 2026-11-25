@@ -1,8 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { mockFetch, mockPersona, mockSession, setMockPersona } from '../shared/api/mock'
 import { createSessionStore, type StorageLike } from '../shared/auth/session'
-import { gateAccount } from '../shared/auth/return-path'
-import { employerGate, needsLogin } from '../shared/model/access'
+import { employerGate, needsLogin, gateAccount } from '../features/auth'
 import { postingActionMode } from '../features/postings'
 import { applyMockSearch } from './mock-bootstrap'
 

@@ -4,7 +4,7 @@ import choiceMultiple from '@push/api-client/a2ui-fixtures/v1.0/choice-multiple.
 import choiceSections from '@push/api-client/a2ui-fixtures/v1.0/choice-sections.json'
 import choiceSingle from '@push/api-client/a2ui-fixtures/v1.0/choice-single.json'
 import planFeedback from '@push/api-client/a2ui-fixtures/v1.0/plan-feedback.json'
-import { parsePostingDraft } from '../../model/employer-chat'
+import { parsePostingDraft } from '../../../features/chat/utils/employer-chat'
 import { CHAT_SEEDS, DRAFT_REPLY } from './fixtures'
 
 export type ChatScriptName =

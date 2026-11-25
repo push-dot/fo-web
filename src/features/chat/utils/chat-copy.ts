@@ -1,6 +1,6 @@
 import { EMPLOYMENT_TYPES } from '@push/api-client'
 import { careerLabel } from '@push/shared'
-import type { ChatIntent, PostingDraft } from '../../../shared/model/employer-chat'
+import type { ChatIntent, PostingDraft } from './employer-chat'
 
 export const CHAT_LIST_LABEL = '대화 목록'
 export const CHAT_BUY = '크레딧 구매'

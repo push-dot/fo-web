@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import { topupReady } from '../../../shared/model/employer-plans'
+import { topupReady } from '../utils/employer-plans'
 import Dialog from '../../../shared/ui/dialog'
 import {
   PLAN_BUY,

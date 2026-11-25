@@ -2,7 +2,7 @@ import { JOB_CATEGORIES, type ApplicantCounts, type ApplicantDetail, type Applic
 
 import { DOC_FILE, DOC_PDF, DOC_PROFILE, FILTER_ALL, PROFILE_NOW, STAGE_APPLIED, submittedAsIs } from '../constants'
 import { displayName } from '../../../shared/lib/format'
-import { EMPLOYER_STAGE_ACTIONS } from '../../../shared/model/applicant-stage'
+import { EMPLOYER_STAGE_ACTIONS } from './applicant-stage'
 
 type Tone = 'ac' | 'red' | 'grey'
 

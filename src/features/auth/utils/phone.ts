@@ -1,4 +1,4 @@
-import type { OAuthProvider } from '../../../shared/model/login-providers'
+import type { OAuthProvider } from './login-providers'
 
 export const phoneDigits = (value: string) => value.replace(/\D/g, '').slice(0, 11)
 

@@ -1,6 +1,6 @@
 import { ApiError, type A2uiAnswerContext, type A2uiFrame, type A2uiKind, type A2uiMessage, type AccessMode, type ApprovalResolution, type ChatIntent, type ConversationTurn, type StreamEvent, type ToolRunState } from '@push/api-client'
 import type { SurfaceHost } from '../../../shared/a2ui'
-import { toPostingDraft, type PostingDraft } from '../../../shared/model/employer-chat'
+import { toPostingDraft, type PostingDraft } from './employer-chat'
 import { DRAFT_TOOL, PENDING_TOOL_STATES } from '../constants'
 
 export type TurnBody = {

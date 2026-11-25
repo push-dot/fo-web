@@ -1,10 +1,10 @@
 import { useState, type FormEvent } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { authMe, AuthPasswordField, LOGIN_FAILED_COPY, authEmailVerify, verifyOutcome, VerifyExpired, VerifyInvalid } from '../../features/auth'
-import { pathAfterAuth, takeSignupReturnTo } from '../../shared/auth/return-path'
+import { authMe, AuthPasswordField, LOGIN_FAILED_COPY, authEmailVerify, verifyOutcome, VerifyExpired, VerifyInvalid, pathAfterAuth } from '../../features/auth'
+import { takeSignupReturnTo } from '../../shared/auth/return-path'
 import { sessionStore } from '../../shared/auth/session'
-import { PASSWORD_LENGTH_COPY } from '../../shared/model/constants'
-import { passwordError } from '../../shared/model/login-providers'
+import { PASSWORD_LENGTH_COPY } from '../../features/auth'
+import { passwordError } from '../../features/auth'
 import { CONFIRM_PASSWORD_PLACEHOLDER, PASSWORD_HINT, PASSWORD_LABEL, SET_PASSWORD_CONFIRM_LABEL, SET_PASSWORD_LEAD, SET_PASSWORD_MISMATCH, SET_PASSWORD_SUBMIT, SET_PASSWORD_SUBMITTING, SET_PASSWORD_TITLE } from './constants'
 
 type FormError = { field: 'password' | 'confirm' | 'form'; text: string }

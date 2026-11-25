@@ -1,5 +1,3 @@
-import { canInterviewPrep, canUploadExternalPdf, type EmployerPlanId } from './employer-plan'
-
 export type ChatIntent = 'posting' | 'review' | 'interview' | 'general'
 
 export type PostingDraft = {
@@ -27,11 +25,6 @@ const POSTING_DRAFT = {
 }
 
 export const POSTING_DRAFT_REPLY = ['이 내용으로 공고를 적어 봤어요.', '```posting-draft', JSON.stringify(POSTING_DRAFT, null, 2), '```'].join('\n')
-
-export const intentLocked = (intent: ChatIntent, plan: EmployerPlanId): 'PRO' | 'ULTRA' | null =>
-  intent === 'interview' && !canInterviewPrep(plan) ? 'PRO' : null
-
-export const pdfLocked = (plan: EmployerPlanId): boolean => !canUploadExternalPdf(plan)
 
 const FENCE = /```posting-draft[ \t]*\r?\n([\s\S]*?)```/
 

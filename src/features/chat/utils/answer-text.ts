@@ -1,4 +1,4 @@
-import { parsePostingDraft, type PostingDraft } from '../../../shared/model/employer-chat'
+import { parsePostingDraft, type PostingDraft } from './employer-chat'
 
 export type QuestionLine = { check: boolean; text: string }
 

@@ -3,7 +3,7 @@ import { useEffect, useId, useRef, useState, type FormEvent } from 'react'
 
 import { authPhoneSend, authPhoneVerify } from '../api/fetchers'
 import { withCleanup } from '../../../shared/lib/with-cleanup'
-import type { OAuthProvider } from '../../../shared/model/login-providers'
+import type { OAuthProvider } from '../utils/login-providers'
 import Icon from '../../../shared/ui/icon'
 import AuthAlert from './auth-alert'
 import AuthBack from './auth-back'

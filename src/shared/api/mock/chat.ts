@@ -1,6 +1,6 @@
 import type { A2uiFrame, Conversation, ConversationListItem, ConversationTurn, Message, StreamEvent } from '@push/api-client'
 import { sessionStore } from '../../auth/session'
-import { assistantReply, type ChatIntent } from '../../model/employer-chat'
+import { assistantReply, type ChatIntent } from '../../../features/chat/utils/employer-chat'
 import { CHAT_SCRIPTS, CHAT_SEED_ATTACHMENTS, CHAT_TURNS, type ChatScriptName } from './chat-scripts'
 import { CHAT_SEEDS, DRAFT_REPLY } from './fixtures'
 import { type MockSwitch, companyMe, json, mockSwitch, personaKey, readForm, readJson, routeTail } from './core'

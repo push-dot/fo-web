@@ -138,3 +138,36 @@ export const VERIFY_INVALID_NEXT = '계정을 이미 만들었다면 로그인�
 export const VERIFY_INVALID_RESTART = '처음부터 가입하기'
 
 export const CALLBACK_PATH = '/auth/callback'
+
+export const PUBLIC_PATHS = [
+  '/',
+  '/jobs',
+  '/search',
+  '/login',
+  '/signup',
+  '/auth/callback',
+  '/auth/verify',
+  '/auth/reset',
+] as const
+
+export const POSTING_PUBLIC_PATH = /^\/postings\/[^/]+$/
+
+export const VERIFIED_EMPLOYER_PATHS = ['/employer/postings', '/employer/chat'] as const
+
+export const EMPLOYER_LOGIN_PATHS = [
+  '/employer/verify',
+  '/employer/members',
+  '/employer/plans',
+] as const
+
+export const INVITE_PATH = /^\/invites\/[^/]+$/
+
+export const PASSWORD_MIN = 8
+
+export const PASSWORD_MAX = 128
+
+export const PASSWORD_LENGTH_COPY = '비밀번호가 너무 짧아요. 8자 이상, 영문과 숫자를 섞어 주세요.'
+
+export const EMAIL_TAKEN_PERSONAL_COPY = '이 이메일은 개인 계정으로 가입되어 있어요'
+
+export const EMAIL_TAKEN_EMPLOYER_COPY = '이 이메일은 기업 계정으로 가입되어 있어요. 기업 계정은 다른 이메일로 만들어 주세요.'

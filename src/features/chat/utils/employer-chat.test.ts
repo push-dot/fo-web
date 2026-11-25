@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
-import { canUseEmployerAi } from './employer-plan'
-import { POSTING_DRAFT_REPLY, REVIEW_REPLY, intentLocked, parsePostingDraft, pdfLocked } from './employer-chat'
+import { canUseEmployerAi } from '../../billing'
+import { POSTING_DRAFT_REPLY, REVIEW_REPLY, parsePostingDraft } from './employer-chat'
+import { intentLocked, pdfLocked } from './plan-lock'
 
 const postingDraft = {
   title: '백엔드 엔지니어',

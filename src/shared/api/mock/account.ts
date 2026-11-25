@@ -1,6 +1,6 @@
 import type { CompanyBillingStatus } from '@push/api-client'
 import { isWebView } from '../../lib/bridge'
-import { SEAT_LIMIT_NONE, SEAT_LIMIT_PRO, SEAT_LIMIT_ULTRA } from '../../model/constants'
+import { SEAT_LIMIT_NONE, SEAT_LIMIT_PRO, SEAT_LIMIT_ULTRA } from '../../../features/billing/constants'
 import { COMPANY_BRAND, MEMBER_EMAIL, type MockSwitch, applications, blocks, companyMe, companyRecord, consent, employerPersona, failure, flags, googleIntegration, hold, internalError, json, links, mockPersona, mockSession, mockSwitch, persona, personaKey, readJson, routeTail, switches } from './core'
 
 export const creditBalances = new Map<string, number>()

@@ -1,4 +1,4 @@
-import { PLAN_NAME, seatLimit, type EmployerPlanId } from '../../shared/model/employer-plan'
+import { PLAN_NAME, seatLimit, type EmployerPlanId } from '../billing'
 import { ApiError } from '@push/api-client'
 import { retryAfterSec } from '../../shared/api/retry-after'
 

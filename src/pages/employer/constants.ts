@@ -1,6 +1,6 @@
 import type { EmployerStage } from '@push/api-client'
-import { formatKrw } from '../../shared/model/employer-plans'
-import { PLAN_NAME, seatLimit } from '../../shared/model/employer-plan'
+import { formatKrw } from '../../features/billing'
+import { PLAN_NAME, seatLimit } from '../../features/billing'
 import { endsWithVowel } from '../../features/billing'
 import type { SeatPlan } from '../../features/company'
 

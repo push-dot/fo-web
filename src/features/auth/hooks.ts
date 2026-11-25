@@ -1,7 +1,7 @@
 import type { AccountType } from '@push/api-client'
 import { useState, useEffect } from 'react'
 import { createPkce, savePkceVerifier } from '../../shared/auth/pkce'
-import type { OAuthProvider } from '../../shared/model/login-providers'
+import type { OAuthProvider } from './utils/login-providers'
 import { savePendingLogin } from './utils/pending-login'
 import { authStart, signOut, authEmailResendVerify } from './api/fetchers'
 import { useQueryClient } from '@tanstack/react-query'

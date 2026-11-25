@@ -1,12 +1,12 @@
 import type { Session } from '@push/api-client'
-import { ApiError, authExchange, ProviderMark, PROVIDER_NAME, clearPendingLogin, readPendingLogin, PhoneConsent, termsPending } from '../../features/auth'
+import { ApiError, authExchange, ProviderMark, PROVIDER_NAME, clearPendingLogin, readPendingLogin, PhoneConsent, termsPending, pathAfterAuth } from '../../features/auth'
 import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 
 import { takePkceVerifier } from '../../shared/auth/pkce'
-import { pathAfterAuth, takeReturnTo } from '../../shared/auth/return-path'
+import { takeReturnTo } from '../../shared/auth/return-path'
 import { sessionStore } from '../../shared/auth/session'
-import { emailTakenCopy } from '../../shared/model/login-providers'
+import { emailTakenCopy } from '../../features/auth'
 import { EXCHANGE_CANCEL, EXCHANGE_EMPLOYER, EXCHANGE_PERSONAL, EXCHANGE_TAIL } from './constants'
 import type { LoginState } from '../../features/auth'
 
