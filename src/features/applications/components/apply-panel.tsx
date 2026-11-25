@@ -7,8 +7,9 @@ import { LOAD_FAIL } from '../../../shared/ui/page-state'
 import Skeleton from '../../../shared/ui/skeleton'
 import StateBlock from '../../../shared/ui/state-block'
 import ErrorState from '../../../shared/ui/error-state'
-import { ACTIVITY_LOAD_ERROR, APPLICATION_EMPTY, APPLY_FILTERS, APPLY_HEAD, FIT_NOTE } from '../constants'
+import { APPLICATION_EMPTY, APPLY_FILTERS, APPLY_HEAD, FIT_NOTE } from '../constants'
 import { applyCounts, appliedLine, filterApplications, type ApplyFilter } from '../utils/apply-filter'
+import { ACTIVITY_LOAD_ERROR } from '../../../shared/ui/constants'
 import { applicationStageTone as stageTone } from '../utils/stage-label'
 
 const ApplyPanel = () => {

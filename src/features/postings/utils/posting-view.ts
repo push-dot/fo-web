@@ -2,6 +2,7 @@ import { EMPLOYMENT_TYPES, type CompanyPosting, type PostingStatus } from '@push
 import { careerLabel } from '@push/shared'
 
 import { AGENT_DRAFT, DEADLINE_NONE, DEADLINE_OPEN, STATUS_CLOSED, STATUS_DRAFT, STATUS_OPEN, draftBy, postedBy } from '../constants'
+import { dateLabel } from '../../../shared/lib/format'
 
 export const STATUS_BADGE: Record<PostingStatus, { label: string; tone: 'green' | 'orange' | 'grey' }> = {
   OPEN: { label: STATUS_OPEN, tone: 'green' },
@@ -19,11 +20,6 @@ export const agoLabel = (iso: string, now: number) => {
   if (days <= 0) return '오늘'
   if (days === 1) return '어제'
   return days < 30 ? `${days}일 전` : `${new Date(iso).getMonth() + 1}월 ${new Date(iso).getDate()}일`
-}
-
-export const dateLabel = (iso: string) => {
-  const [, month, day] = iso.slice(0, 10).split('-').map(Number)
-  return month && day ? `${month}월 ${day}일` : iso
 }
 
 export const subLine = (posting: CompanyPosting, now: number) => {

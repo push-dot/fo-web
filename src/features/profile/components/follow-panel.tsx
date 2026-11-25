@@ -5,10 +5,10 @@ import { LOAD_FAIL } from '../../../shared/ui/page-state'
 import Skeleton from '../../../shared/ui/skeleton'
 import StateBlock from '../../../shared/ui/state-block'
 import ErrorState from '../../../shared/ui/error-state'
-import { ACTIVITY_LOAD_ERROR } from '../../applications'
 import { FOLLOW_EMPTY, FOLLOW_EMPTY_ACTION, FOLLOW_EMPTY_SUB, followCount } from '../constants'
-import { listTotal } from '../../postings'
 import FollowRow from './follow-row'
+import { ACTIVITY_LOAD_ERROR } from '../../../shared/ui/constants'
+import { listTotal } from '../../../shared/lib/format'
 
 const FollowPanel = () => {
   const query = useFollows()

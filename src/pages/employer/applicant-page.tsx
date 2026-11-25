@@ -1,5 +1,5 @@
 import type { EmployerStage } from '@push/api-client'
-import { ApiError, employerStageLabel, postingsApplicantFile, useEmployerApplicant, useEmployerApplicants, ApplicantDocument, applicantProfileLine, applicantSub, docChips, STAGE_APPLIED, STAGE_TITLE, memberInitials, StageMenu, useStageMove } from '../../features/applications'
+import { ApiError, employerStageLabel, postingsApplicantFile, useEmployerApplicant, useEmployerApplicants, ApplicantDocument, applicantProfileLine, applicantSub, docChips, STAGE_APPLIED, STAGE_TITLE, StageMenu, useStageMove } from '../../features/applications'
 import { brandColor } from '@push/shared'
 import { useMutation } from '@tanstack/react-query'
 import { useState } from 'react'
@@ -13,7 +13,7 @@ import Icon from '../../shared/ui/icon'
 import ErrorState from '../../shared/ui/error-state'
 import Toast, { useToast } from '../../shared/ui/toast'
 import { AI_INTERVIEW, AI_REVIEW, APPLICANT_FAILED, APPLICANT_LOADING, DOCS_NONE, HUB_PROFILE, POSTINGS_TITLE, STAGE_ENDED, STAGE_RETRY, STAGE_RETRY_NOTE, APPLICANTS_TITLE, FILE_FAILED, stageFailed, stageMoved, stageNotice } from './constants'
-import { dateLabel } from '../../features/postings'
+import { memberInitials, dateLabel } from '../../shared/lib/format'
 
 type Failure = { stage: EmployerStage; ended: boolean }
 

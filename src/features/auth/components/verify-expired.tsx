@@ -1,16 +1,14 @@
 import { Link } from 'react-router-dom'
-import {
-  AuthResult,
-  VERIFY_MAIL_OTHER,
-  VERIFY_MAIL_RESEND,
-  verifyResendWait,
-  useVerifyResend,
-} from '..'
+import AuthResult from './auth-result'
+import { useVerifyResend } from '../hooks'
 import {
   VERIFY_EXPIRED_NEXT,
   VERIFY_EXPIRED_TITLE,
   VERIFY_EXPIRED_TO,
   VERIFY_EXPIRED_WHY,
+  VERIFY_MAIL_OTHER,
+  VERIFY_MAIL_RESEND,
+  verifyResendWait,
 } from '../constants'
 import Toast from '../../../shared/ui/toast'
 
