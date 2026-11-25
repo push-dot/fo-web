@@ -8,9 +8,9 @@ import Popover from '../../../shared/ui/popover'
 import Skeleton from '../../../shared/ui/skeleton'
 import StateBlock from '../../../shared/ui/state-block'
 import ErrorState from '../../../shared/ui/error-state'
-import { ACTIVITY_LOAD_ERROR } from '../../applications'
 import { COMMENTED_EMPTY, POST_EMPTY, POST_EMPTY_ACTION, POST_EMPTY_SUB, POSTS_VIEW_LABEL, POSTS_VIEWS } from '../constants'
-import { listTotal } from '../../postings'
+import { ACTIVITY_LOAD_ERROR } from '../../../shared/ui/constants'
+import { listTotal } from '../../../shared/lib/format'
 import MyPostRow from './my-post-row'
 
 type PostsView = (typeof POSTS_VIEWS)[number]['key']

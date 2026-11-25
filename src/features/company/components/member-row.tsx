@@ -1,6 +1,6 @@
 import { brandColor } from '@push/shared'
 import { MEMBER_SELF, REMOVE_MEMBER, TRANSFER_ADMIN } from '../constants'
-import { memberInitials } from '../../applications'
+import { memberInitials } from '../../../shared/lib/format'
 import Row from './row'
 
 const MemberRow = ({

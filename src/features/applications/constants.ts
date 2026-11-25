@@ -32,13 +32,6 @@ export const SHEET_LIVE = '경력과 기술은 지금 프로필 기준이에요'
 
 export const FILE_DOWNLOAD = '파일 받기'
 
-export const memberInitials = (name: string) => {
-  const chars = [...name.trim()]
-  return /^[가-힣]{3,}$/.test(name.trim())
-    ? chars.slice(-2).join('')
-    : (chars[0] ?? '').toUpperCase()
-}
-
 export const APPLICATION_EMPTY = '아직 지원한 공고가 없어요.'
 
 export const CALENDAR_EMPTY = '이날은 일정이 없어요.'
@@ -80,8 +73,6 @@ export const CALENDAR_WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토
 
 export const FIT_NOTE =
   '적합도는 앱에서 계산한 점수예요. 자세한 항목과 고칠 점은 앱의 에이전트에서 볼 수 있어요.'
-
-export const ACTIVITY_LOAD_ERROR = '목록을 불러오지 못했어요.'
 
 export const BLOCKED_APPLICATION_STAGES = ['REJECTED', 'ACCEPTED', 'WITHDRAWN'] as const
 

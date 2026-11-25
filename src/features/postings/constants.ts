@@ -91,9 +91,6 @@ export const BOOKMARK_EMPTY_SUB = '공고에서 북마크를 누르면 여기에
 
 export const bookmarkCount = (count: number) => `북마크한 공고 ${count}개`
 
-export const listTotal = (envelope: { data: unknown[]; page: { total?: number } }) =>
-  envelope.page.total ?? envelope.data.length
-
 export const MOCK_FIT_DELAY_MS = 1200
 
 export const APPLIED_TOAST = '지원했어요. 내 활동에서 진행 상황을 볼 수 있어요'

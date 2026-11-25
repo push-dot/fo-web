@@ -1,6 +1,4 @@
 import { ApiError, type LedgerEntry } from '@push/api-client'
-import { creditText } from './utils/credit-count'
-import { MAX_PACKS, PACK_CREDITS, formatKrw } from './utils/employer-plans'
 
 export const MICRO_PER_CREDIT = 6000
 
@@ -17,12 +15,6 @@ export const PLAN_BUY_HINT = '이번 달 크레딧이 모자라면 더 살 수 �
 export const PLAN_BUY = '구매'
 
 export const PLAN_BUY_PACKS = '구매할 팩 수'
-
-export const planBuyPackHint = (packPrice: number) =>
-  `1팩에 ${creditText(PACK_CREDITS)}크레딧 · ${formatKrw(packPrice)}이에요. 한 번에 ${MAX_PACKS}팩까지 살 수 있어요.`
-
-export const buyTotal = (packs: number, packPrice: number) =>
-  `${creditText(packs * PACK_CREDITS)}크레딧 · ${formatKrw(packs * packPrice)}`
 
 export const BUY_TERMS =
   '크레딧은 한 번만 결제돼요. 자동으로 다시 결제되지 않아요. 결제한 날부터 7일 안에 쓰지 않았다면 환불받을 수 있어요.'

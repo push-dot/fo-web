@@ -4,8 +4,9 @@ import CardSkeletons from '../../../shared/ui/card-skeletons'
 import StateBlock from '../../../shared/ui/state-block'
 import ErrorState from '../../../shared/ui/error-state'
 import PostingCard from './posting-card'
-import { ACTIVITY_LOAD_ERROR } from '../../applications'
-import { BOOKMARK_EMPTY, BOOKMARK_EMPTY_SUB, bookmarkCount, listTotal } from '../constants'
+import { ACTIVITY_LOAD_ERROR } from '../../../shared/ui/constants'
+import { listTotal } from '../../../shared/lib/format'
+import { BOOKMARK_EMPTY, BOOKMARK_EMPTY_SUB, bookmarkCount } from '../constants'
 
 const BookmarkPanel = () => {
   const query = useBookmarks()

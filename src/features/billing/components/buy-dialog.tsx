@@ -7,9 +7,8 @@ import {
   PLAN_BUY_PACKS,
   PLAN_BUY_TITLE,
   PLAN_CANCEL,
-  buyTotal,
-  planBuyPackHint,
 } from '../constants'
+import { buyTotal, planBuyPackHint } from '../utils/pack-copy'
 import DialogHead from './dialog-head'
 
 const BuyDialog = ({

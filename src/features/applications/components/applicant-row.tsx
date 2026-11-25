@@ -2,10 +2,10 @@ import { brandColor } from '@push/shared'
 import type { ApplicantSummary, EmployerStage } from '@push/api-client'
 import { Link } from 'react-router-dom'
 
-import { APPLICANTS_HEAD, APPLICANT_NEW, memberInitials } from '../constants'
+import { APPLICANTS_HEAD, APPLICANT_NEW } from '../constants'
 import { DOC_BADGE, applicantSub } from '../utils/applicant-view'
-import { dateLabel } from '../../postings'
 import StagePick from './stage-pick'
+import { memberInitials, dateLabel } from '../../../shared/lib/format'
 
 const ApplicantRow = ({
   postingId,

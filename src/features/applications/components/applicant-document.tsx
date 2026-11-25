@@ -4,7 +4,8 @@ import { Fragment } from 'react'
 
 import Icon from '../../../shared/ui/icon'
 import { careerRows, type DocChip } from '../utils/applicant-view'
-import { DOCUMENT_EMPTY, FILE_DOWNLOAD, SHEET_CAREERS, SHEET_INTRO, SHEET_LIVE, SHEET_SKILLS, memberInitials } from '../constants'
+import { DOCUMENT_EMPTY, FILE_DOWNLOAD, SHEET_CAREERS, SHEET_INTRO, SHEET_LIVE, SHEET_SKILLS } from '../constants'
+import { memberInitials } from '../../../shared/lib/format'
 
 type Profile = NonNullable<ApplicantDetail['applicant']>
 

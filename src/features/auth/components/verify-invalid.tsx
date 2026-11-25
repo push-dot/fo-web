@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { AuthResult } from '..'
+import AuthResult from './auth-result'
 import {
   PASSWORD_CHANGED_ACTION,
   VERIFY_INVALID_NEXT,
