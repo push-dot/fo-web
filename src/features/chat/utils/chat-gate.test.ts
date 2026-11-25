@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs'
 import { ApiError, QueueBusyError } from '@push/api-client'
 import { describe, expect, it } from 'vitest'
-import { approvalFailureFrom, chatGateFrom, composerAfterVanish, questionForComposer } from './chat-gate'
+import { approvalFailureFrom, chatGateFrom, chatRouteState, composerAfterVanish, questionForComposer } from './chat-gate'
 
 describe('chatGateFrom', () => {
   it('maps plan, verification, and unknown failures', () => {
@@ -46,5 +46,16 @@ describe('chatGateFrom', () => {
     expect(approvalFailureFrom(new ApiError('dup', 'APPROVAL_ALREADY_RESOLVED', 409))).toBe('resolved')
     expect(approvalFailureFrom(new ApiError('old', 'APPROVAL_EXPIRED', 410))).toBe('expired')
     expect(approvalFailureFrom(new Error('offline'))).toBe('failed')
+  })
+})
+
+describe('chatRouteState', () => {
+  it('carries the applicant an applicant page hands to the agent', () => {
+    expect(chatRouteState({ intent: 'review', applicationId: 'app-1', postingId: 'p-1' })).toEqual({
+      intent: 'review',
+      applicationId: 'app-1',
+      postingId: 'p-1',
+    })
+    expect(chatRouteState(null)).toEqual({ intent: 'general', applicationId: undefined, postingId: undefined })
   })
 })
