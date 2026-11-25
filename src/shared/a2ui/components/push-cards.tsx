@@ -253,7 +253,6 @@ export type PushJobCardProps = {
 }
 
 export const PushJobCardView = ({ props, context }: ViewProps<PushJobCardProps>) => {
-  // The image URL comes from the server: only http(s) and data images pass.
   const image = sanitizeMediaUrl(props.imageUrl)
   return (
     <button

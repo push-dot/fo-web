@@ -7,10 +7,8 @@ export const billingCompanyStatus = (...args: Parameters<typeof fetchCompanyBill
 export const useCompanyBilling = () =>
   useQuery({ queryKey: ['billing', 'company'], queryFn: () => billingCompanyStatus() })
 
-/** False until billing loads, so nothing offers a payment on a guess. */
 export const usePaymentsOpen = () => paymentsOpen(useCompanyBilling().data)
 
-// push-be pages the ledger 50 rows at a time.
 export const useBillingLedger = () =>
   useInfiniteQuery({
     queryKey: ['billing', 'ledger'],

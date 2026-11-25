@@ -27,8 +27,6 @@ export const ErrorScreen = ({ onHome, onRetry }: { onHome?: () => void; onRetry:
   </PageState>
 )
 
-// The raw error stays in the console; the screen never shows its message or stack.
-// The WebView has no home page to go back to, so it only offers retry.
 export const RouteError = () => {
   const error = useRouteError()
   const navigate = useNavigate()
@@ -41,7 +39,6 @@ export const RouteError = () => {
   )
 }
 
-// The WebView has no home to land on, so the unknown-path screen only offers going back.
 export const WebViewNotFound = () => {
   const navigate = useNavigate()
   return (

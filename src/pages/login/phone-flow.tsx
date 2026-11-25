@@ -67,7 +67,6 @@ const PhoneFlow = ({
   const [error, setError] = useState<string | null>(null)
   const [pending, setPending] = useState(false)
   const [consent, setConsent] = useState<Session | null>(null)
-  // The wait shows in the resend states (board: none) only after push-be refused a resend.
   const [refused, setRefused] = useState(false)
   const phoneInput = useRef<HTMLInputElement>(null)
   const codeInput = useRef<HTMLInputElement>(null)
@@ -81,7 +80,6 @@ const PhoneFlow = ({
       firstStep.current = false
       return
     }
-    // A taken number comes back read-only, so focus goes to the card's first way out.
     if (step === 'code') codeInput.current?.focus()
     else (takenCard.current?.querySelector('button') ?? phoneInput.current)?.focus()
   }, [step])
@@ -111,7 +109,6 @@ const PhoneFlow = ({
           setError(sendFailureCopy(caught))
           return
         }
-        // A code went to this number moments ago: go (back) to the code step so it can still be entered, like the app.
         setResendAt(Date.now() + wait * 1000)
         setNow(Date.now())
         setRefused(true)
@@ -132,7 +129,6 @@ const PhoneFlow = ({
       try {
         const result = await authPhoneVerify(credentials)
         const { created: _created, linked: _linked, provider: _provider, ...session } = result
-        // The code is spent once verified, so a failed terms read asks for a new code rather than a retry.
         const pendingTerms = await termsPending(session).catch(() => null)
         if (pendingTerms === null) {
           setCode('')
@@ -142,7 +138,6 @@ const PhoneFlow = ({
       } catch (caught) {
         const failure = phoneFailure(caught)
         if (failure.kind === 'taken') {
-          // push-be sends the code to any number and refuses only here, so the board's number-step card shows after the code step.
           setTaken({ provider: failure.provider })
           setStep('number')
         } else if (failure.kind === 'failed') {

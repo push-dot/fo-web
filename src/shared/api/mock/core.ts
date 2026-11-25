@@ -419,7 +419,6 @@ export const toCard = (item: CompanyPosting): Posting => ({
 export type ApplicantRecord = {
   application: Application
   seed: (typeof APPLICANT_SEEDS)[number]
-  /** Cleared the first time any member opens the applicant, matching company_seen_at. */
   seen: boolean
 }
 
@@ -455,7 +454,6 @@ export const applicantSummary = ({ application, seed, seen }: ApplicantRecord) =
   isNew: !seen,
 })
 
-// push-be keeps text documents in documents and attached PDFs in files.
 export const applicantDetail = ({ application, seed }: ApplicantRecord) => ({
   application,
   documents: seed.documents.filter((item) => !isPdf(item.title)).map((item) => ({ id: item.id, title: item.title.replace(' (프로필)', ''), content: item.content })),
@@ -484,7 +482,6 @@ export const COUNT_KEY = {
   WITHDRAWN: 'rejected',
 } as const
 
-// job-1 stands for a posting with 38 applicants; the five records are the visible page, so moves shift the totals.
 export const BOARD_COUNTS = { total: 38, applied: 24, screening: 8, interview: 4, offer: 1, rejected: 1 }
 
 export const applicantCounts = (postingId: string) => {
@@ -651,7 +648,6 @@ export let meProfile: Profile = { ...ME_PROFILE }
 
 export let feed: Post[] = FEED.map((item) => ({ ...item }))
 
-// shortcut: 김서준's seeded posts stay out of the /posts feed because WebSocial draws none of them; merge them once the boards agree.
 export const myPosts: Post[] = MY_POSTS.map((item) => ({ ...item }))
 
 export const postById = (id: string) => feed.find((item) => item.id === id) ?? myPosts.find((item) => item.id === id)
@@ -694,7 +690,6 @@ export let settings: Settings = {
   confirmBeforeEdit: true,
 }
 
-// The mock persona agreed at sign-up; the signup-consent switch serves an account that has not (push-be stores terms apart).
 export let consent: Consent = {
   referenceData: false,
   updatedAt: null,
@@ -730,7 +725,6 @@ export const removeSource = (id: string) => {
   return false
 }
 
-// Push documents (AI_MADE sources) carry a push-be document revision; archive is how push-be deletes them.
 export const documentRevisions = new Map<string, number>()
 export const archivedDocs = new Map<string, { source: SeedSource; list: SeedSource[] }>()
 
@@ -810,12 +804,10 @@ export let inviteSeq = 0
 
 export const personaKey = () => mockPersona() ?? 'default'
 
-// fo-mobile's mock viewer id: the app opens its own hub profile as /profiles/dev, which is 김서준 here.
 export const APP_VIEWER_ID = 'dev'
 
 export const currentUserId = () => sessionStore.load()?.user.id ?? 'u1'
 
-// push-be sends every member's displayName; the boards' admin is 이민아.
 export const adminMember = (joinedAt: string): CompanyMember => ({
   userId: currentUserId(),
   email: MEMBER_EMAIL,
@@ -999,7 +991,6 @@ export const failedReply = (offerId: string) => ({
 
 export const adminOnly = () => failure(403, 'FORBIDDEN', '관리자만 할 수 있어요')
 
-// Other modules read these live bindings but cannot assign them.
 export const setSentOffers = (next: Offer[]) => {
   sentOffers = next
 }

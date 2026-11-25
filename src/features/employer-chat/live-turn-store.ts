@@ -12,10 +12,6 @@ const nextFrame: Frame = (run) => {
   return () => clearTimeout(handle)
 }
 
-/**
- * The turn streaming now, outside React state: a frame per token would re-render the whole room.
- * Events queue up and fold into the turn once per animation frame; subscribers see one change per frame.
- */
 export const createLiveTurnStore = (frame: Frame = nextFrame) => {
   let turn: ChatTurn | null = null
   let active = false
@@ -34,7 +30,6 @@ export const createLiveTurnStore = (frame: Frame = nextFrame) => {
   }
 
   return {
-    /** Starts a live turn; `null` until the first event arrives. */
     begin: (from: ChatTurn | null) => {
       if (active) return
       active = true

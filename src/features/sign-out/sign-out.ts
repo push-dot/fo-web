@@ -5,10 +5,6 @@ import { authLogout } from '../../shared/api/operations'
 import { cookieSession } from '../../shared/auth/cookie-session'
 import { sessionStore } from '../../shared/auth/session'
 
-/**
- * Like the app's signOut: revokes the refresh token on push-be (best effort), then drops the session and every cached read
- * so the next account never sees this one's data. A deleted account skips the revoke; push-be already ended its sessions.
- */
 export const signOut = async (queryClient: Pick<QueryClient, 'clear'>, { revoke = true } = {}) => {
   const refreshToken = sessionStore.load()?.refreshToken
   if (revoke && (cookieSession || refreshToken)) await authLogout(cookieSession ? undefined : refreshToken).catch(() => undefined)

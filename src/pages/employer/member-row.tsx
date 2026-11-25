@@ -49,7 +49,6 @@ export const MemberRow = ({
   admin: boolean
   self: boolean
   busy: boolean
-  /** Set only for an ADMIN looking at another member. */
   onRemove?: () => void
   onTransfer?: () => void
 }) => (
@@ -85,7 +84,6 @@ export const InviteRow = ({
 }: {
   expiry: string
   busy: boolean
-  /** Omitted for a MEMBER, who can see the invite but cannot send it again or cancel it. */
   onResend?: () => void
   onRevoke?: () => void
 }) => (

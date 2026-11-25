@@ -29,7 +29,6 @@ type EditorForm = {
   description: string
   requirements: string
   preferred: string
-  // Only an agent draft brings these; the board has no field for them, so they are sent on create and left alone on update.
   workConditions: string
   jobCategory: JobCategory
   careerMin: number
@@ -135,7 +134,6 @@ const PostingEditorPage = () => {
   const save = useMutation({
     mutationFn: (status: 'OPEN' | 'DRAFT') => {
       const body = toInput(formRef.current, !id)
-      // A closed posting cannot go back to OPEN or DRAFT, so it keeps its status.
       const withStatus = closedAt ? body : { ...body, status }
       return id ? postingsUpdate(id, { ...withStatus, expectedRevision: revisionRef.current }) : postingsCreate(withStatus)
     },
@@ -204,7 +202,6 @@ const PostingEditorPage = () => {
       <BulletField label={label} value={form[key]} onChange={(next) => patch({ [key]: next })} />
     </div>
   )
-  // Saving a live posting as a draft takes it off the list, so that asks first.
   const saveDraft = () => (detail.data?.status === 'OPEN' && !closedAt ? setConfirm('draft') : submit('DRAFT'))
   const actions = (
     <>

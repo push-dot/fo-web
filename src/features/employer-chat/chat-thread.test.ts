@@ -27,7 +27,6 @@ const job = (
   events: [{ type: 'tool', name: 'read', state: 'ok', summary: '읽기' }],
 })
 
-// push-be pages messages newest first.
 const newestFirst = (...messages: Message[]) => messages.reverse()
 
 describe('threadItems', () => {

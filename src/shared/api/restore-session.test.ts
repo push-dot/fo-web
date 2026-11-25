@@ -22,7 +22,7 @@ const booted = async (answer: Response) => {
   const { restoreSession } = await import('./client')
   const { sessionStore } = await import('../auth/session')
   saveSignupReturnTo('/invites/abc', 'kim@push.app')
-  tab.items.clear() // the verify link opens in a new tab
+  tab.items.clear()
   await restoreSession()
   return { sessionStore, takeSignupReturnTo, local }
 }

@@ -1,7 +1,6 @@
 import type { ConversationTurn, Message } from '@push/api-client'
 import { storedTurn, type ChatTurn } from './chat-turn'
 
-// Same job, same turn object: rows memoised on it do not redraw when the thread is rebuilt.
 const storedCache = new WeakMap<ConversationTurn, ReturnType<typeof storedTurn>>()
 const storedOnce = (turn: ConversationTurn) => {
   const known = storedCache.get(turn)
@@ -13,14 +12,11 @@ const storedOnce = (turn: ConversationTurn) => {
 
 export type Attachment = Message['attachments'][number]
 
-/** `text` is empty when the live turn only follows an answer to a card already on screen. */
 export type LiveTurn = {
   text: string
   attachments: Attachment[]
   turn: ChatTurn | null
-  /** Ids of the stored messages already there when the run started: the ones it adds are shown by the live turn. */
   known: string[]
-  /** The stored job this turn follows again (after leaving the screen): its stored copy is not shown twice. */
   jobId?: string
 }
 
@@ -29,11 +25,6 @@ export type ThreadItem =
   | { kind: 'turn'; key: string; turn: ChatTurn; live: boolean }
   | { kind: 'reply'; key: string; text: string }
 
-/**
- * One ordered list for the thread: stored messages, the stored jobs from GET .../turns in place of the assistant
- * messages they produced, and the turn streaming now. push-be pages messages newest first, so they are reversed here.
- * The live turn replaces the messages stored since it began (its own question and the reply), so nothing shows twice.
- */
 export const threadItems = (
   messages: Message[],
   turns: ConversationTurn[],
@@ -56,7 +47,6 @@ export const threadItems = (
         text: message.text,
         attachments: message.attachments,
       }
-      // A job still waiting on a card has no assistant message yet: show it under its question.
       return own && !rows.some((row) => row.id === own.assistantMessageId)
         ? [user, replay(own)]
         : [user]
@@ -85,10 +75,6 @@ export const threadItems = (
   ]
 }
 
-/**
- * The application attached most recently before each item, in one pass (a card offers actions for that applicant),
- * and the last one overall. Replaces slicing the thread per item.
- */
 export const applicationTrail = (
   items: ThreadItem[],
 ): { before: (string | undefined)[]; last: string | undefined } => {

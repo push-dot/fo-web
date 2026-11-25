@@ -90,7 +90,6 @@ const LoginPage = () => {
     await withCleanup(async () => {
       try {
         const session = await authEmailLogin(email, password)
-        // The session stays unused until the terms are on record. A failed read blocks it, as social and phone do.
         const gate = await termsOutcome(session)
         if (gate === 'blocked') {
           setError(LOGIN_FAILED_COPY)
@@ -122,7 +121,6 @@ const LoginPage = () => {
   }
 
   const busy = pending || oauth.pending
-  // push-be has no resend-only endpoint: a new verification mail comes from submitting the sign-up form again.
   const alert = failed ? (
     <AuthAlert
       title={`${PROVIDER_NAME[failed]}${SOCIAL_FAIL_TAIL}`}
@@ -201,7 +199,6 @@ const LoginPage = () => {
           <p className="auth-switch">
             <Link to="/signup?accountType=EMPLOYER">{SIGNUP_LINK_COPY}</Link>
             <span aria-hidden="true">·</span>
-            {/* Board WebLoginBizWrongPw: after a wrong password the way out is as strong as sign-up. */}
             <Link className={error === BAD_CREDENTIALS_COPY ? undefined : 'quiet'} to="/auth/reset">
               {FORGOT_COPY}
             </Link>

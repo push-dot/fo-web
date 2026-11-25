@@ -8,7 +8,6 @@ export type PostingDraft = {
   requirements: string[]
   preferred: string[]
   workConditions: Record<string, unknown>
-  /** The facts under the title: the tool result has them on the posting, the fence under workConditions. */
   location?: string
   careerMin?: number
   careerMax?: number | null

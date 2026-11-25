@@ -30,7 +30,6 @@ import Shell from './shell'
 
 type Loaded = Promise<{ default: ComponentType }>
 
-// Route-level split: the page's chunk loads on first visit, not with the entry bundle.
 const page = (load: () => Loaded) => async () => ({ Component: (await load()).default })
 
 const legal = (kind: LegalKind) => async () => {
@@ -38,7 +37,6 @@ const legal = (kind: LegalKind) => async () => {
   return { Component: () => <LegalPage kind={kind} /> }
 }
 
-// A new page opens at the top; back and forward restore where the reader was.
 export const ScrollRoot = () => (
   <>
     <ScrollRestoration />

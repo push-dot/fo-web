@@ -2,7 +2,6 @@ import type { ViewProps } from './view'
 
 export type TextProps = { text?: string; variant?: string }
 
-// v0.9.1 sends h1–h5, caption and body; 1.0 only caption and body.
 const TEXT_CLASS: Record<string, string> = {
   h1: 'h1',
   h2: 'h2',
@@ -13,10 +12,8 @@ const TEXT_CLASS: Record<string, string> = {
   body: 'a2-ds',
 }
 
-// 1.0 has no plain-text heading, so push-be sends the approval question as a body Text with the id `title`.
 const TITLE_ID = 'title'
 
-/** Push override of the basic Text: plain text, never Markdown (a file name's `_` must not turn italic). */
 export const TextView = ({ props, context }: ViewProps<TextProps>) => {
   const title = !props.variant && context.componentModel.id === TITLE_ID
   return (
@@ -34,7 +31,6 @@ export type ListProps = {
   align?: string
 }
 
-/** Push override of the basic List: a plain, non-lazy column or row. */
 export const ListView = ({ props, buildChild }: ViewProps<ListProps>) => (
   <div className={props.direction === 'horizontal' ? 'a2-list row' : 'a2-list'}>
     {(props.children ?? []).map((child) =>

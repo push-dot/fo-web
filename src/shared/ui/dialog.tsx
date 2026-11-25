@@ -16,7 +16,6 @@ export const useEscape = (onClose: () => void) => {
 
 export const Dialog = ({ label, onClose, wide = false, className, children }: DialogProps) => {
   const ref = useRef<HTMLDivElement>(null)
-  // Read while rendering: by the first effect an autoFocus field inside already holds focus.
   const [opener] = useState(() => openerOf(document.activeElement))
   useEscape(onClose)
   useEffect(() => {

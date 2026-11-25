@@ -29,7 +29,6 @@ afterEach(() => {
   document.body.innerHTML = ''
 })
 
-// The golden frames share one surfaceId; in a thread every surface has its own.
 const own = (fixture: unknown, surfaceId: string): A2uiFrame =>
   JSON.parse(
     JSON.stringify(fixture).replaceAll((fixture as A2uiFrame).surfaceId, surfaceId),

@@ -8,7 +8,6 @@ import { TOPUP_DONE, planConfirmError, planPaid } from './constants'
 
 type Failed = { code: string | null; message: string | null }
 
-/** Settles the browser's return from Toss once, tells the person, and strips the return params so a reload does nothing. */
 const useTossReturn = (showToast: (message: string) => void) => {
   const [params, setParams] = useSearchParams()
   const queryClient = useQueryClient()

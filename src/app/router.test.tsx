@@ -41,7 +41,6 @@ describe('scroll restoration', () => {
 })
 
 describe('route errors', () => {
-  // SSR cannot catch render-time throws, so the route fails in its loader; the errorElement path is the same.
   const render = async (webView: boolean) => {
     vi.spyOn(console, 'error').mockImplementation(() => {})
     vi.mocked(isWebView).mockReturnValue(webView)

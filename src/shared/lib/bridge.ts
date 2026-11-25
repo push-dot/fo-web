@@ -22,7 +22,6 @@ declare global {
   }
 }
 
-/** The app's access token lives here, never on `window`: a script from another origin cannot read it off a global. */
 let nativeToken: string | null | undefined
 let resolveToken: ((token: string | null) => void) | undefined
 const tokenWait = new Promise<string | null>((resolve) => (resolveToken = resolve))
@@ -35,12 +34,10 @@ export const setNativeToken = (token: string | null | undefined) => {
 export const pushEnv = (): PushEnv => {
   if (typeof window === 'undefined') return {}
   const env = (window.__PUSH__ ??= {})
-  // An older app still injects `token` into the global: take it once, then remove it.
   if ('token' in env && !Object.getOwnPropertyDescriptor(env, 'token')?.get) {
     setNativeToken(env.token)
     delete env.token
   }
-  // The api client reads `.token` synchronously; before the app's first push:token in a WebView it gets a promise it awaits.
   if (!Object.getOwnPropertyDescriptor(env, 'token'))
     Object.defineProperty(env, 'token', {
       enumerable: false,
@@ -50,7 +47,6 @@ export const pushEnv = (): PushEnv => {
   return env
 }
 
-/** Which app list opened the page; the app boards for one route differ by it. */
 export type WebViewFrom = 'following' | 'bookmark'
 
 export const webViewFrom = (search = typeof location === 'undefined' ? '' : location.search): WebViewFrom | undefined => {
@@ -74,7 +70,6 @@ export const isMock = () => {
 
 if (typeof window !== 'undefined') {
   applyTheme(pushEnv().theme)
-  // Ask the app for the token: it answers with push:token once, so the page never has it before it asks.
   window.ReactNativeWebView?.postMessage(JSON.stringify({ type: 'ready' }))
   window.addEventListener('push:token', (e) => {
     setNativeToken((e as CustomEvent<{ token?: string | null }>).detail?.token ?? null)

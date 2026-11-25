@@ -96,7 +96,6 @@ export const VerifyInvalid = () => (
 
 type FormError = { field: 'password' | 'confirm' | 'form'; text: string }
 
-// The person who opens the mailed link chooses the password, so a second signup for the same address cannot set it.
 const VerifyPage = () => {
   const [params] = useSearchParams()
   const token = params.get('token')
@@ -119,7 +118,6 @@ const VerifyPage = () => {
     try {
       const session = await authEmailVerify(token, password)
       sessionStore.save(session)
-      // The session carries no email; the saved return path is used only for the address it was saved for.
       const email = await authMe().then(
         (me) => me.email,
         () => '',

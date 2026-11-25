@@ -3,7 +3,6 @@ import type { OfferBox } from '@push/shared'
 
 export type ThreadFoot = 'respond' | 'declined' | 'closed' | 'composer' | 'none'
 
-/** `sendBlocked`: a send in this visit came back 403 BLOCKED, so the composer closes before canSend re-reads. */
 export const threadFoot = (offer: Offer, box: OfferBox, sendBlocked = false): ThreadFoot => {
   if (offer.status === 'DECLINED') return 'declined'
   if (offer.status !== 'ACCEPTED') return box === 'received' ? 'respond' : 'none'

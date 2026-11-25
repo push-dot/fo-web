@@ -34,8 +34,6 @@ import VerifyMail from './verify-mail'
 import { authEmailSignup } from '../../features/sign-up'
 import { useVerifyResend } from './verify-resend'
 
-// Personal accounts start with a phone number (owner ruling: email/password is employer only); a first social login
-// arrives here with push-be's pendingToken to attach the number.
 const SignupPage = () => {
   const [params] = useSearchParams()
   const location = useLocation()

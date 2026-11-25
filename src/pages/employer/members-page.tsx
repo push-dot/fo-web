@@ -75,7 +75,6 @@ const MembersPage = () => {
       queryClient.invalidateQueries({ queryKey: ['company', 'invites'] }),
     ])
   }
-  // A 403 means the role changed under us (another admin took over), so the page reloads what it may show.
   const fail = (error: unknown, member = false) => {
     toast.show(memberActionError(error, member), { tone: 'err' })
     if (error instanceof ApiError && (error.status === 403 || error.status === 404)) void refresh()

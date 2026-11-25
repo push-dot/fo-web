@@ -15,7 +15,6 @@ export const useEmployerConversations = () =>
 const olderPage = (last: { page: { hasMore: boolean; nextCursor: string | null } }) =>
   last.page.hasMore ? (last.page.nextCursor ?? undefined) : undefined
 
-/** Newest first, one page per scroll back to the top: push-be pages messages and jobs by cursor. */
 export const useEmployerMessages = (id: string | undefined) =>
   useInfiniteQuery({
     queryKey: ['employer-messages', id],

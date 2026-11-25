@@ -45,7 +45,6 @@ const render = (role: Company['role'], paymentsEnabled?: boolean, extra?: Partia
   )
 }
 
-// The <button> whose label is `label`, or undefined when the page leaves it out.
 const button = (html: string, label: string) =>
   html.match(new RegExp(`<button[^>]*>(?:(?!</button>).)*${label}</button>`))?.[0]
 

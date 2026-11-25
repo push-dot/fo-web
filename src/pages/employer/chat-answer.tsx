@@ -12,10 +12,6 @@ export const ChatSay = ({ text, soft }: { text: string; soft?: boolean }) => (
 
 type ChatAnswerProps = { text: string; live: boolean; after: 'start' | 'plan'; insert?: ReactNode }
 
-/**
- * Assistant text: paragraphs, numbered questions with 확인할 점, and a posting-draft fence. `insert` (the draft card of the
- * tool row above) goes after the first paragraph, and the text after it reads softer, as on WebBizAiDraft.
- */
 const ChatAnswer = ({ text, live, after, insert }: ChatAnswerProps) => {
   const parts = answerParts(text)
   return (

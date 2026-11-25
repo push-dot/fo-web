@@ -13,7 +13,6 @@ type ChatAppProps = {
   activeId?: string
   title?: string
   dock?: ReactNode
-  /** The finished reply, read out once: the thread itself is not a live region, so loading it reads nothing. */
   announce?: string
   children: ReactNode
 }

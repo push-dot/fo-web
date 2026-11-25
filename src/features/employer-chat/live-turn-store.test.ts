@@ -5,7 +5,6 @@ import { createLiveTurnStore } from './live-turn-store'
 
 const token = (text: string, seq: number): StreamEvent => ({ type: 'token', text, seq })
 
-/** A frame scheduler the test steps by hand. */
 const manual = () => {
   const queued: (() => void)[] = []
   return { frame: (run: () => void) => (queued.push(run), () => void queued.splice(queued.indexOf(run), 1)), step: () => queued.splice(0).forEach((run) => run()), pending: () => queued.length }

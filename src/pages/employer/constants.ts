@@ -144,13 +144,11 @@ export const stageNotice = (name: string) => (name ? `바꾸면 ${name} 님에�
 export const stageFailed = (stage: EmployerStage) =>
   `${{ SCREENING: '서류 통과로', INTERVIEW: '면접으로', OFFER: '합격으로', REJECTED: '불합격으로' }[stage]} 바꾸지 못했어요.`
 export const submittedAsIs = (date: string) => `${date} 제출한 그대로예요`
-/** Pre-snapshot applications: the detail is the live profile, so the board must not say 제출한 그대로. */
 export const PROFILE_NOW = '지금 프로필 기준'
 export const DOCUMENT_EMPTY = '내용을 미리 볼 수 없는 파일이에요'
 export const SHEET_INTRO = '소개'
 export const SHEET_CAREERS = '경력'
 export const SHEET_SKILLS = '기술'
-// Careers and skills are the live profile only when there is no apply-time snapshot.
 export const SHEET_LIVE = '경력과 기술은 지금 프로필 기준이에요'
 export const FILE_DOWNLOAD = '파일 받기'
 export const FILE_FAILED = '파일을 받지 못했어요'
@@ -201,7 +199,6 @@ export const CHAT_LOADING = '대화를 불러오고 있어요'
 export const CHAT_CREATING = '대화를 만들고 있어요'
 export const CHAT_FAILED = '대화를 불러오지 못했어요'
 export const CHAT_STOP_FAILED = '멈추지 못했어요. 한 번 더 눌러 주세요'
-/** 403 FORBIDDEN: another member started the job, so a retry cannot stop it. */
 export const CHAT_STOP_FORBIDDEN = '다른 담당자가 시작한 작업이라 멈출 수 없어요'
 export const stopFailedText = (error: unknown) =>
   error instanceof ApiError && error.status === 403 && error.code === 'FORBIDDEN' ? CHAT_STOP_FORBIDDEN : CHAT_STOP_FAILED
@@ -243,7 +240,6 @@ export const STREAM_ERROR_TEXT: Record<string, string> = {
 export const DEFAULT_STREAM_ERROR_TEXT = '작업을 이어가지 못했어요. 다시 보내 주세요.'
 
 const queueBusyText = (sec: number) => `지금 요청이 많아요. ${sec}초 뒤에 다시 보내 주세요.`
-// push-be writes nothing while a Stripe webhook holds the billing row, so the same request can go again.
 const billingLockedText = (sec: number) => `결제 정보를 정리하고 있어요. ${sec}초 뒤에 다시 보내 주세요.`
 
 const retryAfterSec = (error: ApiError) => {
@@ -258,7 +254,6 @@ const CLOSED_STREAM_ERROR_TEXT: Record<string, string> = {
   INSUFFICIENT_CREDITS: CHAT_CREDITS_CLOSED,
 }
 
-// While payments are closed the credit and plan lines state the fact instead of sending people to pay.
 export const streamErrorText = (error: unknown, paymentsOpen = true) => {
   if (!(error instanceof ApiError)) return DEFAULT_STREAM_ERROR_TEXT
   const sec = error.code === 'QUEUE_BUSY' ? retryAfterSec(error) : undefined
@@ -352,14 +347,11 @@ export const ledgerDate = (iso: string) =>
 const usd = (amount: number) =>
   new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: Number.isInteger(amount) ? 0 : 2 }).format(amount)
 
-// A refund row is negative in USD; the sign goes before the dollar sign.
-// 결제 내역 = Stripe payments only (rows with amountUsd), in the server's order. A refund row whose label is missing reads 환불.
 export const ledgerPayments = (rows: readonly LedgerEntry[]) =>
   rows.flatMap(({ id, type, description, amountUsd, receiptUrl, createdAt }) =>
     amountUsd == null ? [] : [{ id, createdAt, amountUsd, receiptUrl, title: description ?? (type === 'REFUND' ? LEDGER_REFUND : PLAN_HISTORY) }],
   )
 
-/** The loaded pages have no Stripe rows, and push-be still has another page. */
 export const ledgerNeedsAnotherPage = (paymentCount: number, hasNextPage: boolean) => paymentCount === 0 && hasNextPage
 
 export const ledgerView = ({
@@ -383,7 +375,6 @@ export const ledgerView = ({
   return 'rows'
 }
 
-/** 더 보기 only once a payment row is on screen, so it never sits next to the empty state. */
 export const ledgerShowsMore = (paymentCount: number, hasNextPage: boolean) => paymentCount > 0 && hasNextPage
 
 export const ledgerUsd = (amountUsd: number) => (amountUsd < 0 ? `-${usd(-amountUsd)}` : usd(amountUsd))
@@ -444,13 +435,11 @@ export const inviteExpiry = (email: string, expiresAt: string, now = Date.now())
   return `${email} · ${days > 0 ? `${days}일 뒤 만료` : '만료됨'}`
 }
 
-// Korean names show the given name (last two syllables) like the boards; anything else its first letter.
 export const memberInitials = (name: string) => {
   const chars = [...name.trim()]
   return /^[가-힣]{3,}$/.test(name.trim()) ? chars.slice(-2).join('') : (chars[0] ?? '').toUpperCase()
 }
 
-// Every member and invite write is ADMIN only on push-be; resend has its own cooldown and seat answers.
 export const memberActionError = (error: unknown, member = false) => {
   if (!(error instanceof ApiError)) return MEMBERS_ACTION_FAILED
   if (error.status === 429) {

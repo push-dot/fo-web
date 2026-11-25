@@ -27,7 +27,6 @@ type UndoMachine<T extends UndoItem> = {
   ms?: number
 }
 
-// Undo before the timer is a local cancel. Undo after commit restores a Push document; an upload is already gone.
 export const createUndoDelete = <T extends UndoItem>({
   remove,
   restore = restoreDocument,

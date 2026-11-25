@@ -8,7 +8,6 @@ import {
   planUsed,
 } from './constants'
 
-// buy: 'on' for an admin while payments are open, 'off' for a member (board WebBizPlanViewer), 'hidden' while payments are closed.
 const PlanUsage = ({ percent, buy, onHistory, onBuy }: { percent: number; buy: 'on' | 'off' | 'hidden'; onHistory: () => void; onBuy: () => void }) => (
   <section className="box plan-usage">
     <div className="plan-usage-head">

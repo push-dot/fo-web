@@ -27,7 +27,6 @@ describe('termsPending', () => {
   })
 
   it('asks a new employer Google account until the consent step saves the terms', async () => {
-    // push-be records terms only on the email sign-up; a Google employer starts with none.
     let stored: Consent = { referenceData: false, updatedAt: null }
     const read = vi.fn(async () => stored)
     await expect(termsPending(session('EMPLOYER'), read)).resolves.toBe(true)

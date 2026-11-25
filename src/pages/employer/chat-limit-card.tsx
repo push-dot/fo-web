@@ -23,7 +23,6 @@ const Action = ({ label, primary, admin }: { label: string; primary: boolean; ad
   )
 }
 
-/** 402 INSUFFICIENT_CREDITS in place of the composer. While payments are closed it states the fact and offers nothing to buy. */
 const ChatLimitCard = ({
   ultra,
   admin,

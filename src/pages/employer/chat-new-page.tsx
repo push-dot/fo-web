@@ -20,7 +20,6 @@ const ChatNewPage = () => {
   return postingId ? <ReferenceStart postingId={postingId} /> : <ChatRoom screen="new" />
 }
 
-/** 이 공고 참고하기: the conversation is created with the reference posting before the first message. */
 const ReferenceStart = ({ postingId }: { postingId: string }) => {
   const navigate = useNavigate()
   const queryClient = useQueryClient()

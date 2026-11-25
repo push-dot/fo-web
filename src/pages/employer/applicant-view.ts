@@ -14,7 +14,6 @@ export const DOC_BADGE: Record<ApplicantDocumentKind, { label: string; tone: Ton
 
 export { applicationStageTone as stageTone } from '../../entities/application/stage-label'
 
-// 개발 · 5년 · <headline>
 export const applicantSub = (applicant: ApplicantSummary['applicant']) =>
   [
     JOB_CATEGORIES.find((item) => item.key === applicant.jobCategory)?.label,
@@ -24,7 +23,6 @@ export const applicantSub = (applicant: ApplicantSummary['applicant']) =>
     .filter(Boolean)
     .join(' · ')
 
-/** CURRENT is the live profile (no snapshot). SUBMITTED keeps the "as submitted" line. */
 export const applicantProfileLine = (source: 'SUBMITTED' | 'CURRENT' | undefined, applied: string) =>
   source === 'CURRENT' ? PROFILE_NOW : applied ? submittedAsIs(applied) : ''
 
@@ -49,7 +47,6 @@ const dotted = (iso: string) => iso.slice(0, 7).replace('-', '.')
 
 export type CareerRow = { key: string; title: string; period: string; summary: string }
 
-// 2022.03 – 지금 · 4년 8개월 (start month through the end month, both counted)
 export const careerRows = (careers: NonNullable<ApplicantDetail['applicant']>['careers'], now: number): CareerRow[] =>
   careers.map((career, index) => {
     const from = career.startedOn ? monthIndex(career.startedOn) : null
@@ -67,7 +64,6 @@ export const careerRows = (careers: NonNullable<ApplicantDetail['applicant']>['c
 
 export type DocChip = { key: string; label: string; badge: { label: string; tone: Tone }; content: string; file: { id: string; name: string } | null }
 
-// Text documents are the profile snapshot; attached files carry their page count.
 export const docChips = (detail: Pick<ApplicantDetail, 'documents' | 'files'>): DocChip[] => [
   ...detail.documents.map((doc) => ({ key: doc.id, label: doc.title, badge: DOC_BADGE.PROFILE, content: doc.content, file: null })),
   ...(detail.files ?? []).map((file) => ({

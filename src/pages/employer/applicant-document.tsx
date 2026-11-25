@@ -10,7 +10,6 @@ type Profile = NonNullable<ApplicantDetail['applicant']>
 
 type SheetProps = { chip: DocChip; name: string; sub: string; profile?: Profile; now: number; downloading?: boolean; onDownload?: () => void }
 
-// The white sheet of the resume viewer: the submitted text with today's profile careers and skills, or an attached file to download.
 const ApplicantDocument = ({ chip, name, sub, profile, now, downloading = false, onDownload }: SheetProps) => {
   if (chip.file) {
     return (

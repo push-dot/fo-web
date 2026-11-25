@@ -11,7 +11,6 @@ const payment = async (customerKey: string) => {
   return toss.payment({ customerKey })
 }
 
-/** Opens the Toss card registration. The browser leaves this page and comes back to successUrl or failUrl. */
 export const requestTossBillingAuth = async (customerKey: string, planId: CheckoutPlanId) => {
   const sdk = await payment(customerKey)
   await sdk.requestBillingAuth({ method: 'CARD', windowTarget: 'self', ...tossReturnUrls(window.location.origin, 'billing', planId) })

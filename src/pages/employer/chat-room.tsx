@@ -48,12 +48,10 @@ import {
   VERIFY_LINK,
 } from './constants'
 
-/** The agent screen: the starter (no `id`) or one conversation, both on the same composer and stream. */
 const ChatRoom = ({ id, screen }: { id?: string; screen: 'list' | 'new' | 'thread' }) => {
   const location = useLocation()
   const navigate = useNavigate()
   const toast = useToast()
-  // Every Bot surface of this screen in one official processor; its actions go to the latest handlers below.
   const route = useRef<(action: SurfaceAction) => void>(() => undefined)
   const [surfaces] = useState(() => createSurfaceHost((action) => route.current(action)))
   const routed = chatRouteState(location.state)
@@ -101,14 +99,12 @@ const ChatRoom = ({ id, screen }: { id?: string; screen: 'list' | 'new' | 'threa
   })
   const { store, shell, sending, gate } = session
 
-  // The live turn's blocks stream through the store; the room only learns that one exists and which surface it waits on.
   const hasTurn = useSyncExternalStore(store.subscribe, store.has)
   const liveSurface = useSyncExternalStore(store.subscribe, store.surfaceId)
   const live: LiveTurn | null = shell && { ...shell, turn: hasTurn ? EMPTY_TURN : null }
   const items = threadItems(storedMessages, storedTurns, live)
   const trail = applicationTrail(items)
   const lastItem = items.at(-1)
-  // Only the last turn's newest approval or choice surface can be answered; every other surface cannot answer.
   const waiting =
     lastItem?.kind === 'turn'
       ? lastItem.live
@@ -122,13 +118,11 @@ const ChatRoom = ({ id, screen }: { id?: string; screen: 'list' | 'new' | 'threa
   const pdfDisabled = !settled || pdfLocked(plan)
   const planName = plan ? PLAN_NAME[plan] : null
 
-  // What the stable actions read at the time of a click.
   const current = useRef({ sending, intent, applicationId, last: trail.last, toast })
   useEffect(() => {
     current.current = { sending, intent, applicationId, last: trail.last, toast }
   })
   const { send, answer, stop } = session
-  // What the member types while a surface waits is the answer: the session closes it with no pick once the send is taken.
   const closes = waiting && awaiting ? waiting : undefined
   useEffect(() => {
     route.current = (action) =>
@@ -138,7 +132,6 @@ const ChatRoom = ({ id, screen }: { id?: string; screen: 'list' | 'new' | 'threa
         openPosting: (postingId) => navigate(`/postings/${postingId}`),
         openPlan: () => navigate('/employer/plans'),
         change: () => document.getElementById('chat-input')?.focus(),
-        // apply, convert, view, open_review and share are personal-side paths: the employer web has none.
         result: {
           retry_save: () => send({ text: RETRY_SAVE_ASK, intent: current.current.intent, applicationId: '', file: null }),
         },

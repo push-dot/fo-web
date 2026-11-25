@@ -28,11 +28,9 @@ export type PushChoiceProps = {
 
 const answerable = (question: Question) => question.answerable !== false
 
-// Ids come from the frame: an id like `constructor` must not read Object.prototype.
 const ownValue = <T,>(record: Record<string, T> | undefined, id: string) =>
   record && Object.hasOwn(record, id) ? record[id] : undefined
 
-/** The picks of every answerable question, in question order and each in choice order. */
 export const allPicks = (questions: Question[], selected: Selected) =>
   questions
     .filter(answerable)
@@ -58,22 +56,16 @@ const ChoiceCopy = ({ choice }: { choice: Choice }) => (
   </span>
 )
 
-/**
- * The Bot's question (design system PushChoice, web look). A single pick without `submit` answers on click; otherwise
- * native radios and checkboxes only select and one primary button answers. Several questions step inside the surface.
- */
 export const PushChoiceView = ({ props, context }: ViewProps<PushChoiceProps>) => {
   const [step, setStep] = useState(0)
   const [own, setOwn] = useState<Selected>({})
   const open = props.open === true
-  // Open but not the surface that may answer now: drawn as answered, with its answer controls disabled.
   const active = useContext(SurfaceAnswerable)
   const live = open && active
   const picked = props.picked ?? []
   const selected = props.selected ?? own
   const write = props.setSelected ?? setOwn
   const last = props.questions.length - 1
-  // Answered: the last step, where the answer was given, stays on screen.
   const at = open ? Math.min(step, last) : last
   const question = props.questions[at]
   if (!question) return null
@@ -124,7 +116,6 @@ export const PushChoiceView = ({ props, context }: ViewProps<PushChoiceProps>) =
       </button>
     ) : null
 
-  // A single pick with no submit button answers on click.
   if (!props.submit && !question.multiple && props.questions.length === 1) {
     return (
       <div className={`a2-choice${done}`}>
@@ -219,7 +210,6 @@ export const PushChoiceView = ({ props, context }: ViewProps<PushChoiceProps>) =
           <button
             type="button"
             className={`a2-bt pri${!open && submitted ? ' sel' : ''}`}
-            // A pick answer needs at least one id; a submit answer always has "submit".
             disabled={!live || (props.answer === 'pick' && picks.length === 0)}
             onClick={() => send(submitBody())}
           >

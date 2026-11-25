@@ -271,7 +271,6 @@ describe('employer chat mock', () => {
     const messages = await read<{ data: { role: string; text: string }[] }>(
       await mockFetch(`http://localhost/api/v1/conversations/${pro.data.id}/messages`),
     )
-    // Newest first, as push-be pages them: the last question comes first.
     expect(messages.data[0]?.role).toBe('ASSISTANT')
     const assistant = messages.data
       .filter((item) => item.role === 'ASSISTANT')

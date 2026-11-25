@@ -57,7 +57,6 @@ export const LedgerDialog = ({ company, onClose }: { company: string; onClose: (
     hasNextPage,
     paymentCount: rows.length,
   })
-  // Pages of credit grants have no payment rows. Keep reading so 아직 없어요 and 더 보기 never show together.
   useEffect(() => {
     if (!ledger.isSuccess || ledger.isFetchingNextPage || ledger.isFetchNextPageError) return
     if (ledgerNeedsAnotherPage(rows.length, hasNextPage)) void ledger.fetchNextPage()

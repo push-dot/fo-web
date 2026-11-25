@@ -1,6 +1,5 @@
 import { parsePostingDraft, type PostingDraft } from '../../shared/model/employer-chat'
 
-/** A run of lines under the numbered line: 확인할 점 lines (`check`) or any other lines, in the order written. */
 export type QuestionLine = { check: boolean; text: string }
 
 export type Question = { n: string; text: string; lines: QuestionLine[] }
@@ -11,7 +10,6 @@ export type AnswerPart =
   | { kind: 'draft'; draft: PostingDraft }
 
 const FENCE = /```posting-draft[ \t]*\r?\n[\s\S]*?```/
-// One or two digits: a paragraph that opens with a date ("2026. 11. 10.") is not a numbered list.
 const NUMBERED = /^(\d{1,2})\.\s+(?!\d{1,2}\.)([\s\S]*)$/
 const CHECK = /^확인할 점\s*·\s*/
 
@@ -33,7 +31,6 @@ const question = (lines: string[]): Question => {
   }
 }
 
-// "1. a\n2. b" is one block with several items: each numbered line starts a question, the lines under it belong to it.
 const questions = (block: string): Question[] | null => {
   const lines = block.split('\n')
   if (!NUMBERED.test(lines[0] ?? '')) return null
@@ -64,7 +61,6 @@ const textParts = (text: string): AnswerPart[] => {
         ]
       return [...parts, { kind: 'questions', items, raw: [block] }]
     }, [])
-  // A numbered list with no 확인할 점 is an ordinary list (a choice the agent wrote out), not a question card.
   return parts.map((part) =>
     part.kind === 'questions' && !part.items.some((item) => item.lines.some((line) => line.check))
       ? { kind: 'para', text: part.raw.join('\n\n') }
@@ -75,7 +71,6 @@ const textParts = (text: string): AnswerPart[] => {
 export const answerParts = (text: string): AnswerPart[] => {
   const fence = text.match(FENCE)
   const draft = fence ? parsePostingDraft(fence[0]) : null
-  // A fence that does not parse stays as written: the member still reads what the agent wrote.
   if (!fence || !draft) return textParts(text)
   const at = fence.index ?? 0
   return [

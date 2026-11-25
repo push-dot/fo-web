@@ -18,7 +18,6 @@ export const AWAITING_PLACEHOLDER = '승인하거나 취소하면 이어서 할�
 
 export const APPROVAL_NEEDED = '승인이 필요해요'
 export const APPROVAL_WAITING = '기다리는 중'
-/** The chat message a failed save's 다시 저장하기 sends (push-be a2ui README, result_action retry_save). */
 export const RETRY_SAVE_ASK = '내 서류에 저장해 줘'
 export const CHECK_POINT = '확인할 점'
 export const WRITING = '답변 쓰는 중'
@@ -36,13 +35,11 @@ export const DRAFT_HEAD = '공고 초안 v1'
 export const DRAFT_EDIT = '직접 고치기'
 export const DRAFT_REDO = '다시 쓰기'
 export const DRAFT_REDO_ASK = '초안을 다시 써 줘'
-/** WebBizAiDraft's line under the title: 회사 · 지역 · 경력 · 고용형태, each part only when it is known. */
 export const draftMeta = (draft: PostingDraft, company: string | undefined) => {
   const career =
     draft.careerMin === undefined
       ? null
       : careerLabel({ careerMin: draft.careerMin, careerMax: draft.careerMax ?? null })
-  // The fence writes FULL_TIME, the posting full_time.
   const kind = draft.employmentType?.toLowerCase()
   return [
     company,
@@ -83,18 +80,15 @@ export const STARTER_CARDS: StarterCard[] = [
   { intent: 'interview', title: '면접 질문', example: '결제 승인 백엔드 면접 질문 만들어 줘', icon: 'chat' },
 ]
 
-// The board's example names a real applicant, so the card uses the first applicant of the open posting when there is one.
 export const reviewExample = (name: string | undefined) => (name ? `${name} 님 서류 검토해 줘` : '지원자 서류 검토해 줘')
 
 export const POSTING_OPEN_KICKER = '공고 · 게시 중'
 export const POSTING_CLOSED_KICKER = '공고 · 마감'
 export const referenceKicker = (company: string) => `참고 공고 · ${company}`
-// The board names the posting without its stack suffix: "결제 승인 백엔드 엔지니어 (Kotlin)" reads as the first part.
 export const applicantKicker = (posting: string) => {
   const name = posting.replace(/\s*\([^)]*\)\s*$/, '')
   return name ? `지원자 · ${name}` : '지원자'
 }
-/** Only a member who cannot pay is told who can, and only while payments are open. */
 export const lockAdminNote = (admin: boolean, payable: boolean) =>
   payable && !admin ? LOCK_ADMIN_ONLY : null
 export const quoted = (text: string) => `“${text}”`

@@ -8,7 +8,6 @@ import { stageTone } from './applicant-view'
 import { stagePickLabel } from './constants'
 import StageMenu from './stage-menu'
 
-// The stage cell of a list row: a pill (dot, label, chevron) that opens the stage menu.
 const StagePick = ({ name, stage, busy, onPick }: { name: string; stage: ApplicationStage; busy: boolean; onPick: (next: EmployerStage) => void }) => {
   const [open, setOpen] = useState(false)
   const label = employerStageLabel(stage)

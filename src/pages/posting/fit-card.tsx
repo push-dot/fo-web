@@ -36,10 +36,8 @@ const fitCardSubtitle = (
 }
 
 const loadMockFit = async (): Promise<FitCardModel> => {
-  // The app boards draw the finished fit card, so the WebView mock skips the waiting delay.
   const [{ mockFit }] = await Promise.all([loadMock(), new Promise((resolve) => setTimeout(resolve, isWebView() ? 0 : MOCK_FIT_DELAY_MS))])
   const model = mockFitModel(mockFit, pushEnv().plan)
-  // Mock tours (`mock=fit-three`): the Applied and ApplySheet boards draw the three-part card of the waiting rows.
   return pushEnv().fitParts === 3 ? { ...model, parts: bookmarkFitParts(model.parts) } : model
 }
 
@@ -82,7 +80,6 @@ const FitCard = ({ postingId }: { postingId: string }) => {
   const paymentsOpen = usePaymentsOpen()
   const status = fitStatus({ documentPending: documentQuery.isPending, document: doc, fitPending: fitQuery.isPending, fit })
   const subtitle = fitCardSubtitle(status, fit)
-  // JobFit and JobDetailStates draw the waiting cards without a chevron and without a tap target.
   const tappable = status === 'ready' || status === 'locked'
   const Root = tappable ? 'button' : 'div'
   return (

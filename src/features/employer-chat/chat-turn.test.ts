@@ -123,7 +123,6 @@ describe('runTurn', () => {
       userMessageId: 'm1',
       assistantMessageId: null,
       answer: null,
-      // GET .../turns keeps the first seq of a joined token row: "안" + "녕" → "안녕" at seq 3.
       events: [{ type: 'token' as const, text: '안녕', seq: 3 }],
     }
     const deps = depsOf({
@@ -133,7 +132,6 @@ describe('runTurn', () => {
           { type: 'token', text: '녕', seq: 4 },
           { type: 'done', operation: null, seq: 5 },
         ]
-        // The gateway follow emits each stored row with id > after, unmerged.
         return frames(...rows.filter((event) => after === undefined || (event.seq ?? 0) > after))
       }),
     })
@@ -183,7 +181,6 @@ describe('runTurn', () => {
     const pending = (after?: number) => rows.filter((event) => after === undefined || (event.seq ?? 0) > after)
     const follow = vi.fn((_id: string, after?: number) => {
       const rest = pending(after)
-      // The first read of each job dies after the frames it already had, the way a gateway poll throws.
       if (follow.mock.calls.length === 1) {
         const shown = rest.filter((event) => event.type === 'token').slice(0, after === undefined ? 4 : 2)
         return frames(...shown, poll)

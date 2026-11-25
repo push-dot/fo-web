@@ -64,7 +64,6 @@ const SearchPage = () => {
   }
   const selectType = (next: SearchType) => {
     const query = new URLSearchParams(params)
-    // the 공고 tab is the overview; 공고 N개 모두 보기 opens the full posting list
     if (next === 'postings') query.delete('type')
     else query.set('type', next)
     setParams(query, { preventScrollReset: true })
@@ -111,7 +110,6 @@ const SearchPage = () => {
     const postingTotal = totalOf('postings') ?? postingRows.length
     const shown = postingRows.slice(0, SEARCH_PREVIEW_POSTINGS)
     const persons = peopleRows.slice(0, SEARCH_PREVIEW_PEOPLE)
-    // a failed section says so while the sections that loaded stay visible
     const peopleFailed = Boolean(session) && people.isError
     body =
       !postings.isError && !peopleFailed && shown.length === 0 && persons.length === 0 ? (

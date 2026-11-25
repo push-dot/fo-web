@@ -27,7 +27,6 @@ export const PAYMENT_TAILS = new Set(['/billing/checkout', '/billing/topup', '/b
 
 export const MAX_PACKS = 20
 
-// The return push-be gives Stripe (billing.ts returnUrls), with a made-up session id.
 export const localPlansUrl = (checkout: 'success' | 'credits') => `/employer/plans?checkout=${checkout}&session_id=cs_mock_${Date.now()}`
 
 export const companyBillingStatus = (): CompanyBillingStatus => {
@@ -102,7 +101,6 @@ export const handlePhone = (method: string, tail: string) => {
     return phoneSent(PHONE_CODE_TTL_S)
   }
   if (tail === '/auth/phone/verify') {
-    // push-be sends the code either way and refuses at verify; the board shows this right after send (mock2-requests.md T-auth).
     if (mockSwitch('login-phone-taken')) return failure(409, 'PHONE_ALREADY_REGISTERED', '이미 가입된 번호예요', { existingProviders: ['google'] })
     if (mockSwitch('login-code-wrong')) return failure(400, 'PHONE_CODE_INVALID', '인증번호가 맞지 않아요', { attemptsLeft: 4 })
     if (mockSwitch('login-code-expired')) return failure(400, 'PHONE_CODE_EXPIRED', '인증번호가 만료됐어요')
@@ -196,7 +194,6 @@ export const LEDGER = [
 
 export const PLAN_NAMES = { BASIC: 'Basic', PRO: 'Pro', ULTRA: 'Ultra' } as const
 
-// Newest first like push-be; balanceAfter is the running company total, so it is filled from the oldest row up.
 export const ledgerEntries = () => {
   const rows = LEDGER.flatMap(([day, plan, amountUsd]) => {
     const createdAt = `${day}T00:00:00.000Z`
@@ -259,7 +256,6 @@ export const switchResponse = async (method: string, tail: string, url: URL, inp
       return failure(403, 'BLOCKED', '지금은 이 사람에게 제안을 보낼 수 없어요')
     }
     if (mockSwitch('docs-uploading') && tail === '/sources') await hold()
-    // push-be answers this before any role or body check while PAYMENTS_ENABLED is off.
     if (mockSwitch('payments-disabled') && PAYMENT_TAILS.has(tail)) return failure(503, 'PAYMENTS_DISABLED', '지금은 결제할 수 없어요')
     if (mockSwitch('inbox-cant-send') && /^\/me\/offers\/[^/]+\/messages$/.test(tail)) {
       return failure(403, 'BLOCKED', 'this user is not accepting messages from you')

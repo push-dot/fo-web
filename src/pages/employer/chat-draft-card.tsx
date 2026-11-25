@@ -16,7 +16,6 @@ const lines = (value: string) =>
 const ChatDraftCard = ({ draft, postingId }: { draft: PostingDraft; postingId?: string }) => {
   const actions = useChatActions()
   const meta = draftMeta(draft, useMyCompany().data?.name)
-  // The employment type reads in the line under the title, not as a raw FULL_TIME among the conditions.
   const { employmentType: _, ...conditions } = draft.workConditions
   const groups = [
     ['하는 일', lines(draft.description)],

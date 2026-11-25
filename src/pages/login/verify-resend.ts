@@ -12,7 +12,6 @@ import {
 
 export type VerifyResendResult = { toast: string | null; error: string | null; cooldownMs: number }
 
-// POST auth/email/verify/resend is 204 either way, and 429 when the shared mail bucket is full.
 export const requestVerifyResend = async (
   email: string,
   send: (email: string) => Promise<void>,
@@ -39,7 +38,6 @@ export const useVerifyResend = (email: string) => {
 
   useEffect(() => {
     if (!resendCooling(now, until)) return
-    // Ticks each second so the button can count down (board WebVerifyMailResent: "(59초)").
     const timer = window.setTimeout(() => setNow(Date.now()), Math.min(1000, until - Date.now()))
     return () => window.clearTimeout(timer)
   }, [now, until])

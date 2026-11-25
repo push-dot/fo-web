@@ -11,9 +11,7 @@ export type ChatPerson = {
 
 export type ChatActions = {
   busy: boolean
-  /** The Bot surfaces of the screen; null outside a chat room. */
   surfaces: SurfaceHost | null
-  /** The newest waiting surface: the only one that takes input. */
   waiting: string | undefined
   people: ChatPerson[]
   send: (text: string, intent?: ChatIntent) => void

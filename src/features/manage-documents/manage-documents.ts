@@ -15,7 +15,6 @@ const REVOKE_AFTER_MS = 60_000
 
 export const isPushDocument = (item: Pick<SourceItem, 'origin'>) => item.origin === 'AI'
 
-// push-be deletes a Push document by archiving it; DELETE sources/:id only removes uploaded files.
 export const removeDocument = (item: Pick<SourceItem, 'id' | 'origin'>) =>
   isPushDocument(item) ? documentsArchive(item.id) : sourcesRemove(item.id)
 
@@ -25,7 +24,6 @@ export const archivedRevision = (removed: unknown) => {
   return typeof revision === 'number' ? revision : null
 }
 
-// Undo after archive uses the revision the archive response already carries.
 export const restoreDocument = (item: Pick<SourceItem, 'id' | 'origin'>, removed: unknown) => {
   const revision = archivedRevision(removed)
   if (!isPushDocument(item) || revision == null) return Promise.resolve()
@@ -42,12 +40,10 @@ const documentResponse = async (item: SourceItem) => {
   return documentsExportFile(item.id, version, 'PDF')
 }
 
-// An uploaded file's own type must never render in the app origin (HTML/SVG would run script), so only PDF is shown inline.
 export const blobTypeFor = (serverType: string) =>
   serverType.split(';')[0]?.trim().toLowerCase() === 'application/pdf' ? 'application/pdf' : 'application/octet-stream'
 
 export const openDocument = async (item: SourceItem, download: boolean) => {
-  // The tab opens before the fetch so the click still counts as a user gesture.
   const tab = download ? null : window.open('', '_blank')
   try {
     const source = await (await documentResponse(item)).blob()

@@ -9,7 +9,6 @@ export const STATUS_BADGE: Record<PostingStatus, { label: string; tone: 'green' 
   CLOSED: { label: STATUS_CLOSED, tone: 'grey' },
 }
 
-// Older servers send no status: closedAt tells open from closed.
 export const statusOf = (posting: Pick<CompanyPosting, 'status' | 'closedAt'>): PostingStatus =>
   posting.status ?? (posting.closedAt ? 'CLOSED' : 'OPEN')
 

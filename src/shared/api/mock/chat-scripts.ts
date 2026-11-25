@@ -26,7 +26,6 @@ type TurnEvent = ConversationTurn['events'][number]
 
 type ChatScript = { title: string | null; events: StreamEvent[]; stall: boolean }
 
-// Bot cards are push-be's golden A2UI frames (@push/api-client/a2ui-fixtures), as the server sends them.
 const surface = (fixture: unknown) => fixture as A2uiFrame
 
 const interviewText = CHAT_SEEDS.find((seed) => seed.id === 'c-interview')?.messages[1]?.[1] ?? ''
@@ -114,7 +113,6 @@ export const CHAT_SCRIPTS: Record<ChatScriptName, ChatScript> = {
         summary: '공고 초안 쓰기',
         target: '결제 승인 · 4–6년',
         resultLine: '제목 · 하는 일 3 · 자격 요건 3 · 우대 사항 2 · 근무 조건',
-        // push-be's draft_posting result is the saved posting, with the facts WebBizAiDraft reads under the title.
         result: { draft: { ...draft, location: '서울 강남구', careerMin: 4, careerMax: 6, employmentType: 'full_time' } },
       },
       {

@@ -60,7 +60,6 @@ import {
   inviteWelcome,
 } from './constants'
 
-// push-be details on the preview (404) and on accept (403/404/409). EXPIRED also carries inviterName and expiresAt.
 const detailOf = (caught: unknown, key: string) =>
   caught instanceof ApiError && caught.details?.[key] != null ? String(caught.details[key]) : ''
 const DEAD_LINK = new Set(['INVALID', 'ACCEPTED', 'COMPANY_DELETING'])
@@ -249,7 +248,6 @@ const InvitePage = () => {
     )
   }
 
-  // A signed-in employer accepts here (push-be checks the invited email); a guest signs in or up first and comes back.
   const accept = async () => {
     setAcceptError(null)
     setAccepting(true)

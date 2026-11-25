@@ -2,7 +2,6 @@ import type { Comment } from '@push/api-client'
 
 export type CommentThread = { root: Comment; replies: Comment[] }
 
-// replies at any depth hang under their top-level comment; a reply whose parent is missing stands on its own
 export const threadComments = (comments: Comment[]): CommentThread[] => {
   const byId = new Map(comments.map((comment) => [comment.id, comment]))
   const rootOf = (comment: Comment) => {

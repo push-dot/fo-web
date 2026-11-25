@@ -96,7 +96,6 @@ const ResetPage = () => {
     setPending(true)
     let caught: unknown = null
     try {
-      // push-be answers 202 whether or not the email has an account, so the page never says which.
       await authRequestPasswordReset(email)
     } catch (failure) {
       caught = failure

@@ -6,7 +6,6 @@ import { Icon } from '../../shared/ui/icon'
 import { Popover } from '../../shared/ui/popover'
 import { STAGE_TITLE } from './constants'
 
-// The stages push-be accepts from an employer; 지원함 is where an application starts, so it is not a choice.
 const StageMenu = ({ stage, onPick, onClose }: { stage: ApplicationStage; onPick: (next: EmployerStage) => void; onClose: () => void }) => {
   const current = employerStageLabel(stage)
   return (

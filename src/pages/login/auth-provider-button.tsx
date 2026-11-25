@@ -13,7 +13,6 @@ export const ProviderMark = ({ provider }: { provider: ButtonProvider }) => {
   return <Icon name="phone" size={22} />
 }
 
-// The board lines every personal start button up on one 216 px icon column; employer and invite buttons centre a plain label.
 const AuthProviderButton = ({
   provider,
   disabled,

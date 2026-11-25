@@ -15,7 +15,6 @@ const Block = ({ block, label }: { block: LegalBlock; label: string }) => {
     )
   }
   return (
-    // The wrapper scrolls sideways on narrow screens, so keyboard users can focus it.
     <div className="biz-table-wrap" role="region" aria-label={label} tabIndex={0}>
       <table className="biz-table legal-table b2 t2">
         <thead>
@@ -41,7 +40,6 @@ const Block = ({ block, label }: { block: LegalBlock; label: string }) => {
   )
 }
 
-// Names each table region; a section with several tables numbers them so the names stay unique.
 const tableLabel = (heading: string, blocks: readonly LegalBlock[], block: LegalBlock) => {
   const tables: readonly LegalBlock[] = blocks.filter((item) => item.kind === 'table')
   return tables.length > 1 ? `${heading} 표 ${tables.indexOf(block) + 1}` : `${heading} 표`

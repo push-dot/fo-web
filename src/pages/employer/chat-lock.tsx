@@ -6,7 +6,6 @@ import { useChatActions } from './chat-actions'
 import { lockAdminNote, lockBody, LOCK_REVIEW_ONLY, LOCK_TITLE, REVIEW_ASK } from './chat-copy'
 import { PLANS_LINK } from './constants'
 
-/** 403 PLAN_REQUIRED (Pro) for an interview ask below Pro. */
 const ChatLock = ({ plan }: { plan: string | null }) => {
   const { busy, send } = useChatActions()
   const payable = usePaymentsOpen()

@@ -1,13 +1,7 @@
 import { z } from 'zod'
 import type { A2uiProtocol } from './protocol'
 
-/**
- * The Push catalog's custom components as Zod schemas, from push-be `packages/contracts/a2ui/push-catalog.v1.json`
- * (`push-catalog.json`, v0.9.1, has the same props with `{path}` bindings). Not strict: a prop the backend adds later is
- * ignored, so a deployed web still draws the card; required props and their types stay enforced. `id` and `component` are the envelope, not props.
- */
 export const pushSchemas = ({ bindingKey }: Pick<A2uiProtocol, 'bindingKey'>) => {
-  // A data binding: the binder resolves it and adds a setter (`setSelected`) for the bound prop.
   const binding = z.object({ [bindingKey]: z.string() }).strict()
   const bound = <T extends z.ZodTypeAny>(value: T) => z.union([value, binding])
   const props = <T extends z.ZodRawShape>(shape: T) =>

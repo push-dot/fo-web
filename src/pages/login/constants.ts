@@ -63,13 +63,11 @@ export const TERMS_SERVICE = '서비스 이용약관'
 export const TERMS_PRIVACY = '개인정보 수집·이용'
 export const TERMS_MARKETING = '혜택·이벤트 알림 받기'
 export const TERMS_VIEW = '보기'
-// privacyConsent (packages/shared legal) names this link on the sign-up consent screen.
 export const TERMS_PRIVACY_POLICY = '개인정보 처리방침 보기'
 export const TERMS_SERVICE_LINK = '이용약관 보기'
 export const TERMS_COLLECTION_LINK = '개인정보 수집·이용 보기'
 export const CONSENT_SUBMIT = '동의하고 시작하기'
 
-// Same document per row as the app's TERM_DOCUMENTS (fo-mobile features/auth/constants.ts); routes in app/router.tsx.
 export const TERM_VIEW = {
   serviceTerms: '/terms',
   privacy: '/privacy-consent',

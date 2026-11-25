@@ -28,7 +28,6 @@ type SurfaceBlock = Extract<TurnBlock, { kind: 'surface' }>
 
 const isPlan = (block: TurnBlock | undefined) => block?.kind === 'surface' && block.card === 'plan'
 
-/** A Bot card. Only the newest waiting surface can answer, and none while a run or an answer is in flight; the rest stay usable. */
 const ChatSurface = ({ block }: { block: SurfaceBlock }) => {
   const { surfaces, waiting, busy } = useChatActions()
   if (!surfaces) return null
@@ -66,7 +65,6 @@ const Block = ({ block, previous, next, live }: BlockProps) => {
         />
       )
     case 'tool':
-      // The text written right after a draft introduces it, so the card moves under that text.
       return (
         <>
           <ChatToolRow tool={block} />
@@ -104,7 +102,6 @@ const ChatTurnView = ({ item, applicationId }: { item: TurnItem; applicationId?:
         />
       ))}
       {queued !== null && running ? <ChatQueueCard ahead={queued} /> : null}
-      {/* A stopped tool row already says so; otherwise a cut-off answer must not read as finished. */}
       {ended && !blocks.some((block) => block.kind === 'tool' && block.state === 'stop') ? (
         <p className="c1 t3 chat-note">
           {TURN_ENDED[ended]}

@@ -35,7 +35,6 @@ export type PhoneFailure =
 
 type ErrorLike = { code?: string; details?: Record<string, unknown> | null }
 
-// push-be codes for POST auth/phone/verify. PHONE_TAKEN never names the owner's provider, so only PHONE_ALREADY_REGISTERED offers a login button.
 export const phoneFailure = (caught: unknown): PhoneFailure => {
   const { code, details } = (caught ?? {}) as ErrorLike
   if (code === 'PHONE_CODE_INVALID') return { kind: 'wrong' }
@@ -51,7 +50,6 @@ export const phoneFailure = (caught: unknown): PhoneFailure => {
   return { kind: 'failed' }
 }
 
-// POST auth/phone/send: 429 with details.retryAfterSec = a code went to this number moments ago. A 429 without it is the per-IP bucket.
 export const sendCooldown = (caught: unknown) => {
   const { code, details } = (caught ?? {}) as ErrorLike
   const wait = Number(details?.retryAfterSec)

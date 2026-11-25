@@ -8,7 +8,6 @@ import { savePendingLogin } from './pending-login'
 
 const CALLBACK_PATH = '/auth/callback'
 
-// One PKCE start for every page that offers a social button; the mock answers start like push-be, so there is no mock branch.
 export const useOAuthStart = () => {
   const [pending, setPending] = useState(false)
   const [failed, setFailed] = useState<OAuthProvider | null>(null)

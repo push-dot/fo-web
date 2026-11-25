@@ -50,12 +50,10 @@ const CallbackPage = () => {
         const result = await authExchange({ code, codeVerifier: verifier })
         clearPendingLogin()
         if ('accessToken' in result) {
-          // The session is kept only once the terms are on record, so leaving the consent step asks again next time.
           if (await termsPending(result)) setConsent(result)
           else finish(result)
           return
         }
-        // First personal social login: push-be holds the identity until a phone number is verified.
         navigate('/signup', { replace: true, state: { pendingToken: result.pendingToken } })
       } catch (caught) {
         fail(failureDetail(caught))

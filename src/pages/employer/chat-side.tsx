@@ -7,7 +7,6 @@ import { CHAT_BUY, queueAhead, usedText } from './chat-copy'
 import type { ChatUsage } from './chat-usage'
 import { CHAT_EMPTY, CHAT_FAILED, CHAT_LOADING, CHAT_NEW, CHAT_SHARED } from './constants'
 
-/** Board marks: a running job is accent, a pending approval is orange, a finished chat has none. */
 export const chatListMark = (
   status: ConversationStatus,
 ): { label: string; tone: 'ac' | 'orange' } | null => {
@@ -24,7 +23,6 @@ export const UsageMeter = ({ usage, className }: { usage: ChatUsage; className: 
 
 const RoomGap = () => <div style={{ height: 4 }} />
 
-/** One conversation on the board: stateless, so its view is reused as the list scrolls. */
 export const ChatRoomRow = ({
   conversation,
   active,

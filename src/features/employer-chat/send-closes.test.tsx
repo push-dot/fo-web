@@ -24,7 +24,6 @@ afterEach(() => {
 
 const settle = () => act(async () => new Promise((resolve) => setTimeout(resolve, 0)))
 
-/** Sends one typed message that answers the waiting surface `s1`, and returns what the surface host was told. */
 const sendTyped = async () => {
   const patch = vi.fn()
   let send: ((out: Outgoing) => void) | undefined

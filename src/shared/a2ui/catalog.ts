@@ -15,17 +15,12 @@ import type { ViewProps } from './components/view'
 import { A2UI_PROTOCOL, PUSH_CATALOG_ID, type A2uiProtocol } from './protocol'
 import { pushSchemas } from './schemas'
 
-// The binder resolves bindings to plain values, which each view types for itself.
 const implement = <P>(api: ComponentApi, view: FC<ViewProps<P>>) =>
   createComponentImplementation(
     api,
     view as unknown as Parameters<typeof createComponentImplementation>[1],
   )
 
-/**
- * The Push catalog for web: the official basic catalog of the protocol with `Text` and `List` drawn by Push (same
- * schemas), plus the seven Push components. One catalog per surface, as v0.9.1 and v1.0 require.
- */
 export const pushCatalog = (protocol: A2uiProtocol): Catalog<ReactCatalogComponent> => {
   const basic = protocol.basic.components
   const schema = (name: string) => {
@@ -46,7 +41,6 @@ export const pushCatalog = (protocol: A2uiProtocol): Catalog<ReactCatalogCompone
     implement({ name: 'PushJobCard', schema: push.PushJobCard }, PushJobCardView),
   ]
   const kept = [...basic.keys()].filter((name) => name !== 'Text' && name !== 'List')
-  // derive keeps the basic functions and the protocol version; the Push entries replace or add by name.
   return protocol.basic.derive({
     catalogId: PUSH_CATALOG_ID,
     components: [...kept, ...own],

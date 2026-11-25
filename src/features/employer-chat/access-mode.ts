@@ -6,7 +6,6 @@ import { DEFAULT_ACCESS_MODE } from './constants'
 
 const SETTINGS_KEY = ['settings']
 
-/** Optimistic save of the access mode on the cached settings: the picker moves at once and snaps back when the save fails. */
 export const accessModeMutation = (
   client: Pick<QueryClient, 'cancelQueries' | 'getQueryData' | 'setQueryData'>,
   save: (mode: AccessMode) => Promise<Settings>,

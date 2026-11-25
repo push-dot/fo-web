@@ -33,7 +33,6 @@ const InviteDialog = ({ company, refresh, onClose, onSent }: { company: Company;
     onError: async (error) => {
       const forbidden = error instanceof ApiError && error.status === 403
       setFailed(!(forbidden && error.code === 'SEAT_LIMIT'))
-      // SEAT_LIMIT, or the role moved to someone else: reload what the page may show.
       if (forbidden) await refresh()
     },
   })

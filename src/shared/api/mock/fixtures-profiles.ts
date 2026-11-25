@@ -116,7 +116,6 @@ export const APP_PROFILES: Record<string, Profile> = {
     resumeSourceId: null,
     updatedAt: '2026-10-18T09:00:00.000Z',
   },
-  // The rest of fo-mobile's hub list, so a tapped person opens as themself rather than the fallback.
   u3: person('u3', '박도윤', 'SwiftUI로 앱을 만드는 iOS 개발자', 'dev', 3, 'feedback'),
   u4: person('u4', '최지우', '데이터 파이프라인 · Spark · Airflow', 'dev', 5, 'seeking'),
   u5: person('u5', '정민재', '쿠버네티스 운영이 즐거운 DevOps', 'dev', 4, 'satisfied'),

@@ -8,7 +8,6 @@ import {
   type StarterCard,
 } from './chat-copy'
 
-/** Empty conversation: hero and four example asks. A card fills the composer; nothing is sent until the user sends it. */
 const ChatStarter = ({
   applicant,
   onPick,

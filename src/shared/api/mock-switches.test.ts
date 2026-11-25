@@ -222,7 +222,6 @@ describe('ms= switches', () => {
     expect(payments.every((item) => item.receiptUrl?.startsWith('https://'))).toBe(true)
     expect(ledger.body.data.filter((item) => item.amountUsd == null).every((item) => item.description === null)).toBe(true)
     expect(new Set(ledger.body.data.map((item) => item.id)).size).toBe(ledger.body.data.length)
-    // each balanceAfter is the one below it plus this row, newest first (Basic 3,000 + Pro 15,000 × 3 credits)
     ledger.body.data.forEach((item, index) => {
       expect(item.balanceAfter).toBe((ledger.body.data[index + 1]?.balanceAfter ?? 0) + item.amountMicroCredits)
     })
@@ -250,7 +249,6 @@ describe('ms= switches', () => {
     for await (const event of readEvents<{ type: string }>(follow.body!)) after.push(event.type)
     expect(after.at(-1)).toBe('done')
     expect((await call(`/conversations/${id}/messages/stream/active`)).status).toBe(204)
-    // push-be bakes the answer into the replayed surface, and a second answer is refused.
     const replayed = await read<{ data: { events: { type: string; messages?: { updateDataModel?: { value: unknown } }[] }[] }[] }>(`/conversations/${id}/turns`)
     const frame = replayed.body.data.flatMap((turn) => turn.events).find((event) => event.type === 'a2ui')
     expect(frame?.messages?.[2]?.updateDataModel?.value).toMatchObject({ open: false, picked: ['approve'] })
@@ -263,7 +261,6 @@ describe('ms= switches', () => {
     const created = await read<{ data: { id: string } }>('/conversations', 'POST', { audience: 'EMPLOYER', title: '' })
     const id = created.body.data.id
     const response = await call(`/conversations/${id}/messages/stream`, 'POST', { text: '서류 통과한 사람 면접 단계로 옮겨 줘', accessMode: 'AUTO' })
-    // The job is stored by the time the done frame arrives, not a moment after it.
     for await (const event of readEvents<{ type: string }>(response.body!)) {
       if (event.type !== 'done') continue
       expect((await read<{ data: unknown[] }>(`/conversations/${id}/turns`)).body.data).toHaveLength(1)
@@ -281,10 +278,8 @@ describe('ms= switches', () => {
     expect((await errorCode(`/conversations/${id}/stream/cancel`, 'POST')).code).toBe('CONFLICT')
     const response = await call(`/conversations/${id}/messages/stream`, 'POST', { text: '이번 주 새 지원자 정리해 줘', accessMode: 'AUTO' })
     const frames = readEvents<{ type: string; name?: string; seq?: number }>(response.body!)[Symbol.asyncIterator]()
-    // The tool script stalls on its last tool line, still running.
     let first = (await frames.next()).value as { type: string; name?: string; seq: number }
     while (first.name !== 'read_documents') first = (await frames.next()).value as typeof first
-    // The job runs apart from the stream: it is listed as running, and a follow picks it up.
     const running = await read<{ data: { status: string; events: unknown[] }[] }>(`/conversations/${id}/turns`)
     expect(running.body.data[0]!.status).toBe('RUNNING')
     expect(running.body.data[0]!.events.at(-1)).toMatchObject({ type: 'tool', state: 'run' })
@@ -335,7 +330,6 @@ describe('ms= switches', () => {
     using('employer-pro', 'chat-queue')
     const id = (await read<{ data: { id: string } }>('/conversations', 'POST', { audience: 'EMPLOYER', title: '' })).body.data.id
     expect((await call(`/conversations/${id}/messages/stream`, 'POST', { text: '정리해 줘', accessMode: 'AUTO' })).status).toBe(200)
-    // A running job in this conversation is not a full queue.
     expect((await call(`/conversations/${id}/messages/stream`, 'POST', { text: '또', accessMode: 'AUTO' })).status).toBe(200)
     await call(`/conversations/${id}/stream/cancel`, 'POST')
     setMockPersona(null)

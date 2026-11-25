@@ -11,8 +11,6 @@ const GAP = 8
 const TAB_BAR = 64
 const TAB_BAR_MAX = 1024
 
-// A menu that would run past the bottom of the window opens above its button instead, when it fits there.
-// At ≤1024px the fixed tab bar takes 64px, so that strip is not available space.
 export const opensUp = (pop: { top: number; bottom: number }, host: { top: number }, viewport: number, windowWidth = Number.POSITIVE_INFINITY) => {
   const reserved = windowWidth <= TAB_BAR_MAX ? TAB_BAR : 0
   return pop.bottom > viewport - reserved - GAP && host.top - (pop.bottom - pop.top) - GAP >= 0

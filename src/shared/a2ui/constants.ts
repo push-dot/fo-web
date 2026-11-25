@@ -1,4 +1,3 @@
-/** Copy the renderer draws itself (push-be a2ui README "What the client does"); everything else comes in the surface. */
 export const A2UI_COPY = {
   next: '다음',
   recommended: '추천',
@@ -15,14 +14,12 @@ export const A2UI_COPY = {
   question: '질문',
 } as const
 
-/** Example bars of a locked PushFit: never the real scores. */
 export const LOCKED_FIT_SAMPLE = [
   { label: '기술 스택', score: 8 },
   { label: '경력', score: 6.5 },
   { label: '도메인', score: 5 },
 ] as const
 
-/** The local actions a surface may dispatch besides `answer`. */
 export const A2UI_ACTION = {
   answer: 'answer',
   openReview: 'open_review',
