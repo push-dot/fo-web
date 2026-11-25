@@ -1,14 +1,14 @@
 import { Link } from 'react-router-dom'
 
-import MySide from '../my/my-side'
-import { useBlocks } from '../../entities/session'
-import { Icon } from '../../shared/ui/icon'
+import { MySide } from '../../features/profile'
+import { useBlocks } from '../../features/auth'
+import Icon from '../../shared/ui/icon'
 import { LOAD_FAIL } from '../../shared/ui/page-state'
 import Skeleton from '../../shared/ui/skeleton'
-import StateBlock, { ErrorState } from '../../shared/ui/state-block'
+import StateBlock from '../../shared/ui/state-block'
+import ErrorState from '../../shared/ui/error-state'
 import Toast, { useToast } from '../../shared/ui/toast'
-import BlockedRow from './blocked-row'
-import { BLOCKED_COPY } from './constants'
+import { BlockedRow, BLOCKED_COPY } from '../../features/settings'
 
 const BlockedPage = () => {
   const query = useBlocks()

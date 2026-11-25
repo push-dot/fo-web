@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import type { LedgerEntry } from '@push/api-client'
-import { BUY_TERMS, PLAN_TERMS, buyTotal, planBuyPackHint, planMonthly, planPayFailedBody, ledgerDate, ledgerNeedsAnotherPage, ledgerPayments, ledgerShowsMore, ledgerUsd, ledgerView, planPaid, planSwitchLabel, planUsedPercent, planViewerBody } from './constants'
+import { BUY_TERMS, buyTotal, planBuyPackHint, ledgerDate, ledgerNeedsAnotherPage, ledgerPayments, ledgerShowsMore, ledgerUsd, ledgerView, planPaid } from '../../features/billing'
+import { PLAN_TERMS, planMonthly, planPayFailedBody, planSwitchLabel, planUsedPercent, planViewerBody } from './constants'
 
 describe('plan switch label', () => {
   it('picks the josa by the last sound of the plan name', () => {

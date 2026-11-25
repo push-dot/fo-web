@@ -1,16 +1,11 @@
 import { isValidElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
-import {
-  RouterProvider,
-  StaticRouterProvider,
-  createMemoryRouter,
-  createStaticHandler,
-  createStaticRouter,
-} from 'react-router-dom'
+import { RouterProvider, StaticRouterProvider, createMemoryRouter, createStaticHandler, createStaticRouter } from 'react-router-dom'
 import { describe, expect, it, vi } from 'vitest'
 import { isWebView } from '../shared/lib/bridge'
-import { RouteError } from './route-error'
-import { ScrollRoot, appRoutes } from './router'
+import RouteError from './route-error'
+import ScrollRoot from './scroll-root'
+import { appRoutes } from './router'
 
 vi.mock('react-router-dom', async (importOriginal) => ({
   ...(await importOriginal<typeof import('react-router-dom')>()),
@@ -41,7 +36,6 @@ describe('scroll restoration', () => {
 })
 
 describe('route errors', () => {
-  // SSR cannot catch render-time throws, so the route fails in its loader; the errorElement path is the same.
   const render = async (webView: boolean) => {
     vi.spyOn(console, 'error').mockImplementation(() => {})
     vi.mocked(isWebView).mockReturnValue(webView)

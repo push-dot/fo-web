@@ -1,15 +1,13 @@
 import { Link, useNavigate } from 'react-router-dom'
 
-import PostingCard from '../jobs/posting-card'
-import { useApplications } from '../../entities/application'
-import { useBookmarks, usePostingList } from '../../entities/posting'
+import { PostingCard, useBookmarks, usePostingList } from '../../features/postings'
+import { useApplications } from '../../features/applications'
 import { saveReturnTo } from '../../shared/auth/return-path'
 import { useSession } from '../../shared/auth/use-session'
-import { CardSkeletons } from '../../shared/ui/skeleton'
-import { ErrorState } from '../../shared/ui/state-block'
+import CardSkeletons from '../../shared/ui/card-skeletons'
+import ErrorState from '../../shared/ui/error-state'
 import { HOME_ERROR, HOME_SECTIONS, HOME_SHORTCUTS, HOME_SKELETON_CARDS, OPEN_APPLICATION_STAGES } from './constants'
 import ShortcutArt from './shortcut-art'
-
 
 const ShortcutSkeleton = () => (
   <span className="shortcut shortcut-sk" aria-hidden="true">

@@ -1,19 +1,14 @@
-import { POST_CATEGORIES, type PostCategory } from '@push/api-client'
+import type { PostCategory } from '@push/api-client'
+import { POST_CATEGORIES, authorLabel, postCategoryLabel, usePostPages, composerPrompt, AuthorAvatar, ComposerSheet, COMPOSER_ACTION, PostCard, usePopularPosts, useViewerAuthor } from '../../features/social'
 import { LegendList } from '@legendapp/list/react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
-import { authorLabel, postCategoryLabel, usePostPages } from '../../entities/post'
-import { composerPrompt } from '../../features/compose-post'
 import { compactCount } from '../../shared/lib/format'
 import Skeleton from '../../shared/ui/skeleton'
-import StateBlock, { ErrorState } from '../../shared/ui/state-block'
-import AuthorAvatar from './author-avatar'
-import ComposerSheet from './composer-sheet'
-import { COMPOSER_ACTION, POPULAR_TITLE, POST_PAGE_SIZE, SOCIAL_EMPTY, SOCIAL_ERROR, SOCIAL_RETRY, SOCIAL_TITLE } from './constants'
-import PostCard from './post-card'
-import { usePopularPosts } from './popular-posts'
-import { useViewerAuthor } from './use-viewer-author'
+import StateBlock from '../../shared/ui/state-block'
+import ErrorState from '../../shared/ui/error-state'
+import { POPULAR_TITLE, POST_PAGE_SIZE, SOCIAL_EMPTY, SOCIAL_ERROR, SOCIAL_RETRY, SOCIAL_TITLE } from './constants'
 
 const POST_CARD_HEIGHT = 170
 

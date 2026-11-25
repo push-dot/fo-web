@@ -1,13 +1,7 @@
 import type { EmailSignupInput } from '@push/api-client'
 
 import type { AccountType } from './access'
-import {
-  EMAIL_TAKEN_EMPLOYER_COPY,
-  EMAIL_TAKEN_PERSONAL_COPY,
-  PASSWORD_LENGTH_COPY,
-  PASSWORD_MAX,
-  PASSWORD_MIN,
-} from './constants'
+import { EMAIL_TAKEN_EMPLOYER_COPY, EMAIL_TAKEN_PERSONAL_COPY, PASSWORD_LENGTH_COPY, PASSWORD_MAX, PASSWORD_MIN } from './constants'
 
 export type OAuthProvider = 'google' | 'apple' | 'github'
 export type LoginProvider = OAuthProvider | 'phone' | 'email'
@@ -28,6 +22,5 @@ export const passwordError = (password: string) => {
 
 type SignupForm = Omit<EmailSignupInput, 'agreeTerms' | 'consentReference'> & { terms: boolean }
 
-// push-be records the 약관·처리방침 agreement from agreeTerms, so it is sent only after the checkbox is ticked.
 export const emailSignupInput = ({ terms, ...form }: SignupForm): EmailSignupInput | null =>
   terms ? { ...form, agreeTerms: true } : null

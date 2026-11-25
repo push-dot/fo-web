@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import type { BlockedUser, ListEnvelope } from '@push/api-client'
 
-import { LOCALE_NOTE, NOTIFY_ROWS } from './constants'
-import { blockedCount, blockedLine, settingsSections, withoutBlocked } from './lib'
+import { LOCALE_NOTE } from './constants'
+import { NOTIFY_ROWS, blockedCount, blockedLine, settingsSections, withoutBlocked } from '../../features/settings'
 
 describe('settings copy', () => {
   it('reads the board language hint', () => {

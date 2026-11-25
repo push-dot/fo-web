@@ -6,7 +6,8 @@ import { createRoot, type Root } from 'react-dom/client'
 import { MemoryRouter, useLocation } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { PLAN_CONFIRM_FAILED, PLAN_PAY_FAILED_TITLE, TOPUP_DONE, planPaid } from './constants'
+import { PLAN_CONFIRM_FAILED, TOPUP_DONE, planPaid } from '../../features/billing'
+import { PLAN_PAY_FAILED_TITLE } from './constants'
 import PlansPage from './plans-page'
 
 const operations = vi.hoisted(() => ({

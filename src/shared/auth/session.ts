@@ -59,7 +59,6 @@ export const createSessionStore = (storage: StorageLike) => {
       return null
     }
   }
-  // Another tab signing in, refreshing or out writes the shared localStorage; this tab's subscribers follow.
   if (typeof window !== 'undefined') {
     window.addEventListener('storage', (event) => {
       if (event.key === SESSION_STORAGE_KEY || event.key === null) emit()
@@ -73,7 +72,6 @@ export const createSessionStore = (storage: StorageLike) => {
     },
     clear: () => {
       storage.removeItem(SESSION_STORAGE_KEY)
-      // Signing out hands the browser to someone else, so this user's pending sign-up return goes too.
       forgetSignupReturnTo()
       emit()
     },

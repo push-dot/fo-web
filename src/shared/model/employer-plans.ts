@@ -16,7 +16,6 @@ export const DEFAULT_PLAN_PRICES: PlanPrices = { BASIC: 29_000, PRO: 140_000, UL
 
 const validPrice = (value: unknown): value is number => typeof value === 'number' && Number.isInteger(value) && value > 0
 
-/** The server's KRW prices win; an old server, or one with a bad value, falls back to the list price. */
 export const planPrices = (billing: { prices?: Partial<Record<keyof PlanPrices, unknown>> } | undefined): PlanPrices => {
   const sent = billing?.prices
   const pick = (key: keyof PlanPrices) => (validPrice(sent?.[key]) ? sent[key] : DEFAULT_PLAN_PRICES[key])
@@ -31,11 +30,9 @@ export const showEmployerCheckout = (audience: 'PERSONAL' | 'EMPLOYER' | undefin
 export const canChangeEmployerPlan = (role: 'ADMIN' | 'MEMBER' | undefined, companyMissing: boolean): boolean =>
   role === 'ADMIN' || (companyMissing && role === undefined)
 
-// Servers before push-be #246 send no paymentsEnabled and keep payments open. No billing data at all (loading, error) stays closed.
 export const paymentsOpen = (billing: { paymentsEnabled?: boolean } | undefined): boolean =>
   billing !== undefined && billing.paymentsEnabled !== false
 
-// push-be takes 1 to 20 packs of 1,500 credits per top-up.
 export const topupReady = (packs: number): boolean => Number.isInteger(packs) && packs >= 1 && packs <= MAX_PACKS
 
 const PLAN_IDS: readonly string[] = EMPLOYER_PLAN_CARDS.map((card) => card.id)
@@ -49,7 +46,6 @@ export type TossReturn =
 
 const PLANS_PATH = '/employer/plans'
 
-/** Where Toss sends the browser back after card registration (subscribe) and after a payment (top-up). */
 export const tossReturnUrls = (origin: string, route: 'billing' | 'topup', planId?: CheckoutPlanId) => {
   const success = new URL(PLANS_PATH, origin)
   success.searchParams.set('toss', route)
@@ -59,7 +55,6 @@ export const tossReturnUrls = (origin: string, route: 'billing' | 'topup', planI
   return { successUrl: success.href, failUrl: fail.href }
 }
 
-/** Reads ?toss=billing|topup|fail from the return URL. Anything missing or malformed is ignored, never confirmed. */
 export const tossReturn = (params: URLSearchParams): TossReturn | null => {
   const kind = params.get('toss')
   if (kind === 'fail') return { kind, code: params.get('code'), message: params.get('message') }

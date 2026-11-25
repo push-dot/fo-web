@@ -1,4 +1,4 @@
-import type { IconName } from '../shared/ui/icon'
+import type { IconName } from '../shared/ui/icon-paths'
 import { NAV } from './constants'
 
 export type TabItem = { to: string; label: string; icon: IconName; lock?: boolean }

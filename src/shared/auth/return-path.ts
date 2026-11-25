@@ -17,9 +17,6 @@ export const takeReturnTo = () => {
   return sanitizeReturnTo(stored)
 }
 
-// push-be's email sign-up takes no return path and the verification mail may open in a new tab (empty sessionStorage),
-// so the page that started the sign-up is kept in localStorage for the link's 24 hours, tied to the email it is for:
-// on a shared browser another person's verification link must not land on it.
 export const saveSignupReturnTo = (value: string, email: string, now = Date.now()) => {
   saveReturnTo(value)
   browserLocalStorage()?.setItem(
@@ -45,7 +42,6 @@ export const takeSignupReturnTo = (email: string, now = Date.now()) => {
     )
       return sanitizeReturnTo(saved.path)
   } catch {
-    // A broken entry falls back to this tab's path.
   }
   return inTab
 }

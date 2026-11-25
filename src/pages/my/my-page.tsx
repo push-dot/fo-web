@@ -1,21 +1,9 @@
 import { useSearchParams } from 'react-router-dom'
 import { useSession } from '../../shared/auth/use-session'
 import ActivityPanel from './activity-panel'
-import CompanyPanel from './company-panel'
-import {
-  ACTIVITY_CHIP_KEY,
-  EDIT_PARAM,
-  EMPLOYER_ACTIVITY_CHIPS,
-  EMPLOYER_MY_TABS,
-  MY_TAB_KEY,
-  PERSONAL_ACTIVITY_CHIPS,
-  PERSONAL_MY_TABS,
-  PROFILE_EDIT_TITLE,
-} from './constants'
-import DocumentsPanel from './documents-panel'
-import LinksPanel from './links-panel'
-import MySide from './my-side'
-import ProfileForm from './profile-form'
+import { CompanyPanel } from '../../features/company'
+import { ACTIVITY_CHIP_KEY, EMPLOYER_ACTIVITY_CHIPS, EMPLOYER_MY_TABS, MY_TAB_KEY, PERSONAL_ACTIVITY_CHIPS, PERSONAL_MY_TABS, PROFILE_EDIT_TITLE } from './constants'
+import { EDIT_PARAM, DocumentsPanel, LinksPanel, MySide, ProfileForm } from '../../features/profile'
 
 const MyPage = () => {
   const session = useSession()

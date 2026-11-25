@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom'
-import ChatRoom from './chat-room'
+import { ChatRoom } from '../../features/chat'
 
 const ChatThreadPage = () => {
   const { id = '' } = useParams()

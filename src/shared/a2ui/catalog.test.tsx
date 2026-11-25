@@ -11,7 +11,6 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { PUSH_CATALOG } from './catalog'
 import { createSurfaceHost, type SurfaceAction } from './surface-host'
 
-// The golden 1.0 wire frames push-be writes (copied into @push/api-client). A catalog change there fails here.
 const dir = dirname(
   createRequire(import.meta.url).resolve('@push/api-client/a2ui-fixtures/v1.0/todo.json'),
 )
@@ -35,7 +34,6 @@ const frame = (name: string) => {
   return found
 }
 
-// Lit warns once in dev; React wants act in a DOM test.
 vi.spyOn(console, 'warn').mockImplementation(() => undefined)
 ;(globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true
 
@@ -46,7 +44,6 @@ afterEach(() => {
   document.body.innerHTML = ''
 })
 
-/** A one-surface frame of the Push catalog: `components` as given, the data model as `value`. */
 const made = (components: Record<string, unknown>[], value: Record<string, unknown> = {}): A2uiFrame => {
   const surfaceId = 'made'
   const catalogId = 'https://push.app/a2ui/catalogs/push/v1/catalog.json'
@@ -102,7 +99,6 @@ describe('Push catalog against the golden frames', () => {
   it.each(Object.keys(fixtures))('%s draws its text', async (name) => {
     const { el } = await draw(name)
     expect(el.textContent?.trim().length).toBeGreaterThan(0)
-    // Text is plain: no Markdown renderer and no HTML from the frame.
     expect(el.querySelector('.no-markdown-renderer')).toBeNull()
   })
 })

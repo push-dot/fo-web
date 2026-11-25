@@ -2,30 +2,13 @@ import type { ApplicantSummary, ApplicationStage, EmployerStage } from '@push/ap
 import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 
-import { useApplicantCounts, employerStageLabel, useEmployerApplicants } from '../../entities/application'
-import { useEmployerPosting } from '../../entities/posting'
-import { Icon } from '../../shared/ui/icon'
-import StateBlock, { ErrorState } from '../../shared/ui/state-block'
+import { useApplicantCounts, employerStageLabel, useEmployerApplicants, ApplicantRow, stageTabs, APPLICANTS_HEAD, useStageMove } from '../../features/applications'
+import { useEmployerPosting, STATUS_BADGE, statusOf } from '../../features/postings'
+import Icon from '../../shared/ui/icon'
+import StateBlock from '../../shared/ui/state-block'
+import ErrorState from '../../shared/ui/error-state'
 import Toast, { useToast } from '../../shared/ui/toast'
-import ApplicantRow from './applicant-row'
-import { stageTabs } from './applicant-view'
-import {
-  APPLICANTS_EMPTY,
-  APPLICANTS_EMPTY_BODY,
-  APPLICANTS_FAILED,
-  APPLICANTS_HEAD,
-  APPLICANTS_LOADING,
-  APPLICANTS_NOTE,
-  APPLICANTS_TITLE,
-  POSTINGS_TITLE,
-  STAGE_RETRY,
-  VIEW_POSTING,
-  stageEmpty,
-  stageMoved,
-  stageNotMoved,
-} from './constants'
-import { STATUS_BADGE, statusOf } from './posting-view'
-import { useStageMove } from './use-stage-move'
+import { APPLICANTS_EMPTY, APPLICANTS_EMPTY_BODY, APPLICANTS_FAILED, APPLICANTS_LOADING, APPLICANTS_NOTE, APPLICANTS_TITLE, POSTINGS_TITLE, STAGE_RETRY, VIEW_POSTING, stageEmpty, stageMoved, stageNotMoved } from './constants'
 
 const ApplicantsPage = () => {
   const { id } = useParams()

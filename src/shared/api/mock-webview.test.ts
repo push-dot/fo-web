@@ -8,7 +8,6 @@ const SIGNED = { headers: { Authorization: 'Bearer mock-access' } }
 const APP_POSTING_IDS = Array.from({ length: 25 }, (_, at) => `p${at + 1}`)
 const APP_PROFILE_IDS = ['me', 'dev', 'u1', 'u2', 'u3', 'u4', 'u5', 'u-haeun', 'u-jihyun']
 
-// The WebView pages render neither the bookmark/apply nor the follow/offer flags (posting actions return null in the WebView).
 const UNRENDERED = new Set(['bookmarked', 'applied', 'following', 'offered'])
 
 const rendered = (data: Record<string, unknown>) =>

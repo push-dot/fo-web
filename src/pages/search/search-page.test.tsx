@@ -7,12 +7,12 @@ type Query = { isLoading: boolean; isError: boolean; data?: { data: unknown[]; p
 
 const state = vi.hoisted(() => ({ postings: {} as Query, people: {} as Query, posts: {} as Query }))
 
-vi.mock('../../features/search-catalog', () => ({
+vi.mock('../../features/search/api/hooks', () => ({
   useSearchPostings: () => state.postings,
   useSearchPeople: () => state.people,
   useSearchPosts: () => state.posts,
 }))
-vi.mock('../../features/recent-searches', () => ({
+vi.mock('../../features/search/utils/recent-searches', () => ({
   readRecentSearches: () => [],
   saveRecentSearch: () => [],
   removeRecentSearch: () => [],

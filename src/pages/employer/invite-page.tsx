@@ -1,66 +1,22 @@
-import { ApiError, type InvitePreview } from '@push/api-client'
+import type { InvitePreview } from '@push/api-client'
+import { ApiError, companiesAcceptInvite, companiesInvitePreview } from '../../features/company'
 import { brandColor } from '@push/shared'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState, type ReactNode } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 
-import { authMe, useAuthMe } from '../../entities/session'
-import { companiesAcceptInvite, companiesInvitePreview } from '../../features/accept-invite'
-import { signOut } from '../../features/sign-out'
+import { authMe, useAuthMe, signOut, AuthAlert, AuthResult, useOAuthStart } from '../../features/auth'
 import { withCleanup } from '../../shared/lib/with-cleanup'
 import { saveReturnTo, saveSignupReturnTo } from '../../shared/auth/return-path'
 import { sessionStore } from '../../shared/auth/session'
 import { useSession } from '../../shared/auth/use-session'
 import { ROLE_NAME } from '../../shared/model/employer-plan'
-import { GoogleMark, Icon } from '../../shared/ui/icon'
-import { LoadFail } from '../../shared/ui/page-state'
-import AuthAlert from '../login/auth-alert'
-import AuthResult from '../login/auth-result'
-import { useOAuthStart } from '../login/oauth-start'
-import {
-  INVITE_ACCEPT_FAILED,
-  INVITE_ACCEPTING,
-  INVITE_CAN,
-  INVITE_EMAIL_ACCEPT,
-  INVITE_EXPIRED_NEXT,
-  INVITE_EXPIRED_TITLE,
-  INVITE_EXPIRED_WHY,
-  INVITE_FACT_COMPANY,
-  INVITE_FACT_EXPIRES,
-  INVITE_FACT_INVITER,
-  INVITE_GOOGLE,
-  INVITE_HAS_ACCOUNT,
-  INVITE_HOME,
-  INVITE_INVALID_NEXT,
-  INVITE_INVALID_TITLE,
-  INVITE_INVALID_WHY,
-  INVITE_KEEP,
-  INVITE_LEAD_OBJECT,
-  INVITE_LEAD_ROLE,
-  INVITE_LEAD_SUBJECT,
-  INVITE_LIMIT,
-  ledgerDate,
-  INVITE_LOGIN,
-  INVITE_OTHER_ACCOUNT,
-  INVITE_OTHER_AS,
-  INVITE_OTHER_NEED,
-  INVITE_OTHER_NOW,
-  INVITE_OTHER_PERSONAL,
-  INVITE_OTHER_TITLE,
-  INVITE_PERKS,
-  INVITE_RELOGIN,
-  INVITE_TO_AGENT,
-  INVITE_TO_POSTINGS,
-  INVITE_WELCOME_CAN,
-  INVITE_WELCOME_LEAD,
-  INVITE_WELCOME_ROLE,
-  inviterLabel,
-  invitePreparing,
-  inviteTitle,
-  inviteWelcome,
-} from './constants'
+import GoogleMark from '../../shared/ui/google-mark'
+import Icon from '../../shared/ui/icon'
+import LoadFail from '../../shared/ui/load-fail'
+import { INVITE_ACCEPT_FAILED, INVITE_ACCEPTING, INVITE_CAN, INVITE_EMAIL_ACCEPT, INVITE_EXPIRED_NEXT, INVITE_EXPIRED_TITLE, INVITE_EXPIRED_WHY, INVITE_FACT_COMPANY, INVITE_FACT_EXPIRES, INVITE_FACT_INVITER, INVITE_GOOGLE, INVITE_HAS_ACCOUNT, INVITE_HOME, INVITE_INVALID_NEXT, INVITE_INVALID_TITLE, INVITE_INVALID_WHY, INVITE_KEEP, INVITE_LEAD_OBJECT, INVITE_LEAD_ROLE, INVITE_LEAD_SUBJECT, INVITE_LIMIT, INVITE_LOGIN, INVITE_OTHER_ACCOUNT, INVITE_OTHER_AS, INVITE_OTHER_NEED, INVITE_OTHER_NOW, INVITE_OTHER_PERSONAL, INVITE_OTHER_TITLE, INVITE_PERKS, INVITE_RELOGIN, INVITE_TO_AGENT, INVITE_TO_POSTINGS, INVITE_WELCOME_CAN, INVITE_WELCOME_LEAD, INVITE_WELCOME_ROLE, inviterLabel, invitePreparing, inviteTitle, inviteWelcome } from './constants'
+import { ledgerDate } from '../../features/billing'
 
-// push-be details on the preview (404) and on accept (403/404/409). EXPIRED also carries inviterName and expiresAt.
 const detailOf = (caught: unknown, key: string) =>
   caught instanceof ApiError && caught.details?.[key] != null ? String(caught.details[key]) : ''
 const DEAD_LINK = new Set(['INVALID', 'ACCEPTED', 'COMPANY_DELETING'])
@@ -249,7 +205,6 @@ const InvitePage = () => {
     )
   }
 
-  // A signed-in employer accepts here (push-be checks the invited email); a guest signs in or up first and comes back.
   const accept = async () => {
     setAcceptError(null)
     setAccepting(true)

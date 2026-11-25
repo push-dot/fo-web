@@ -1,7 +1,23 @@
+import bookmarks from '@push/design-system/assets/icons-3d/bookmark.svg'
+import jobs from '@push/design-system/assets/icons-3d/brief.svg'
+import activity from '@push/design-system/assets/icons-3d/chart.svg'
+
 export const HOME_SHORTCUTS = [
   { key: 'jobs', label: '채용공고', hint: '조건으로 골라 보기', to: '/jobs', login: false },
-  { key: 'bookmarks', label: '북마크', hint: '저장한 공고', to: '/me?tab=activity&chip=bookmarks', login: true },
-  { key: 'activity', label: '내 활동', hint: '진행 중인 지원', to: '/me?tab=activity&chip=applications', login: true },
+  {
+    key: 'bookmarks',
+    label: '북마크',
+    hint: '저장한 공고',
+    to: '/me?tab=activity&chip=bookmarks',
+    login: true,
+  },
+  {
+    key: 'activity',
+    label: '내 활동',
+    hint: '진행 중인 지원',
+    to: '/me?tab=activity&chip=applications',
+    login: true,
+  },
 ] as const
 
 export const HOME_SECTIONS = [
@@ -10,8 +26,23 @@ export const HOME_SECTIONS = [
   { sort: 'popular', title: '이번 주 많이 본 공고' },
 ] as const
 
-export const OPEN_APPLICATION_STAGES = ['DISCOVERED', 'PREPARING', 'READY', 'APPLIED', 'SCREENING', 'INTERVIEW', 'OFFER'] as const
+export const OPEN_APPLICATION_STAGES = [
+  'DISCOVERED',
+  'PREPARING',
+  'READY',
+  'APPLIED',
+  'SCREENING',
+  'INTERVIEW',
+  'OFFER',
+] as const
 
-export const HOME_ERROR = { title: '공고를 불러오지 못했어요.', body: '잠시 후 다시 열어 주세요.' } as const
+export const HOME_ERROR = {
+  title: '공고를 불러오지 못했어요.',
+  body: '잠시 후 다시 열어 주세요.',
+} as const
 
 export const HOME_SKELETON_CARDS = 5
+
+export type ShortcutKey = 'jobs' | 'bookmarks' | 'activity'
+
+export const SHORTCUT_ART: Record<ShortcutKey, string> = { jobs, bookmarks, activity }

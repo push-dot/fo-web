@@ -6,7 +6,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 
 import { sessionStore } from '../../shared/auth/session'
 import MembersPage from './members-page'
-import { INVITE_RESEND, INVITE_REVOKE } from './constants'
+import { INVITE_RESEND, INVITE_REVOKE } from '../../features/company'
 
 const company = (role: Company['role']): Company => ({
   id: 'co-1',

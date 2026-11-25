@@ -14,7 +14,6 @@ export type ChatSeed = {
   updatedAt: string
   postingId?: string
   messages: ['USER' | 'ASSISTANT', string][]
-  /** List row when no job is live. The board shows a running chat and one that needs approval. */
   list?: {
     status: 'NEEDS_APPROVAL' | 'RUNNING' | 'DONE'
     queuePosition: number | null

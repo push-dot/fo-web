@@ -175,10 +175,8 @@ export const LISTINGS: Posting[] = [
 
 export const POPULAR_ORDER = ['p12', 'p13', 'p1', 'p9', 'p3']
 
-// WebJobs boards: 개발 외 1 (category dev,data) reads 공고 312개 over a list that keeps loading.
 export const CATALOG_TOTALS: Record<string, number> = { 'data,dev': 312 }
 
-// WebSearch boards: totals and the result rows, in the board's order.
 export const SEARCH_BOARDS: Record<string, { postings: number; people: number; posts: number; postingIds: string[]; peopleIds: string[] }> = {
   백엔드: { postings: 48, people: 12, posts: 31, postingIds: ['p1', 'p9', 'p3', 'p12'], peopleIds: ['u-taeyoon', 'u-doyun'] },
 }
@@ -206,8 +204,6 @@ export const POSTING_DETAILS: Record<string, Partial<PostingView>> = {
   },
 }
 
-// fo-mobile's DetailWebView opens these with its own mock ids; the Push 앱 boards (JobDetail, ProfileDetail,
-// MyFollowingProfile, ProfileDetailMe) draw them, so they follow the app boards, not the web ones.
 export const APP_POSTING_BODY: Partial<PostingView> = {
   industry: '핀테크',
   skills: ['Kotlin', 'Spring Boot', 'JPA', 'Kafka'],

@@ -1,5 +1,3 @@
-// The Korean web font comes in ~120 small files (font-display: swap), so a page drawn at once shows fallback glyphs that then turn into the
-// font. In the app's web view the page stays hidden until its data is drawn and the fonts it asked for are in, so the text appears once, right.
 const MAX_MS = 2000
 const FRAMES = 3
 
@@ -21,7 +19,6 @@ export const holdForFonts = () => {
   setTimeout(show, MAX_MS)
 }
 
-/** Call once the page's text is on screen: shows the page when no font file is still on its way. */
 export const releaseAfterFonts = () => {
   if (!held) return
   const settle = () =>
