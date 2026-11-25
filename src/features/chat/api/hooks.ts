@@ -9,7 +9,7 @@ import { conversationsList, conversationsMessages, conversationsTurns } from './
 import type { AccessMode, Settings } from '@push/api-client'
 import { useSettings } from '../../auth'
 import { meUpdateSettings } from '../../../shared/api/operations'
-import { DEFAULT_ACCESS_MODE } from '../constants'
+import { shownAccessMode } from '../constants'
 
 export const useEmployerConversations = () =>
   useQuery({
@@ -63,6 +63,6 @@ export const useAccessMode = () => {
   const save = useMutation(
     accessModeMutation(client, (mode) => meUpdateSettings({ aiAccessMode: mode })),
   )
-  const accessMode: AccessMode = settings.data?.aiAccessMode ?? DEFAULT_ACCESS_MODE
+  const accessMode = shownAccessMode(settings.data?.aiAccessMode)
   return { accessMode, pick: save.mutate }
 }

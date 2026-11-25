@@ -52,8 +52,10 @@ export const ACCESS_MODES = [
     label: '자동',
     description: '나만 바뀌는 일은 바로 하고, 다른 사람에게 닿는 일은 물어봐요',
   },
-  { value: 'BYPASS', label: '바로 실행', description: '묻지 않고 실행해요' },
 ] as const satisfies readonly { value: AccessMode; label: string; description: string }[]
+
+export const shownAccessMode = (saved: AccessMode | undefined): AccessMode =>
+  ACCESS_MODES.find((mode) => mode.value === saved)?.value ?? DEFAULT_ACCESS_MODE
 
 export const APPROVAL_FAILURE: Record<ApprovalFailure, string> = {
   resolved: '이미 답한 요청이에요',
