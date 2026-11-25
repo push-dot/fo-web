@@ -6,7 +6,7 @@ import { useState, type FormEvent } from 'react'
 import { companiesInvite } from '../api/fetchers'
 import { inviteHint } from '../utils/invite-hint'
 import { inviteLimitCopy, INVITE_CANCEL, INVITE_DIALOG_TITLE, INVITE_EMAIL, INVITE_FAILED_SEND, INVITE_SUBMIT, MEMBERS_CLOSE, inviteFullNote, inviteLead, seatPlan } from '../constants'
-import { canInvite } from '../../../shared/model/employer-plan'
+import { canInvite } from '../../billing'
 import Dialog from '../../../shared/ui/dialog'
 import Icon from '../../../shared/ui/icon'
 

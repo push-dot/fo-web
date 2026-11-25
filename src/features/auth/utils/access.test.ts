@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import { employerGate, isPublicPath, needsLogin } from './access'
-import { EMPLOYER_STAGE_ACTIONS, stageChangeBlocked } from './applicant-stage'
-import { canInterviewPrep, canInvite, canUploadExternalPdf, canUseEmployerAi, seatLimit } from './employer-plan'
-import { showFitCard } from './fit-card'
-import { sanitizeReturnTo } from './return-to'
+import { EMPLOYER_STAGE_ACTIONS, stageChangeBlocked } from '../../applications'
+import { canInterviewPrep, canInvite, canUploadExternalPdf, canUseEmployerAi, seatLimit } from '../../billing'
+import { showFitCard } from '../../postings'
+import { sanitizeReturnTo } from '../../../shared/auth/return-to'
 
 const employer = (verified: boolean) => ({ accountType: 'EMPLOYER' as const, verified })
 const personal = { accountType: 'PERSONAL' as const, verified: false }

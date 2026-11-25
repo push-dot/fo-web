@@ -8,7 +8,7 @@ import { useMyProfile } from '../api/hooks'
 import { initials, roleLabel } from '../../../shared/lib/format'
 import { useSession } from '../../../shared/auth/use-session'
 import Icon from '../../../shared/ui/icon'
-import { ROLE_NAME } from '../../../shared/model/employer-plan'
+import { ROLE_NAME } from '../../billing'
 import { EMPLOYER_ACTIVITY_MENU, EMPLOYER_MENU, PERSONAL_ACTIVITY_MENU, PERSONAL_MENU } from '../constants'
 
 const MySide = () => {

@@ -1,4 +1,4 @@
-import { BLOCKED_APPLICATION_STAGES, EMPLOYER_STAGE_ACTIONS } from './constants'
+import { BLOCKED_APPLICATION_STAGES, EMPLOYER_STAGE_ACTIONS } from '../constants'
 
 export type ApplicationStage =
   | 'DISCOVERED'

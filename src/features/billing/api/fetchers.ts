@@ -10,7 +10,7 @@ import {
   type CheckoutPlanId,
   type TossReturn,
   tossReturnUrls,
-} from '../../../shared/model/employer-plans'
+} from '../utils/employer-plans'
 import { tossClientKey } from '../utils/toss-client-key'
 import type { TossSettled } from '../types'
 import { loadTossPayments } from '@tosspayments/tosspayments-sdk'

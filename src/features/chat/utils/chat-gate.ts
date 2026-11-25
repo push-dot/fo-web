@@ -1,5 +1,5 @@
 import { ApiError } from '@push/api-client'
-import type { ChatIntent } from '../../../shared/model/employer-chat'
+import type { ChatIntent } from './employer-chat'
 import { HTTP_TOO_MANY_REQUESTS } from '../constants'
 
 export type ChatBlock = 'interview' | 'pdf' | 'verify' | 'credits' | 'busy' | 'failed'

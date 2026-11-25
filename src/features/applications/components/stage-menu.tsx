@@ -1,7 +1,7 @@
 import type { EmployerStage } from '@push/api-client'
 
 import { employerStageLabel } from '../utils/stage-label'
-import { EMPLOYER_STAGE_ACTIONS, type ApplicationStage } from '../../../shared/model/applicant-stage'
+import { EMPLOYER_STAGE_ACTIONS, type ApplicationStage } from '../utils/applicant-stage'
 import Icon from '../../../shared/ui/icon'
 import Popover from '../../../shared/ui/popover'
 import { STAGE_TITLE } from '../constants'

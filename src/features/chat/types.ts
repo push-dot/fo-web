@@ -1,5 +1,5 @@
 import type { SurfaceHost } from '../../shared/a2ui'
-import type { ChatIntent } from '../../shared/model/employer-chat'
+import type { ChatIntent } from './utils/employer-chat'
 
 export type ChatPerson = {
   applicationId: string

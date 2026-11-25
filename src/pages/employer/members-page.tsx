@@ -5,7 +5,7 @@ import { useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 
 import { useSession } from '../../shared/auth/use-session'
-import { PLAN_NAME, canInvite } from '../../shared/model/employer-plan'
+import { PLAN_NAME, canInvite } from '../../features/billing'
 import ConfirmDialog from '../../shared/ui/confirm-dialog'
 import Icon from '../../shared/ui/icon'
 import Toast, { useToast } from '../../shared/ui/toast'

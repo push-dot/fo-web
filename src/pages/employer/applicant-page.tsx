@@ -7,7 +7,7 @@ import { Link, useParams } from 'react-router-dom'
 
 import { NAV } from '../../app/constants'
 import { saveFile } from '../../shared/lib/save-file'
-import { EMPLOYER_STAGE_ACTIONS, stageChangeBlocked } from '../../shared/model/applicant-stage'
+import { EMPLOYER_STAGE_ACTIONS, stageChangeBlocked } from '../../features/applications'
 import AgentMark from '../../shared/ui/agent-mark'
 import Icon from '../../shared/ui/icon'
 import ErrorState from '../../shared/ui/error-state'

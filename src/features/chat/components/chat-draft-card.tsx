@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useMyCompany } from '../../company'
 import { textFromConditions } from '../../postings'
-import type { PostingDraft } from '../../../shared/model/employer-chat'
+import type { PostingDraft } from '../utils/employer-chat'
 import Icon from '../../../shared/ui/icon'
 import { DRAFT_EDIT, DRAFT_HEAD, DRAFT_REDO, draftMeta } from '../utils/chat-copy'
 import { useChatActions } from '../hooks'

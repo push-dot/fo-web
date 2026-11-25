@@ -20,7 +20,7 @@ import { useQueryClient, type InfiniteData } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import type { SurfaceHost } from '../../shared/a2ui'
 import { withCleanup } from '../../shared/lib/with-cleanup'
-import type { ChatIntent } from '../../shared/model/employer-chat'
+import type { ChatIntent } from './utils/employer-chat'
 import {
   acceptedFailure,
   approvalFailureFrom,
@@ -48,7 +48,7 @@ import { conversationsAttach, conversationsCreateEmployer, chatTurnDeps } from '
 import { createLiveTurnStore } from './stores'
 import { useCompanyBilling, usePaymentsOpen } from '../billing'
 import { useEmployerPlan } from '../company'
-import { PLAN_NAME } from '../../shared/model/employer-plan'
+import { PLAN_NAME } from '../billing'
 import { usedPercent } from './utils/chat-usage'
 
 const idle: ChatActions = {

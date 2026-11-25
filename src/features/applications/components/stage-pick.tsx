@@ -2,7 +2,7 @@ import type { EmployerStage } from '@push/api-client'
 import { useState } from 'react'
 
 import { employerStageLabel, applicationStageTone as stageTone } from '../utils/stage-label'
-import { stageChangeBlocked, type ApplicationStage } from '../../../shared/model/applicant-stage'
+import { stageChangeBlocked, type ApplicationStage } from '../utils/applicant-stage'
 import Icon from '../../../shared/ui/icon'
 import { stagePickLabel } from '../constants'
 import StageMenu from './stage-menu'

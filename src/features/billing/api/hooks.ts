@@ -1,6 +1,6 @@
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import { billingLedger } from '../../../shared/api/operations'
-import { paymentsOpen } from '../../../shared/model/employer-plans'
+import { paymentsOpen } from '../utils/employer-plans'
 import { billingCompanyStatus } from './fetchers'
 
 export const useCompanyBilling = () =>

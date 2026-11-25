@@ -2,7 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 
 import { withCleanup } from '../../shared/lib/with-cleanup'
-import { passwordError } from '../../shared/model/login-providers'
+import { passwordError } from '../../features/auth'
 import { AuthBack, AuthPasswordField, AuthResult, authConfirmPasswordReset, authPasswordResetEmail, authRequestPasswordReset, PASSWORD_CHANGED_ACTION, LOGIN_FAILED_COPY, VERIFY_MAIL_MISSING, linkOutcome, requestOutcome } from '../../features/auth'
 import { BACK_TO_LOGIN, CONFIRM_MISMATCH, CONFIRM_PASSWORD_LABEL, CONFIRM_PASSWORD_PLACEHOLDER, EMPLOYER_EMAIL_LABEL, LOGIN_SUBMIT_COPY, NEW_PASSWORD_LABEL, NEW_PASSWORD_LEAD_TAIL, NEW_PASSWORD_TITLE, PASSWORD_CHANGED_COPY, PASSWORD_CHANGED_LOGIN, PASSWORD_CHANGED_SESSIONS, PASSWORD_HINT, RESET_CONFIRM_COPY, RESET_EXPIRED_NEXT, RESET_EXPIRED_TITLE, RESET_EXPIRED_WHY, RESET_GOOGLE_NOTE, RESET_INVALID_TITLE, RESET_INVALID_WHY, RESET_LEAD, RESET_LIMIT, RESET_NEW_LINK, RESET_RESEND, RESET_SEND_COPY, RESET_SENT_NEXT, RESET_SENT_TAIL, RESET_SEND_FAILED, RESET_SENT_TITLE, RESET_SPAM, RESET_TITLE } from './constants'
 

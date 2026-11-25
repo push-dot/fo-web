@@ -1,6 +1,6 @@
 import type { AccountType } from '@push/api-client'
 import { browserSessionStorage } from '../../../shared/lib/storage'
-import type { OAuthProvider } from '../../../shared/model/login-providers'
+import type { OAuthProvider } from './login-providers'
 import { linkedProvider } from './phone'
 
 const PENDING_LOGIN_KEY = 'push-oauth-pending'

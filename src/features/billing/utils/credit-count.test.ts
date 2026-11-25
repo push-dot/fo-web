@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { EMPLOYER_PLAN_CARDS } from '../../../shared/model/employer-plans'
+import { EMPLOYER_PLAN_CARDS } from './employer-plans'
 import { creditCount, creditText } from './credit-count'
 
 describe('creditCount', () => {

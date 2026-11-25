@@ -1,4 +1,4 @@
-import type { AccountType } from '../../../shared/model/access'
+import type { AccountType } from '../utils/access'
 
 const AccountTypeControl = ({
   value,

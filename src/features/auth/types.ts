@@ -1,4 +1,4 @@
-import type { LoginProvider, OAuthProvider } from '../../shared/model/login-providers'
+import type { LoginProvider, OAuthProvider } from './utils/login-providers'
 
 export type ButtonProvider = Exclude<LoginProvider, 'email'>
 

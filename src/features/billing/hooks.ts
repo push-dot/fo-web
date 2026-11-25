@@ -7,7 +7,7 @@ import {
   EMPLOYER_PLAN_CARDS,
   TOSS_RETURN_PARAMS,
   tossReturn,
-} from '../../shared/model/employer-plans'
+} from './utils/employer-plans'
 import { TOPUP_DONE, planConfirmError, planPaid } from './constants'
 
 type Failed = { code: string | null; message: string | null }

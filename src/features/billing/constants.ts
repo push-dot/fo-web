@@ -1,6 +1,6 @@
 import { ApiError, type LedgerEntry } from '@push/api-client'
 import { creditText } from './utils/credit-count'
-import { MAX_PACKS, PACK_CREDITS, formatKrw } from '../../shared/model/employer-plans'
+import { MAX_PACKS, PACK_CREDITS, formatKrw } from './utils/employer-plans'
 
 export const MICRO_PER_CREDIT = 6000
 
@@ -148,3 +148,9 @@ export const planActionError = (error: unknown) =>
   error instanceof ApiError && error.code === 'PAYMENTS_DISABLED'
     ? PAYMENTS_CLOSED
     : PLAN_ACTION_FAILED
+
+export const SEAT_LIMIT_ULTRA = 5
+
+export const SEAT_LIMIT_PRO = 2
+
+export const SEAT_LIMIT_NONE = 0
