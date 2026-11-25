@@ -1,7 +1,8 @@
 import { ApiError } from '@push/api-client'
-import { useQuery, type UseQueryResult } from '@tanstack/react-query'
+import { useQuery, useQueryClient, type UseQueryResult } from '@tanstack/react-query'
 import { useEffect } from 'react'
-import { send } from './bridge'
+import { useLocation } from 'react-router-dom'
+import { nativeDetailFor, onNativeDetail, send } from './bridge'
 import { releaseAfterFonts } from './hold-for-fonts'
 
 const STORE_PREFIX = 'push:detail:'
@@ -24,6 +25,9 @@ const write = (key: string, data: unknown) => {
 
 export const useDetail = <T extends object>(key: unknown[], load: () => Promise<T>, titleOf: (data: T) => string) => {
   const id = JSON.stringify(key)
+  const qc = useQueryClient()
+  const { pathname } = useLocation()
+  const native = nativeDetailFor(pathname)
   const q = useQuery({
     queryKey: key,
     queryFn: async () => {
@@ -31,8 +35,18 @@ export const useDetail = <T extends object>(key: unknown[], load: () => Promise<
       write(id, data)
       return data
     },
+    initialData: native?.data as T | undefined,
+    initialDataUpdatedAt: native?.updatedAt,
     placeholderData: (() => read<T>(id)) as () => never,
   }) as UseQueryResult<T>
+  useEffect(
+    () =>
+      onNativeDetail((detail) => {
+        const queryKey = JSON.parse(id) as unknown[]
+        if (detail.path === pathname && qc.getQueryData(queryKey) === undefined) qc.setQueryData(queryKey, detail.data, { updatedAt: detail.updatedAt })
+      }),
+    [qc, pathname, id],
+  )
   const title = q.data ? titleOf(q.data) : undefined
   useEffect(() => {
     if (!title) return

@@ -14,6 +14,7 @@ export type BridgeMessage =
   | { type: 'error'; status: number }
   | { type: 'external'; url: string }
   | { type: 'ready' }
+  | { type: 'fonts-ready' }
 
 declare global {
   interface Window {
@@ -25,6 +26,25 @@ declare global {
 let nativeToken: string | null | undefined
 let resolveToken: ((token: string | null) => void) | undefined
 const tokenWait = new Promise<string | null>((resolve) => (resolveToken = resolve))
+
+export type NativeDetail = { path: string; data: object; updatedAt: number }
+
+let nativeDetail: NativeDetail | undefined
+const detailListeners = new Set<(detail: NativeDetail) => void>()
+
+export const nativeDetailFor = (path: string) => (nativeDetail?.path === path ? nativeDetail : undefined)
+
+export const onNativeDetail = (listener: (detail: NativeDetail) => void) => {
+  detailListeners.add(listener)
+  return () => void detailListeners.delete(listener)
+}
+
+export const setNativeDetail = (value: unknown) => {
+  const d = value as Partial<NativeDetail> | null | undefined
+  if (typeof d?.path !== 'string' || typeof d.data !== 'object' || d.data === null || typeof d.updatedAt !== 'number') return
+  nativeDetail = { path: d.path, data: d.data, updatedAt: d.updatedAt }
+  detailListeners.forEach((listener) => listener(nativeDetail!))
+}
 
 export const setNativeToken = (token: string | null | undefined) => {
   nativeToken = token
@@ -74,6 +94,7 @@ if (typeof window !== 'undefined') {
   window.addEventListener('push:token', (e) => {
     setNativeToken((e as CustomEvent<{ token?: string | null }>).detail?.token ?? null)
   })
+  window.addEventListener('push:detail', (e) => setNativeDetail((e as CustomEvent<unknown>).detail))
   window.addEventListener('push:theme', (e) => {
     applyTheme((e as CustomEvent<{ theme?: unknown }>).detail?.theme)
   })

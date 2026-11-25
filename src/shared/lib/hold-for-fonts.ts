@@ -1,3 +1,5 @@
+import { send } from './bridge'
+
 const MAX_MS = 2000
 const FRAMES = 3
 
@@ -15,6 +17,7 @@ export const holdForFonts = () => {
     if (shown) return
     shown = true
     root.style.visibility = ''
+    send({ type: 'fonts-ready' })
   }
   setTimeout(show, MAX_MS)
 }
