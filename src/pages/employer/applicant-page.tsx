@@ -1,5 +1,5 @@
 import type { EmployerStage } from '@push/api-client'
-import { ApiError, employerStageLabel, postingsApplicantFile, useEmployerApplicant, useEmployerApplicants, ApplicantDocument, applicantProfileLine, applicantSub, docChips, STAGE_APPLIED, STAGE_TITLE, StageMenu, useStageMove } from '../../features/applications'
+import { ApiError, employerStageLabel, postingsApplicantFile, useEmployerApplicant, useEmployerApplicants, ApplicantAi, ApplicantDocument, applicantProfileLine, applicantSub, docChips, STAGE_APPLIED, STAGE_TITLE, StageMenu, useStageMove } from '../../features/applications'
 import { brandColor } from '@push/shared'
 import { useMutation } from '@tanstack/react-query'
 import { useState } from 'react'
@@ -169,10 +169,11 @@ const ApplicantPage = () => {
               <AgentMark />
               {NAV.chat}
             </span>
-            <Link className="btn sec block" to="/employer/chat">
+            <ApplicantAi review={detail.data.aiReview ?? null} kit={detail.data.interviewKit ?? null} />
+            <Link className="btn sec block" to="/employer/chat/new" state={{ intent: 'review', applicationId, postingId: id }}>
               {AI_REVIEW}
             </Link>
-            <Link className="btn sec block" to="/employer/chat">
+            <Link className="btn sec block" to="/employer/chat/new" state={{ intent: 'interview', applicationId, postingId: id }}>
               {AI_INTERVIEW}
             </Link>
           </div>

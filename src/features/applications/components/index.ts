@@ -1,3 +1,4 @@
+export { default as ApplicantAi } from './applicant-ai'
 export { default as ApplicantDocument } from './applicant-document'
 export { default as ApplicantRow } from './applicant-row'
 export { default as ApplyPanel } from './apply-panel'

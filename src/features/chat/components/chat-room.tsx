@@ -41,7 +41,7 @@ const ChatRoom = ({ id, screen }: { id?: string; screen: 'list' | 'new' | 'threa
   const mode = useAccessMode()
   const [intent, setIntent] = useState<ChatIntent>(routed.intent)
   const [text, setText] = useState('')
-  const [applicationId, setApplicationId] = useState('')
+  const [applicationId, setApplicationId] = useState(routed.applicationId ?? '')
   const [file, setFile] = useState<File | null>(null)
   const conversations = useEmployerConversations()
   const messages = useEmployerMessages(id)
@@ -50,7 +50,9 @@ const ChatRoom = ({ id, screen }: { id?: string; screen: 'list' | 'new' | 'threa
   const storedTurns = turns.data?.pages.flatMap((page) => page.data) ?? []
   const running = storedTurns.find(turnRunning)
   const postings = useMyPostings()
-  const openPosting = postings.data?.data.find((item) => !item.closedAt)
+  const openPosting =
+    postings.data?.data.find((item) => item.id === routed.postingId) ??
+    postings.data?.data.find((item) => !item.closedAt)
   const applicants = useEmployerApplicants(openPosting?.id, undefined, {
     queryKey: ['employer-applicants', openPosting?.id, 'chat'],
     enabled: Boolean(openPosting?.id),

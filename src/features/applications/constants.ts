@@ -82,3 +82,14 @@ export const EMPLOYER_STAGE_ACTIONS = [
   { label: '합격', stage: 'OFFER' },
   { label: '불합격', stage: 'REJECTED' },
 ] as const
+
+export const AI_PANEL = {
+  review: 'AI 서류 검토',
+  kit: '면접 질문',
+  kitCount: (count: number) => `면접 질문 ${count}개`,
+  check: '면접에서 확인할 곳',
+  none: '따로 확인할 곳은 찾지 못했어요',
+  disclaimer: '합격·불합격은 담당자가 정해요. AI는 확인할 곳만 짚어요.',
+  verify: '확인할 점',
+  open: '대화에서 보기',
+} as const
