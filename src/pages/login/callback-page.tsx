@@ -1,18 +1,14 @@
-import { ApiError, type Session } from '@push/api-client'
+import type { Session } from '@push/api-client'
+import { ApiError, authExchange, ProviderMark, PROVIDER_NAME, clearPendingLogin, readPendingLogin, PhoneConsent, termsPending, pathAfterAuth } from '../../features/auth'
 import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 
 import { takePkceVerifier } from '../../shared/auth/pkce'
-import { pathAfterAuth, takeReturnTo } from '../../shared/auth/return-path'
+import { takeReturnTo } from '../../shared/auth/return-path'
 import { sessionStore } from '../../shared/auth/session'
-import { emailTakenCopy } from '../../shared/model/login-providers'
-import { authExchange } from '../../features/sign-in'
-import { ProviderMark } from './auth-provider-button'
-import { EXCHANGE_CANCEL, EXCHANGE_EMPLOYER, EXCHANGE_PERSONAL, EXCHANGE_TAIL, PROVIDER_NAME } from './constants'
-import type { LoginState } from './login-page'
-import { clearPendingLogin, readPendingLogin } from './pending-login'
-import PhoneConsent from './phone-consent'
-import { termsPending } from './terms-gate'
+import { emailTakenCopy } from '../../features/auth'
+import { EXCHANGE_CANCEL, EXCHANGE_EMPLOYER, EXCHANGE_PERSONAL, EXCHANGE_TAIL } from './constants'
+import type { LoginState } from '../../features/auth'
 
 const failureDetail = (caught: unknown) => {
   if (caught instanceof ApiError && caught.code === 'EMAIL_TAKEN') return emailTakenCopy(caught.details?.accountType)
@@ -50,12 +46,10 @@ const CallbackPage = () => {
         const result = await authExchange({ code, codeVerifier: verifier })
         clearPendingLogin()
         if ('accessToken' in result) {
-          // The session is kept only once the terms are on record, so leaving the consent step asks again next time.
           if (await termsPending(result)) setConsent(result)
           else finish(result)
           return
         }
-        // First personal social login: push-be holds the identity until a phone number is verified.
         navigate('/signup', { replace: true, state: { pendingToken: result.pendingToken } })
       } catch (caught) {
         fail(failureDetail(caught))

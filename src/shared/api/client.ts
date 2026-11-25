@@ -1,4 +1,5 @@
 import { absoluteUrl, ApiError, createApi, createClient, createRefresher, type RefresherConfig, type Session } from '@push/api-client'
+import { A2UI_VERSION } from '../a2ui/version'
 import { cookieFetch, cookieSession, refreshFromCookie } from '../auth/cookie-session'
 import { readAccessToken, sessionStore } from '../auth/session'
 import { accessToken } from '../auth/token-source'
@@ -40,8 +41,6 @@ const refreshStored = async (current: Session | null): Promise<Session> => {
   return refreshWithToken(current.refreshToken)
 }
 
-// Tabs share one refresh token and it rotates, so a refresh runs under a lock; the second tab then finds the
-// session already renewed and skips its own call.
 const refreshLock: RefresherConfig['lock'] =
   typeof navigator !== 'undefined' && navigator.locks
     ? (run) => navigator.locks.request('push-refresh', run)
@@ -51,8 +50,6 @@ const refresh = createRefresher({
   refresh: refreshStored,
   load: sessionStore.load,
   save: sessionStore.save,
-  // A visitor with no session has nothing to clear, and clearing would also drop the sign-up return path
-  // saved for a verify link opened in a new tab.
   clear: () => {
     if (sessionStore.load()) sessionStore.clear()
   },
@@ -62,13 +59,13 @@ const refresh = createRefresher({
 
 const refreshSession = () => (isWebView() ? Promise.resolve(false) : refresh())
 
-/** A reload keeps no token in memory, so a web session kept in the cookie is asked back before the first screen. */
 export const restoreSession = async () => {
   if (cookieSession && !sessionStore.load()) await refreshSession()
 }
 
 export const http = createClient({
   baseUrl: apiBaseUrl,
+  a2uiVersion: A2UI_VERSION,
   getToken: () => accessToken({ webView: isWebView(), injected: pushEnv().token, session: readAccessToken() }),
   refresh: refreshSession,
   fetch: mockTransport ? mockFetch : cookieSession ? cookieFetch((input, init) => fetch(input, init)) : undefined,

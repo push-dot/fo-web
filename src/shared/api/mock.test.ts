@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { GENERAL_REPLY, REVIEW_REPLY, parsePostingDraft } from '../model/employer-chat'
+import { GENERAL_REPLY, REVIEW_REPLY, parsePostingDraft } from '../../features/chat/utils/employer-chat'
 import { mockFetch, setMockPersona } from './mock'
 
 const read = async <T>(response: Response) => (await response.json()) as T
@@ -271,7 +271,6 @@ describe('employer chat mock', () => {
     const messages = await read<{ data: { role: string; text: string }[] }>(
       await mockFetch(`http://localhost/api/v1/conversations/${pro.data.id}/messages`),
     )
-    // Newest first, as push-be pages them: the last question comes first.
     expect(messages.data[0]?.role).toBe('ASSISTANT')
     const assistant = messages.data
       .filter((item) => item.role === 'ASSISTANT')

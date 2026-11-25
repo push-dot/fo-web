@@ -1,6 +1,6 @@
-import type { Conversation, ConversationListItem, ConversationTurn, Message, StreamEvent } from '@push/api-client'
+import type { A2uiFrame, Conversation, ConversationListItem, ConversationTurn, Message, StreamEvent } from '@push/api-client'
 import { sessionStore } from '../../auth/session'
-import { assistantReply, type ChatIntent } from '../../model/employer-chat'
+import { assistantReply, type ChatIntent } from '../../../features/chat/utils/employer-chat'
 import { CHAT_SCRIPTS, CHAT_SEED_ATTACHMENTS, CHAT_TURNS, type ChatScriptName } from './chat-scripts'
 import { CHAT_SEEDS, DRAFT_REPLY } from './fixtures'
 import { type MockSwitch, companyMe, json, mockSwitch, personaKey, readForm, readJson, routeTail } from './core'
@@ -12,8 +12,8 @@ export type ChatBucket = {
   messages: Map<string, Message[]>
   postingIds: Map<string, string>
   listMeta: Map<string, ChatListMeta>
-  // Finished jobs, oldest first: push-be stores every streamed job and GET .../turns replays them.
   turns: Map<string, ConversationTurn[]>
+  answers: Map<string, string[]>
 }
 
 export const chatBuckets = new Map<string, ChatBucket>()
@@ -21,7 +21,7 @@ export let chatSeq = 0
 export let messageSeq = 0
 
 export const seededChat = (): ChatBucket => {
-  const bucket: ChatBucket = { conversations: [], messages: new Map(), postingIds: new Map(), listMeta: new Map(), turns: new Map() }
+  const bucket: ChatBucket = { conversations: [], messages: new Map(), postingIds: new Map(), listMeta: new Map(), turns: new Map(), answers: new Map() }
   if (!companyMe()) return bucket
   for (const seed of CHAT_SEEDS) {
     bucket.conversations.push({
@@ -91,14 +91,12 @@ export const LIVE_SCRIPTS: [MockSwitch, ChatScriptName][] = [
   ['chat-writing', 'writing'],
   ['chat-queue', 'queue'],
   ['chat-draft', 'draft'],
+  ['chat-multiple', 'multiple'],
+  ['chat-sections', 'sections'],
 ]
 
 export type JobFrame = ConversationTurn['events'][number] | StreamEvent
 
-/**
- * A chat job runs on its own, like a push-be worker: streams only read its frames, so closing one leaves the job
- * running, GET .../turns lists it as RUNNING, and stream/active picks it up again after a seq.
- */
 export type MockJob = {
   conversationId: string
   jobId: string
@@ -115,7 +113,39 @@ export let jobSeq = 0
 
 export const tokensOf = (events: StreamEvent[]) => events.flatMap((event) => (event.type === 'token' ? [event.text] : [])).join('')
 
-// push-be turn_events joins consecutive token rows and keeps the first seq. Status and done are not replayed.
+type SurfaceFrame = Extract<StreamEvent, { type: 'a2ui' }>
+
+const isSurface = (frame: JobFrame | undefined): frame is SurfaceFrame & { seq?: number } => frame?.type === 'a2ui'
+
+const ownSurface = (frame: SurfaceFrame, jobId: string): SurfaceFrame => {
+  const surfaceId = `${frame.surfaceId}:${jobId}`
+  return JSON.parse(JSON.stringify(frame).replaceAll(`"${frame.surfaceId}"`, `"${surfaceId}"`)) as SurfaceFrame
+}
+
+const answeredFrame = <T extends JobFrame>(frame: T, answers: Map<string, string[]>): T => {
+  if (!isSurface(frame)) return frame
+  const picked = answers.get(frame.surfaceId)
+  if (!picked) return frame
+  const messages = frame.messages.map((message) =>
+    'updateDataModel' in message
+      ? { ...message, updateDataModel: { ...message.updateDataModel, value: { ...(message.updateDataModel.value as object), open: false, picked } } }
+      : message,
+  )
+  return { ...frame, messages } as A2uiFrame as T
+}
+
+const surfaceTitle = (frame: A2uiFrame) => {
+  for (const message of frame.messages) {
+    if (!('updateComponents' in message)) continue
+    for (const component of message.updateComponents.components) {
+      if (component.component === 'Text' && component.id === 'title' && typeof component.text === 'string') return component.text
+      const [question] = Array.isArray(component.questions) ? (component.questions as { title?: string }[]) : []
+      if (component.component === 'PushChoice' && question?.title) return question.title
+    }
+  }
+  return null
+}
+
 export const storedEvents = (frames: JobFrame[]): ConversationTurn['events'] => {
   const events: ConversationTurn['events'] = []
   for (const event of frames) {
@@ -130,7 +160,6 @@ export const storedEvents = (frames: JobFrame[]): ConversationTurn['events'] => 
   return events
 }
 
-// push-be checkBackpressure: QUEUED+RETRY count above the plan depth is QUEUE_BUSY. A running conversation is not.
 export const QUEUE_DEPTH_LIMIT = { FREE: 20, BASIC: 40, PRO: 200, ULTRA: 1000 } as const
 
 export const queueBusy = (depth: number, plan: string | null | undefined) => {
@@ -181,8 +210,7 @@ export const startJob = (
       return
     }
     at += 1
-    job.frames.push({ ...event, seq: job.frames.length + 1 })
-    // push-be stores the messages and the job before it sends done, so a refetch right after done sees them.
+    job.frames.push({ ...(isSurface(event) ? ownSurface(event, job.jobId) : event), seq: job.frames.length + 1 })
     if (event.type === 'done') {
       close('DONE')
       return
@@ -196,7 +224,6 @@ export const startJob = (
   return job
 }
 
-/** The frames of a job after `after`, then each new one, until it ends; closing the stream leaves the job alone. */
 export const jobStream = (job: MockJob, after = 0) => {
   const encoder = new TextEncoder()
   let sent = after
@@ -227,7 +254,6 @@ export const fileNameOf = (value: FormDataEntryValue | null) => {
   return 'file'
 }
 
-/** push-be keeps every job with its frames; a cancelled one writes no reply. */
 export const rememberJob = (bucket: ChatBucket, conversation: Conversation) => (job: MockJob, status: 'DONE' | 'CANCELLED') => {
   const id = conversation.id
   const text = status === 'DONE' ? tokensOf(job.frames as StreamEvent[]) : ''
@@ -251,7 +277,8 @@ export const rememberJob = (bucket: ChatBucket, conversation: Conversation) => (
 export const approvalTitle = (frames: JobFrame[]) => {
   for (let index = frames.length - 1; index >= 0; index -= 1) {
     const frame = frames[index]
-    if (frame?.type === 'approval' && frame.title) return frame.title
+    const title = isSurface(frame) && frame.kind === 'approval' ? surfaceTitle(frame) : null
+    if (title) return title
   }
   return null
 }
@@ -269,7 +296,6 @@ export const runningLine = (frames: JobFrame[]) => {
   return null
 }
 
-/** GET /conversations row, matching push-be conversationJson. */
 export const conversationListItem = (bucket: ChatBucket, conversation: Conversation): ConversationListItem => {
   const messages = bucket.messages.get(conversation.id) ?? []
   const job = runningJobs.get(conversation.id)
@@ -303,7 +329,6 @@ export const handleEmployerChat = async (method: string, url: URL, pathname: str
     const conversation = bucket.conversations.find((item) => item.id === id)
     if (!conversation) return json(404, { error: { code: 'NOT_FOUND', message: '대화를 찾지 못했어요' } })
     const items = bucket.messages.get(id) ?? []
-    // push-be pages messages newest first; the bucket keeps them oldest first.
     if (method === 'GET') return json(200, { data: [...items].reverse(), page: { nextCursor: null, hasMore: false, total: items.length } })
     const payload = await readJson(input, init)
     if (mockSwitch('chat-limit')) return creditsSpent()
@@ -364,23 +389,34 @@ export const handleEmployerChat = async (method: string, url: URL, pathname: str
   if (approvalPath && method === 'POST') {
     const payload = await readJson(input, init)
     const optionId = String(payload.optionId ?? '')
-    const approved = optionId === 'approve'
+    const optionIds = Array.isArray(payload.optionIds) ? payload.optionIds.map(String) : []
     const id = decodeURIComponent(approvalPath[1] ?? '')
+    const surfaceId = decodeURIComponent(approvalPath[2] ?? '')
     const bucket = chatBucket()
     const conversation = bucket.conversations.find((item) => item.id === id)
-    if (conversation) startJob(id, CHAT_SCRIPTS[approved ? 'approved' : 'rejected'].events, false, null, rememberJob(bucket, conversation))
-    return json(200, { data: { id: approvalPath[2], status: approved ? 'APPROVED' : 'REJECTED', optionId } })
+    const frames = [...(bucket.turns.get(id) ?? []), ...(CHAT_TURNS[id] ?? [])].flatMap((turn) => turn.events)
+    const card = frames.find((frame) => isSurface(frame) && frame.surfaceId === surfaceId)
+    if (!card) return json(404, { error: { code: 'NOT_FOUND', message: '승인 요청을 찾지 못했어요' } })
+    if (bucket.answers.has(surfaceId)) return json(409, { error: { code: 'APPROVAL_ALREADY_RESOLVED', message: '이미 답했어요' } })
+    bucket.answers.set(surfaceId, optionIds.length ? optionIds : [optionId])
+    const approved = optionId === 'approve'
+    const next = isSurface(card) && card.kind === 'approval' ? (approved ? 'approved' : 'rejected') : 'picked'
+    if (conversation) startJob(id, CHAT_SCRIPTS[next].events, false, null, rememberJob(bucket, conversation))
+    return json(200, { data: { id: surfaceId, status: next === 'rejected' ? 'REJECTED' : 'APPROVED', optionId, jobId: 'mock-answer' } })
   }
   const turnsPath = tail.match(/^\/conversations\/([^/]+)\/turns$/)
   if (turnsPath && method === 'GET') {
     const turnsId = decodeURIComponent(turnsPath[1] ?? '')
     const seeded = mockSwitch('chat-turns') ? (CHAT_TURNS[turnsId] ?? []) : []
-    // Newest first, as push-be pages them.
     const job = runningJobs.get(turnsId)
     const running: ConversationTurn[] = job
       ? [{ jobId: job.jobId, status: 'RUNNING', createdAt: new Date().toISOString(), userMessageId: job.userMessageId, assistantMessageId: null, answer: null, events: storedEvents(job.frames) }]
       : []
-    const data = [...running, ...[...(chatBucket().turns.get(turnsId) ?? [])].reverse(), ...seeded]
+    const { answers } = chatBucket()
+    const data = [...running, ...[...(chatBucket().turns.get(turnsId) ?? [])].reverse(), ...seeded].map((turn) => ({
+      ...turn,
+      events: turn.events.map((event) => answeredFrame(event, answers)),
+    }))
     return json(200, { data, page: { nextCursor: null, hasMore: false, total: data.length } })
   }
   if (method === 'GET' && tail === '/conversations') {

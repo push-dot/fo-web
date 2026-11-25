@@ -1,12 +1,5 @@
 import { useState, type ComponentType } from 'react'
-import {
-  Outlet,
-  Route,
-  RouterProvider,
-  ScrollRestoration,
-  createBrowserRouter,
-  createRoutesFromElements,
-} from 'react-router-dom'
+import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router-dom'
 import { isWebView } from '../shared/lib/bridge'
 import CallbackPage from '../pages/login/callback-page'
 import LoginPage from '../pages/login/login-page'
@@ -25,26 +18,19 @@ import SocialPage from '../pages/social/social-page'
 import type { LegalKind } from '../pages/legal/constants'
 import NotFoundPage from '../pages/not-found/not-found-page'
 import RequireAuth from './require-auth'
-import { RouteError, WebViewNotFound } from './route-error'
+import RouteError from './route-error'
+import WebViewNotFound from './web-view-not-found'
 import Shell from './shell'
+import ScrollRoot from './scroll-root'
 
 type Loaded = Promise<{ default: ComponentType }>
 
-// Route-level split: the page's chunk loads on first visit, not with the entry bundle.
 const page = (load: () => Loaded) => async () => ({ Component: (await load()).default })
 
 const legal = (kind: LegalKind) => async () => {
   const { default: LegalPage } = await import('../pages/legal/legal-page')
   return { Component: () => <LegalPage kind={kind} /> }
 }
-
-// A new page opens at the top; back and forward restore where the reader was.
-export const ScrollRoot = () => (
-  <>
-    <ScrollRestoration />
-    <Outlet />
-  </>
-)
 
 export const appRoutes = (webView: boolean) =>
   createRoutesFromElements(

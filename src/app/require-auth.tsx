@@ -1,7 +1,7 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
-import { gateAccount, saveReturnTo } from '../shared/auth/return-path'
+import { saveReturnTo } from '../shared/auth/return-path'
 import { useSession } from '../shared/auth/use-session'
-import { employerGate, needsLogin } from '../shared/model/access'
+import { employerGate, needsLogin, gateAccount } from '../features/auth'
 
 const RequireAuth = () => {
   const location = useLocation()

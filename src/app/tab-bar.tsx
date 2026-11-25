@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom'
-import { Icon } from '../shared/ui/icon'
+import Icon from '../shared/ui/icon'
 import { tabItems, tabOn } from './tab-items'
 
 const TabBar = ({ kind }: { kind: 'guest' | 'personal' | 'employer' }) => {

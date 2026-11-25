@@ -216,7 +216,6 @@ export const documentsRename = (id: string, title: string) =>
 export const documentsArchive = (id: string) =>
   atDocumentRevision(api.documents, id, (revision) => api.documents.archive(id, revision))
 
-// Known revision is the one archive just returned, so a restore does not GET a row the list hides.
 export const documentsRestore = (id: string, revision: number) =>
   atDocumentRevision(api.documents, id, (next) => api.documents.restore(id, next), revision)
 

@@ -2,7 +2,7 @@
 import { act } from 'react'
 import { createRoot } from 'react-dom/client'
 import { describe, expect, it, vi } from 'vitest'
-import { ErrorScreen } from './route-error'
+import ErrorScreen from './error-screen'
 
 describe('ErrorScreen', () => {
   it('retry button runs onRetry', () => {

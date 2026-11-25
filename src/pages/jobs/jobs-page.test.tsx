@@ -5,7 +5,7 @@ import JobsPage from './jobs-page'
 
 const list = vi.hoisted(() => ({ current: {} as Record<string, unknown> }))
 
-vi.mock('../../entities/posting', () => ({
+vi.mock('../../features/postings/api/hooks', () => ({
   usePostingPages: () => list.current,
   usePostingCount: () => ({}),
   usePostingLocations: () => ({}),

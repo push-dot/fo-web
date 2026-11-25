@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { guestApplyAction } from './constants'
-import { postingActionMode } from '../../entities/posting'
+import { guestApplyAction, postingActionMode } from '../../features/postings'
 
 describe('guest apply', () => {
   it('opens the login dialog for a guest and the sheet for a person', () => {

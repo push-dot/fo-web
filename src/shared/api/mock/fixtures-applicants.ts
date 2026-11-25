@@ -10,11 +10,8 @@ export type ApplicantSeed = {
   tenureYears: number
   appliedAt: string
   documents: { id: string; title: string; content: string; pages?: number }[]
-  /** True until a member opens the applicant. Omitted means already seen. */
   isNew?: boolean
-  /** CURRENT is the live profile. SUBMITTED is the snapshot taken at apply time. */
   profileSource?: 'SUBMITTED' | 'CURRENT'
-  /** Hub profile fields the applicant detail serves; absent = an applicant with no profile data. */
   profile?: { email: string; headline: string; careers: typeof TAEYOON_CAREERS; skills: string[]; hubProfileId: string | null }
 }
 

@@ -1,6 +1,8 @@
 import { ApiError } from '@push/api-client'
 import { describe, expect, it } from 'vitest'
-import { INVITE_GONE, MEMBER_GONE, MEMBERS_ACTION_FAILED, MEMBERS_ADMIN_ONLY, SEAT_FULL_TITLE, inviteExpiry, memberActionError, memberInitials } from './constants'
+import { INVITE_GONE, MEMBER_GONE, MEMBERS_ACTION_FAILED, MEMBERS_ADMIN_ONLY, SEAT_FULL_TITLE, memberActionError } from '../../features/company'
+import { inviteExpiry } from './constants'
+import { memberInitials } from '../../shared/lib/format'
 
 describe('member action errors', () => {
   it('reads the resend cooldown from push-be 429 details', () => {

@@ -34,8 +34,8 @@ afterEach(() => {
 })
 
 describe('ms= switches', () => {
-  it('knows the 52 switches of mock-needs-v2 plus payments-disabled and ignores unknown names', () => {
-    expect(MOCK_SWITCHES).toHaveLength(53)
+  it('knows the 52 switches of mock-needs-v2 plus payments-disabled, chat-multiple and chat-sections, and ignores unknown names', () => {
+    expect(MOCK_SWITCHES).toHaveLength(55)
     using('personal', 'nope,docs-empty')
   })
 
@@ -222,7 +222,6 @@ describe('ms= switches', () => {
     expect(payments.every((item) => item.receiptUrl?.startsWith('https://'))).toBe(true)
     expect(ledger.body.data.filter((item) => item.amountUsd == null).every((item) => item.description === null)).toBe(true)
     expect(new Set(ledger.body.data.map((item) => item.id)).size).toBe(ledger.body.data.length)
-    // each balanceAfter is the one below it plus this row, newest first (Basic 3,000 + Pro 15,000 × 3 credits)
     ledger.body.data.forEach((item, index) => {
       expect(item.balanceAfter).toBe((ledger.body.data[index + 1]?.balanceAfter ?? 0) + item.amountMicroCredits)
     })
@@ -239,15 +238,21 @@ describe('ms= switches', () => {
     for await (const event of readEvents<{ type: string; awaiting?: string }>(response.body!)) {
       types.push('awaiting' in event && event.awaiting ? `${event.type}:${event.awaiting}` : event.type)
     }
-    expect(types).toEqual(['tool', 'tool', 'token', 'approval', 'done:approval'])
+    expect(types).toEqual(['tool', 'tool', 'token', 'a2ui', 'done:approval'])
     const list = await read<{ data: { id: string; title: string }[] }>('/conversations?audience=EMPLOYER')
     expect(list.body.data[0]).toMatchObject({ id, title: '서류 통과 지원자 면접 단계로' })
-    await call(`/conversations/${id}/approvals/ap-stage`, 'POST', { optionId: 'approve' })
+    const turns = await read<{ data: { events: { type: string; surfaceId?: string }[] }[] }>(`/conversations/${id}/turns`)
+    const surfaceId = turns.body.data[0]!.events.find((event) => event.type === 'a2ui')!.surfaceId!
+    expect((await call(`/conversations/${id}/approvals/${surfaceId}`, 'POST', { optionId: 'approve' })).status).toBe(200)
     const follow = await call(`/conversations/${id}/messages/stream/active`)
     const after: string[] = []
     for await (const event of readEvents<{ type: string }>(follow.body!)) after.push(event.type)
     expect(after.at(-1)).toBe('done')
     expect((await call(`/conversations/${id}/messages/stream/active`)).status).toBe(204)
+    const replayed = await read<{ data: { events: { type: string; messages?: { updateDataModel?: { value: unknown } }[] }[] }[] }>(`/conversations/${id}/turns`)
+    const frame = replayed.body.data.flatMap((turn) => turn.events).find((event) => event.type === 'a2ui')
+    expect(frame?.messages?.[2]?.updateDataModel?.value).toMatchObject({ open: false, picked: ['approve'] })
+    expect((await call(`/conversations/${id}/approvals/${surfaceId}`, 'POST', { optionId: 'approve' })).status).toBe(409)
     setMockPersona(null)
   })
 
@@ -256,7 +261,6 @@ describe('ms= switches', () => {
     const created = await read<{ data: { id: string } }>('/conversations', 'POST', { audience: 'EMPLOYER', title: '' })
     const id = created.body.data.id
     const response = await call(`/conversations/${id}/messages/stream`, 'POST', { text: '서류 통과한 사람 면접 단계로 옮겨 줘', accessMode: 'AUTO' })
-    // The job is stored by the time the done frame arrives, not a moment after it.
     for await (const event of readEvents<{ type: string }>(response.body!)) {
       if (event.type !== 'done') continue
       expect((await read<{ data: unknown[] }>(`/conversations/${id}/turns`)).body.data).toHaveLength(1)
@@ -264,7 +268,7 @@ describe('ms= switches', () => {
     const turns = await read<{ data: { userMessageId: string | null; assistantMessageId: string | null; events: { type: string }[] }[] }>(`/conversations/${id}/turns`)
     expect(turns.body.data).toHaveLength(1)
     expect(turns.body.data[0]!.userMessageId).not.toBeNull()
-    expect(turns.body.data[0]!.events.map((event) => event.type)).toEqual(['tool', 'tool', 'token', 'approval'])
+    expect(turns.body.data[0]!.events.map((event) => event.type)).toEqual(['tool', 'tool', 'token', 'a2ui'])
     setMockPersona(null)
   })
 
@@ -274,10 +278,8 @@ describe('ms= switches', () => {
     expect((await errorCode(`/conversations/${id}/stream/cancel`, 'POST')).code).toBe('CONFLICT')
     const response = await call(`/conversations/${id}/messages/stream`, 'POST', { text: '이번 주 새 지원자 정리해 줘', accessMode: 'AUTO' })
     const frames = readEvents<{ type: string; name?: string; seq?: number }>(response.body!)[Symbol.asyncIterator]()
-    // The tool script stalls on its last tool line, still running.
     let first = (await frames.next()).value as { type: string; name?: string; seq: number }
     while (first.name !== 'read_documents') first = (await frames.next()).value as typeof first
-    // The job runs apart from the stream: it is listed as running, and a follow picks it up.
     const running = await read<{ data: { status: string; events: unknown[] }[] }>(`/conversations/${id}/turns`)
     expect(running.body.data[0]!.status).toBe('RUNNING')
     expect(running.body.data[0]!.events.at(-1)).toMatchObject({ type: 'tool', state: 'run' })
@@ -328,7 +330,6 @@ describe('ms= switches', () => {
     using('employer-pro', 'chat-queue')
     const id = (await read<{ data: { id: string } }>('/conversations', 'POST', { audience: 'EMPLOYER', title: '' })).body.data.id
     expect((await call(`/conversations/${id}/messages/stream`, 'POST', { text: '정리해 줘', accessMode: 'AUTO' })).status).toBe(200)
-    // A running job in this conversation is not a full queue.
     expect((await call(`/conversations/${id}/messages/stream`, 'POST', { text: '또', accessMode: 'AUTO' })).status).toBe(200)
     await call(`/conversations/${id}/stream/cancel`, 'POST')
     setMockPersona(null)

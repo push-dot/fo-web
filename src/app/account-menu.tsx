@@ -1,14 +1,15 @@
 import { brandColor } from '@push/shared'
 import { useState } from 'react'
 
-import { useMyCompany } from '../entities/company'
-import { useAuthMe } from '../entities/session'
-import { useSignOut } from '../features/sign-out'
+import { useMyCompany } from '../features/company'
+import { useAuthMe, useSignOut } from '../features/auth'
 import { useSession } from '../shared/auth/use-session'
 import { initials } from '../shared/lib/format'
-import { PLAN_NAME, ROLE_NAME } from '../shared/model/employer-plan'
-import { Icon } from '../shared/ui/icon'
-import { Menu, Popover, type MenuItem } from '../shared/ui/popover'
+import { PLAN_NAME, ROLE_NAME } from '../features/billing'
+import Icon from '../shared/ui/icon'
+import Menu from '../shared/ui/menu'
+import Popover from '../shared/ui/popover'
+import type { MenuItem } from '../shared/ui/types'
 import { ACCOUNT_MENU, NAV } from './constants'
 
 const AccountMenu = () => {
@@ -17,7 +18,6 @@ const AccountMenu = () => {
   const [open, setOpen] = useState(false)
   const employer = session?.user.accountType === 'EMPLOYER'
   const company = useMyCompany({ enabled: employer && Boolean(session?.user.companyId) })
-  // Loaded with the session so the email is there when the menu opens (no line popping in).
   const me = useAuthMe(Boolean(session))
   if (!session) return null
   const person = session.user.displayName

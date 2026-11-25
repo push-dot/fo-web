@@ -1,5 +1,10 @@
-import type { ConversationTurn, Message, StreamEvent } from '@push/api-client'
-import { parsePostingDraft } from '../../model/employer-chat'
+import type { A2uiFrame, ConversationTurn, Message, StreamEvent } from '@push/api-client'
+import approvalTool from '@push/api-client/a2ui-fixtures/v1.0/approval-tool.json'
+import choiceMultiple from '@push/api-client/a2ui-fixtures/v1.0/choice-multiple.json'
+import choiceSections from '@push/api-client/a2ui-fixtures/v1.0/choice-sections.json'
+import choiceSingle from '@push/api-client/a2ui-fixtures/v1.0/choice-single.json'
+import planFeedback from '@push/api-client/a2ui-fixtures/v1.0/plan-feedback.json'
+import { parsePostingDraft } from '../../../features/chat/utils/employer-chat'
 import { CHAT_SEEDS, DRAFT_REPLY } from './fixtures'
 
 export type ChatScriptName =
@@ -13,10 +18,15 @@ export type ChatScriptName =
   | 'tool'
   | 'writing'
   | 'queue'
+  | 'multiple'
+  | 'sections'
+  | 'picked'
 
 type TurnEvent = ConversationTurn['events'][number]
 
 type ChatScript = { title: string | null; events: StreamEvent[]; stall: boolean }
+
+const surface = (fixture: unknown) => fixture as A2uiFrame
 
 const interviewText = CHAT_SEEDS.find((seed) => seed.id === 'c-interview')?.messages[1]?.[1] ?? ''
 
@@ -43,18 +53,7 @@ const GEN: TurnEvent[] = [
     type: 'token',
     text: '모아페이는 결제 승인과 정산을 직접 운영하고, 최근 거래액이 빠르게 늘고 있어요. 참고 공고는 1–3년차 대상이라 그대로 쓰면 연차가 맞지 않을 수 있어요.',
   },
-  {
-    type: 'choice',
-    id: 'need',
-    title: '이번에 가장 필요한 사람은 누구예요?',
-    recommended: '1',
-    options: [
-      { id: '1', label: '결제 승인 API를 키울 사람', desc: '트래픽 증가 대응 · 성능 · 장애 대응' },
-      { id: '2', label: '정산 파이프라인을 맡을 사람', desc: '배치 → 스트림 전환 · 데이터 정합성' },
-      { id: '3', label: '둘 다 볼 수 있는 시니어', desc: '연차 7년 이상 · 리드 경험' },
-      { id: '4', label: '직접 말하기' },
-    ],
-  },
+  surface(choiceSingle),
 ]
 
 const REVIEW: TurnEvent[] = [
@@ -75,25 +74,7 @@ const REVIEW: TurnEvent[] = [
     resultLine: '같은 연차 서류의 구조와 깊이를 기준으로 봤어요',
   },
   { type: 'token', text: '서류 전체는 공고와 잘 맞아요. 다만 아래 세 곳은 면접에서 직접 확인해 보는 게 좋아요.' },
-  {
-    type: 'plan',
-    id: 'feedback',
-    title: '서류 검토',
-    meta: '확인 필요 2 · 근거 충분 1',
-    rows: [
-      {
-        tag: '확인 필요',
-        label: '“p99 420ms → 180ms”의 본인 역할',
-        note: '성과 수치는 구체적인데, 무엇을 직접 바꿨는지 설명이 같은 연차 서류보다 짧아요.',
-      },
-      {
-        tag: '확인 필요',
-        label: 'Kafka 정산 파이프라인',
-        note: '문장 구조는 고급인데, 처리량·장애 사례 같은 빈칸 내용이 구체적이지 않아요.',
-      },
-      { tag: '근거 충분', label: '결제 승인 API 운영 4년', note: '기간, 트래픽 규모, 장애 회고가 서로 맞아요.' },
-    ],
-  },
+  surface(planFeedback),
   { type: 'token', text: '합격·불합격은 담당자가 정해요. AI는 확인할 부분만 짚어요.' },
 ]
 
@@ -109,12 +90,6 @@ const CARRY_REVIEW: TurnEvent = {
 const INTERVIEW: TurnEvent[] = [CARRY_REVIEW, { type: 'token', text: interviewText }]
 
 const QUESTIONS_INTRO = '면접관 시점에서 서류의 역량이 사실인지 확인하는 질문 5개예요. 확인 필요였던 부분부터 넣었어요.\n\n'
-
-const MOVE_ROWS = [
-  { name: '김태윤', initial: '태윤', from: '서류 통과', to: '면접' },
-  { name: '이서연', initial: '서연', color: '#C2255C', from: '서류 통과', to: '면접' },
-  { name: '최현우', initial: '현우', color: '#0C8093', from: '서류 통과', to: '면접' },
-]
 
 const draft = parsePostingDraft(DRAFT_REPLY)
 
@@ -138,7 +113,6 @@ export const CHAT_SCRIPTS: Record<ChatScriptName, ChatScript> = {
         summary: '공고 초안 쓰기',
         target: '결제 승인 · 4–6년',
         resultLine: '제목 · 하는 일 3 · 자격 요건 3 · 우대 사항 2 · 근무 조건',
-        // push-be's draft_posting result is the saved posting, with the facts WebBizAiDraft reads under the title.
         result: { draft: { ...draft, location: '서울 강남구', careerMin: 4, careerMax: 6, employmentType: 'full_time' } },
       },
       {
@@ -174,21 +148,7 @@ export const CHAT_SCRIPTS: Record<ChatScriptName, ChatScript> = {
         type: 'token',
         text: '아래 3명을 면접 단계로 옮기려고 해요. 단계를 바꾸면 지원자에게 알림이 가서, 확인을 받고 진행할게요.',
       },
-      {
-        type: 'approval',
-        id: 'ap-stage',
-        kind: 'TOOL_ACTION',
-        title: '3명을 면접 단계로 옮길까요?',
-        toolName: 'move_stage',
-        // Raw tool args stay ids. The people the card draws come from rows, with no colour.
-        args: { stage: 'INTERVIEW' },
-        rows: MOVE_ROWS.map(({ name, initial, from, to }) => ({ name, initial, from, to })),
-        foot: '옮기면 세 분에게 “지원 상태 변경” 알림이 가요.',
-        options: [
-          { id: 'reject', label: '취소' },
-          { id: 'approve', label: '옮기기' },
-        ],
-      },
+      surface(approvalTool),
       { type: 'done', operation: null, awaiting: 'approval' },
     ],
   },
@@ -253,6 +213,29 @@ export const CHAT_SCRIPTS: Record<ChatScriptName, ChatScript> = {
     title: '김태윤 서류 검토',
     stall: true,
     events: [{ type: 'status', text: 'queued', ahead: 3 } as StreamEvent],
+  },
+  multiple: {
+    title: '산출물 고르기',
+    stall: false,
+    events: [
+      { type: 'token', text: '무엇을 만들지 골라 주세요. 여러 개를 골라도 돼요.' },
+      surface(choiceMultiple),
+      { type: 'done', operation: null, awaiting: 'choice' },
+    ],
+  },
+  sections: {
+    title: '쓰기 전에 확인',
+    stall: false,
+    events: [
+      { type: 'token', text: '쓰기 전에 세 가지만 확인할게요.' },
+      surface(choiceSections),
+      { type: 'done', operation: null, awaiting: 'choice' },
+    ],
+  },
+  picked: {
+    title: null,
+    stall: false,
+    events: [{ type: 'token', text: '골라 주신 대로 이어서 할게요.' }, { type: 'done', operation: null }],
   },
 }
 

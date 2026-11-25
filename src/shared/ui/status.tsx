@@ -1,5 +1,5 @@
 import { isWebView } from '../lib/bridge'
-import { LoadFail } from './page-state'
+import LoadFail from './load-fail'
 
 const Status = ({ error, what }: { error: boolean; what: string }) => {
   if (error && !isWebView()) return <LoadFail />

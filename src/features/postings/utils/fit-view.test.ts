@@ -1,0 +1,153 @@
+import { describe, expect, it } from 'vitest'
+import styles from '../../../styles.css?raw'
+import { bookmarkFitParts, FIT_LOCK, FIT_TITLE, FIT_LOCK_CLOSED, FIT_PART_LABELS, firstDocument, fitCardModel, fitLockText, fitStatus, isLowFit, FIT_LOCK_EXAMPLE, mockFitModel, runPostingFit, WAITING_FIT_PARTS, type FitPayload } from './fit-view'
+
+const payload = (plan: string): FitPayload => ({
+  fitScore: 6.9,
+  parts: { techStack: 8.2, experienceLink: 7.4, careerLevel: 6, keyword: 4.5, domain: 5 },
+  topGap: '도메인',
+  plan,
+})
+
+const doc = { id: 'd1', title: '김서준_백엔드_이력서_2026' }
+
+const client = (plan: string, statuses: string[] = ['DONE']) => {
+  const queue = [...statuses]
+  return {
+    listDocuments: async () => ({ data: [doc] }),
+    startFit: async () => ({ jobId: 'j1' }),
+    readJob: async () => ({ status: queue.length > 1 ? queue.shift()! : queue[0]!, result: payload(plan) }),
+  }
+}
+
+const noSleep = async () => {}
+
+describe('fit card', () => {
+  it('names the default hub profile in its title, as every JobDetail board does', () => {
+    expect(FIT_TITLE).toBe('내 적합도 · 허브 프로필 기준')
+  })
+
+  it('locks the five parts on FREE and keeps the total', async () => {
+    const model = await runPostingFit('p1', doc, client('FREE'), noSleep)
+    expect(model?.score).toBe(6.9)
+    expect(model?.locked).toBe(true)
+    expect(model?.weakness).toBeNull()
+    expect(model?.parts.map((part) => part.label)).toEqual([...FIT_PART_LABELS])
+    expect(model?.parts.every((part) => part.value === null)).toBe(true)
+    expect(JSON.stringify(model)).not.toContain('%')
+    expect(FIT_LOCK).toBe('PRO로 올리면 항목별 점수와 약점을 볼 수 있어요')
+  })
+
+  it('shows every part score on PRO and ULTRA', () => {
+    for (const plan of ['PRO', 'ULTRA']) {
+      const model = fitCardModel(payload(plan))
+      expect(model.locked).toBe(false)
+      expect(model.parts.map((part) => part.value)).toEqual([8.2, 7.4, 6, 4.5, 5])
+      expect(model.weakness).toBe('도메인')
+      expect(JSON.stringify(model)).not.toContain('%')
+    }
+  })
+
+  it('draws five parts when scored and three dashes while waiting', () => {
+    expect(fitCardModel(payload('PRO')).parts.map((part) => part.label)).toEqual([...FIT_PART_LABELS])
+    expect(WAITING_FIT_PARTS).toEqual([
+      { label: '기술 스택', value: null },
+      { label: '경험 연관성', value: null },
+      { label: '키워드', value: null },
+    ])
+  })
+
+  it('finds the newest document or none', async () => {
+    expect(await firstDocument(client('PRO'))).toEqual(doc)
+    expect(await firstDocument({ ...client('PRO'), listDocuments: async () => ({ data: [] }) })).toBeNull()
+    expect(await firstDocument({ ...client('PRO'), listDocuments: async () => Promise.reject(new Error('401')) })).toBeNull()
+  })
+
+  it('stays empty until the job finishes', async () => {
+    expect(await runPostingFit('p1', doc, client('PRO', ['FAILED']), noSleep)).toBeNull()
+    const polled = await runPostingFit('p1', doc, client('PRO', ['RUNNING', 'DONE']), noSleep)
+    expect(polled?.locked).toBe(false)
+  })
+})
+
+describe('bookmarkFitParts', () => {
+  it('keeps the three parts MyBookmarkJob draws and drops career level and domain', () => {
+    const parts = fitCardModel(payload('PRO')).parts
+    expect(bookmarkFitParts(parts).map((part) => part.label)).toEqual(['기술 스택', '경험 연관성', '키워드'])
+    expect(bookmarkFitParts(parts).map((part) => part.value)).toEqual([8.2, 7.4, 4.5])
+  })
+})
+
+describe('fitLockText', () => {
+  it('invites the upgrade only while payments are open', () => {
+    expect(fitLockText(true)).toBe(FIT_LOCK)
+    expect(fitLockText(false)).toBe(FIT_LOCK_CLOSED)
+    expect(FIT_LOCK_CLOSED).toBe('항목별 점수와 약점은 PRO에서 볼 수 있어요')
+    expect(FIT_LOCK_CLOSED).not.toContain('올리면')
+  })
+})
+
+describe('fitStatus', () => {
+  const ready = fitCardModel(payload('PRO'))
+  const locked = fitCardModel(payload('FREE'))
+
+  it('compares while the document or the job is still loading', () => {
+    expect(fitStatus({ documentPending: true, document: undefined, fitPending: true, fit: undefined })).toBe('comparing')
+    expect(fitStatus({ documentPending: false, document: doc, fitPending: true, fit: undefined })).toBe('comparing')
+  })
+
+  it('says soon without a document or a result', () => {
+    expect(fitStatus({ documentPending: false, document: null, fitPending: true, fit: undefined })).toBe('soon')
+    expect(fitStatus({ documentPending: false, document: doc, fitPending: false, fit: null })).toBe('soon')
+  })
+
+  it('locks on FREE and shows the result otherwise', () => {
+    expect(fitStatus({ documentPending: false, document: doc, fitPending: false, fit: locked })).toBe('locked')
+    expect(fitStatus({ documentPending: false, document: doc, fitPending: false, fit: ready })).toBe('ready')
+  })
+})
+
+describe('mockFitModel', () => {
+  const mock = {
+    document: '김서준_백엔드_이력서_2026',
+    score: 6.9,
+    parts: [
+      { label: '기술 스택', value: 7.5 },
+      { label: '경험 연관성', value: 7 },
+      { label: '경력 수준', value: 8 },
+      { label: '키워드', value: 4.5 },
+      { label: '도메인', value: 5 },
+    ],
+    weakness: 'Kafka 운영 경험과 부하 테스트 근거가 부족해요',
+  }
+
+  it('is the PRO card when the app names no plan', () => {
+    const model = mockFitModel(mock, undefined)
+    expect(model.locked).toBe(false)
+    expect(model.parts.map((part) => part.value)).toEqual([7.5, 7, 8, 4.5, 5])
+  })
+
+  it('locks the card for FREE and keeps the score', () => {
+    const model = mockFitModel(mock, 'FREE')
+    expect(model.locked).toBe(true)
+    expect(model.score).toBe(6.9)
+    expect(model.weakness).toBeNull()
+  })
+
+  it('draws five example bars that are not the account\'s own scores', () => {
+    expect(FIT_LOCK_EXAMPLE).toHaveLength(FIT_PART_LABELS.length)
+    expect(FIT_LOCK_EXAMPLE).not.toEqual(mock.parts.map((part) => part.value))
+  })
+})
+
+describe('fit bar tone', () => {
+  it('draws 4.5 and 5.0 low and 5.1 normal, as the JobDetail boards do', () => {
+    expect([4.5, 5, 5.1, 7.5].map(isLowFit)).toEqual([true, true, false, false])
+  })
+})
+
+describe('locked fit bars', () => {
+  it('draws the example bars as the board\'s .gy: the grey text token at 70%, not the decoration grey', () => {
+    expect(styles).toContain('.bar i.ex{background:var(--t4);opacity:.7}')
+  })
+})

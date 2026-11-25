@@ -13,12 +13,16 @@ import { holdForFonts } from './shared/lib/hold-for-fonts'
 
 if (isWebView()) holdForFonts()
 
+const Main = () => (
+  <StrictMode>
+    <Providers>
+      <AppRouter />
+    </Providers>
+  </StrictMode>
+)
+
 void applyMockSearch(window.location.search, sessionStore).then(restoreSession).then(() => {
-  createRoot(document.getElementById('root')!).render(
-    <StrictMode>
-      <Providers>
-        <AppRouter />
-      </Providers>
-    </StrictMode>,
-  )
+  createRoot(document.getElementById('root')!).render(<Main />)
 })
+
+export default Main

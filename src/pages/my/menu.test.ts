@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { EMPLOYER_MENU, PERSONAL_MENU } from './constants'
+import { EMPLOYER_MENU, PERSONAL_MENU } from '../../features/profile'
 
 describe('my menu', () => {
   it('puts 내 링크 on personal 마이 and keeps it off the employer menu', () => {

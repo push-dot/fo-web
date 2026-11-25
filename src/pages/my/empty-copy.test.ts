@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest'
-import { APPLICATION_EMPTY, BOOKMARK_EMPTY, FOLLOW_EMPTY, POST_EMPTY } from './constants'
+import { APPLICATION_EMPTY } from '../../features/applications'
+import { BOOKMARK_EMPTY } from '../../features/postings'
+import { FOLLOW_EMPTY } from '../../features/profile'
+import { POST_EMPTY } from '../../features/social'
 
 describe('activity empty lines', () => {
   it('activity empty lines end with a period', () => {

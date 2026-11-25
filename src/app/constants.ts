@@ -36,7 +36,6 @@ export const FOOTER_LINKS = [
   { label: '기업 서비스' },
 ] as const
 export const FOOTER_MARK = '© 2026 Push'
-// Payment providers review the site for the operator's business details in the footer.
 export const FOOTER_BUSINESS: readonly string[] =
   LEGAL_OPERATOR.kind === 'business'
     ? [

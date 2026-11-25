@@ -2,7 +2,8 @@ import { renderToStaticMarkup } from 'react-dom/server'
 import { MemoryRouter } from 'react-router-dom'
 import { describe, expect, it } from 'vitest'
 
-import VerifyPage, { VerifyExpired } from './verify-page'
+import VerifyPage from './verify-page'
+import { VerifyExpired } from '../../features/auth'
 
 describe('expired verification', () => {
   it('offers 인증 메일 다시 보내기 as a button, not another sign-up form', () => {

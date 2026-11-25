@@ -5,7 +5,7 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { describe, expect, it } from 'vitest'
 
 import ApplicantPage from './applicant-page'
-import { PROFILE_NOW, submittedAsIs } from './constants'
+import { PROFILE_NOW, submittedAsIs } from '../../features/applications'
 
 const detail = (source: 'CURRENT' | 'SUBMITTED'): ApplicantDetail => ({
   application: {

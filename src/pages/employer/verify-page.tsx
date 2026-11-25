@@ -1,34 +1,12 @@
-import { ApiError, type Company } from '@push/api-client'
+import type { Company } from '@push/api-client'
+import { ApiError, LABEL_BNO, digitsOf, formatBno, formatStartDt, VerifyDone, VerifyField, VerifySteps, companiesVerify } from '../../features/company'
 import { useState, type FormEvent } from 'react'
 
 import { withCleanup } from '../../shared/lib/with-cleanup'
 import { sessionStore } from '../../shared/auth/session'
-import { Icon } from '../../shared/ui/icon'
-import {
-  BNO_DIGITS,
-  COMPANY_EXISTS_COPY,
-  LABEL_BNM,
-  LABEL_BNO,
-  LABEL_PNM,
-  LABEL_START,
-  START_DT_DIGITS,
-  VERIFY_LEAD,
-  VERIFY_MISMATCH,
-  VERIFY_MISMATCH_DETAIL,
-  VERIFY_NAME_HINT,
-  VERIFY_PENDING,
-  VERIFY_RETRY,
-  VERIFY_STATUS_NOTE,
-  VERIFY_SUBMIT,
-  VERIFY_TITLE,
-} from './constants'
-import { digitsOf, formatBno, formatStartDt } from '../../features/verify-business'
-import VerifyDone from './verify-done'
-import VerifyField from './verify-field'
-import VerifySteps from './verify-steps'
-import { authMe } from '../../entities/session'
-import { companiesVerify } from '../../features/verify-business'
-
+import Icon from '../../shared/ui/icon'
+import { BNO_DIGITS, COMPANY_EXISTS_COPY, LABEL_BNM, LABEL_PNM, LABEL_START, START_DT_DIGITS, VERIFY_LEAD, VERIFY_MISMATCH, VERIFY_MISMATCH_DETAIL, VERIFY_NAME_HINT, VERIFY_PENDING, VERIFY_RETRY, VERIFY_STATUS_NOTE, VERIFY_SUBMIT, VERIFY_TITLE } from './constants'
+import { authMe } from '../../features/auth'
 
 const VerifyPage = () => {
   const [bNo, setBNo] = useState('')

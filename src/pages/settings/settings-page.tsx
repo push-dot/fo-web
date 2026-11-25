@@ -4,38 +4,17 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
-import MySide from '../my/my-side'
+import { MySide } from '../../features/profile'
 import { useSession } from '../../shared/auth/use-session'
-import { useAuthMe, useBlocks, useSettings } from '../../entities/session'
+import { useAuthMe, useBlocks, useSettings, useSignOut } from '../../features/auth'
 import { initials } from '../../shared/lib/format'
 import { THEME_CHOICES, setTheme, useTheme } from '../../shared/lib/theme'
-import { useSignOut } from '../../features/sign-out'
-import { meUpdateSettings } from '../../features/update-settings'
-import { ConfirmDialog } from '../../shared/ui/dialog'
-import { Icon } from '../../shared/ui/icon'
-import { ErrorState } from '../../shared/ui/state-block'
+import { meUpdateSettings, BLOCKED_COPY, blockedCount, settingsSections, SettingsPick, SettingsRow, SettingsSwitch, WithdrawDialog } from '../../features/settings'
+import ConfirmDialog from '../../shared/ui/confirm-dialog'
+import Icon from '../../shared/ui/icon'
+import ErrorState from '../../shared/ui/error-state'
 import Skeleton from '../../shared/ui/skeleton'
-import {
-  CAREER_VISIBILITY,
-  CONTACT_VISIBILITY,
-  HIDE_COMPANY_LABEL,
-  LOCALES,
-  LOCALE_NOTE,
-  LOGIN_LABEL,
-  LOGOUT_TITLE,
-  SETTINGS_CHANNEL_NOTE,
-  SETTINGS_GROUPS,
-  SETTINGS_LABELS,
-  SETTINGS_LOAD_ERROR,
-  SUPPORT_MAIL,
-  THEME_LABEL,
-  BLOCKED_COPY,
-} from './constants'
-import { blockedCount, settingsSections } from './lib'
-import SettingsPick from './settings-pick'
-import SettingsRow from './settings-row'
-import SettingsSwitch from './settings-switch'
-import WithdrawDialog from './withdraw-dialog'
+import { CAREER_VISIBILITY, CONTACT_VISIBILITY, HIDE_COMPANY_LABEL, LOCALES, LOCALE_NOTE, LOGIN_LABEL, LOGOUT_TITLE, SETTINGS_CHANNEL_NOTE, SETTINGS_GROUPS, SETTINGS_LABELS, SETTINGS_LOAD_ERROR, SUPPORT_MAIL, THEME_LABEL } from './constants'
 
 const SettingsPage = () => {
   const session = useSession()
