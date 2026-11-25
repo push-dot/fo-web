@@ -1,26 +1,12 @@
 import { useState, type ComponentType } from 'react'
 import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router-dom'
 import { isWebView } from '../shared/lib/bridge'
-import CallbackPage from '../pages/login/callback-page'
-import LoginPage from '../pages/login/login-page'
-import ResetPage from '../pages/login/reset-page'
-import SignupPage from '../pages/login/signup-page'
-import EmailVerifyPage from '../pages/login/verify-page'
-import HomePage from '../pages/home/home-page'
-import HubPage from '../pages/hub/hub-page'
-import JobsPage from '../pages/jobs/jobs-page'
-import NotificationsPage from '../pages/notifications/notifications-page'
 import PostingPage from '../pages/posting/posting-page'
 import ProfilePage from '../pages/profile/profile-page'
-import SearchPage from '../pages/search/search-page'
-import PostPage from '../pages/social/post-page'
-import SocialPage from '../pages/social/social-page'
 import type { LegalKind } from '../pages/legal/constants'
-import NotFoundPage from '../pages/not-found/not-found-page'
 import RequireAuth from './require-auth'
 import RouteError from './route-error'
 import WebViewNotFound from './web-view-not-found'
-import Shell from './shell'
 import ScrollRoot from './scroll-root'
 
 type Loaded = Promise<{ default: ComponentType }>
@@ -42,15 +28,15 @@ export const appRoutes = (webView: boolean) =>
       </Route>
     ) : (
       <Route element={<ScrollRoot />} errorElement={<RouteError />}>
-        <Route element={<Shell />}>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/jobs" element={<JobsPage />} />
-          <Route path="/search" element={<SearchPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/signup" element={<SignupPage />} />
-          <Route path="/auth/callback" element={<CallbackPage />} />
-          <Route path="/auth/verify" element={<EmailVerifyPage />} />
-          <Route path="/auth/reset" element={<ResetPage />} />
+        <Route lazy={page(() => import('./shell'))}>
+          <Route path="/" lazy={page(() => import('../pages/home/home-page'))} />
+          <Route path="/jobs" lazy={page(() => import('../pages/jobs/jobs-page'))} />
+          <Route path="/search" lazy={page(() => import('../pages/search/search-page'))} />
+          <Route path="/login" lazy={page(() => import('../pages/login/login-page'))} />
+          <Route path="/signup" lazy={page(() => import('../pages/login/signup-page'))} />
+          <Route path="/auth/callback" lazy={page(() => import('../pages/login/callback-page'))} />
+          <Route path="/auth/verify" lazy={page(() => import('../pages/login/verify-page'))} />
+          <Route path="/auth/reset" lazy={page(() => import('../pages/login/reset-page'))} />
           <Route path="/invites/:token" lazy={page(() => import('../pages/employer/invite-page'))} />
           <Route path="/postings/:id" element={<PostingPage />} />
           <Route path="/terms" lazy={legal('terms')} />
@@ -59,13 +45,13 @@ export const appRoutes = (webView: boolean) =>
           <Route path="/marketing-consent" lazy={legal('marketingConsent')} />
           <Route element={<RequireAuth />}>
             <Route path="/profiles/:id" element={<ProfilePage />} />
-            <Route path="/hub" element={<HubPage />} />
-            <Route path="/social" element={<SocialPage />} />
-            <Route path="/posts/:id" element={<PostPage />} />
+            <Route path="/hub" lazy={page(() => import('../pages/hub/hub-page'))} />
+            <Route path="/social" lazy={page(() => import('../pages/social/social-page'))} />
+            <Route path="/posts/:id" lazy={page(() => import('../pages/social/post-page'))} />
             <Route path="/me" lazy={page(() => import('../pages/my/my-page'))} />
             <Route path="/offers" lazy={page(() => import('../pages/offers/offers-page'))} />
             <Route path="/offers/:id" lazy={page(() => import('../pages/offers/offer-detail-page'))} />
-            <Route path="/notifications" element={<NotificationsPage />} />
+            <Route path="/notifications" lazy={page(() => import('../pages/notifications/notifications-page'))} />
             <Route path="/settings" lazy={page(() => import('../pages/settings/settings-page'))} />
             <Route path="/settings/blocked" lazy={page(() => import('../pages/settings/blocked-page'))} />
             <Route path="/employer/verify" lazy={page(() => import('../pages/employer/verify-page'))} />
@@ -83,7 +69,7 @@ export const appRoutes = (webView: boolean) =>
             <Route path="/employer/members" lazy={page(() => import('../pages/employer/members-page'))} />
             <Route path="/employer/plans" lazy={page(() => import('../pages/employer/plans-page'))} />
           </Route>
-          <Route path="*" element={<NotFoundPage />} />
+          <Route path="*" lazy={page(() => import('../pages/not-found/not-found-page'))} />
         </Route>
       </Route>
     ),
