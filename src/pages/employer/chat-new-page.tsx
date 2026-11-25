@@ -3,14 +3,9 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 
-import ChatApp from './chat-app'
-import ChatRoom from './chat-room'
-import {
-  chatGateFrom,
-  conversationsCreateEmployer,
-  type ChatBlock,
-} from '../../features/employer-chat'
-import { CHAT_CREATING, CHAT_FAILED, PDF_LOCK, REFERENCE_POSTING, VERIFY_LINK } from './constants'
+import { ChatApp, ChatRoom, chatGateFrom, conversationsCreateEmployer, type ChatBlock, CHAT_FAILED, PDF_LOCK } from '../../features/chat'
+import { CHAT_CREATING, REFERENCE_POSTING } from './constants'
+import { VERIFY_LINK } from '../../features/company'
 
 const flights = new Map<string, Promise<Conversation>>()
 

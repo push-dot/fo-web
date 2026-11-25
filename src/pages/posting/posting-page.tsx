@@ -1,4 +1,4 @@
-import { EMPLOYMENT_TYPES, workConditionLines } from '@push/api-client'
+import { EMPLOYMENT_TYPES, workConditionLines, FitCard, BrowserPosting, PostingActions, postingsGet, postingTitleLines } from '../../features/postings'
 import { brandColor, careerLabel } from '@push/shared'
 import { Fragment } from 'react'
 import { useParams } from 'react-router-dom'
@@ -9,15 +9,9 @@ import type { PostingView } from '../../shared/api/mock'
 import { showFitCard } from '../../shared/model/fit-card'
 import Toast, { useToast } from '../../shared/ui/toast'
 import { useDetail } from '../../shared/lib/use-detail'
-import FitCard from './fit-card'
-import BrowserPosting from './browser-posting'
-import PostingActions from './posting-actions'
 import MidDotText from '../../shared/ui/mid-dot-text'
 import Section from '../../shared/ui/section'
 import Status from '../../shared/ui/status'
-import { postingsGet } from '../../entities/posting'
-import { postingTitleLines } from './posting-title'
-
 
 const PostingPage = () => {
   const { id = '' } = useParams()

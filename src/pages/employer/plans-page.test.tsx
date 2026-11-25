@@ -6,7 +6,8 @@ import { MemoryRouter } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import PlansPage from './plans-page'
-import { PAYMENTS_CLOSED, PLAN_TERMS, PLAN_UNSUBSCRIBE, PLAN_VIEWER_TITLE } from './constants'
+import { PAYMENTS_CLOSED } from '../../features/billing'
+import { PLAN_TERMS, PLAN_UNSUBSCRIBE, PLAN_VIEWER_TITLE } from './constants'
 
 const billing = (paymentsEnabled?: boolean, extra: Partial<CompanyBillingStatus> = {}): CompanyBillingStatus => ({
   plan: 'PRO',

@@ -3,32 +3,14 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
-import {
-  AI_POSTING,
-  FILTER_ALL,
-  NEW_POSTING,
-  POSTING_CLOSE,
-  POSTING_CLOSED,
-  POSTING_CLOSE_BODY,
-  POSTING_CLOSE_FAILED,
-  POSTING_CLOSE_TITLE,
-  POSTINGS_EMPTY,
-  POSTINGS_FAILED,
-  POSTINGS_HEAD,
-  POSTINGS_LOADING,
-  POSTINGS_TITLE,
-  STATUS_CLOSED,
-  STATUS_DRAFT,
-  STATUS_OPEN,
-} from './constants'
-import { useMyPostings } from '../../entities/posting'
-import { afterListPostingClose, postingsClose } from '../../features/edit-posting'
-import { ConfirmDialog } from '../../shared/ui/dialog'
-import { Icon } from '../../shared/ui/icon'
-import StateBlock, { ErrorState } from '../../shared/ui/state-block'
+import { AI_POSTING, NEW_POSTING, POSTING_CLOSED, POSTING_CLOSE_BODY, POSTING_CLOSE_FAILED, POSTING_CLOSE_TITLE, POSTINGS_EMPTY, POSTINGS_FAILED, POSTINGS_LOADING, POSTINGS_TITLE } from './constants'
+import { FILTER_ALL } from '../../features/applications'
+import { POSTING_CLOSE, POSTINGS_HEAD, STATUS_CLOSED, STATUS_DRAFT, STATUS_OPEN, useMyPostings, afterListPostingClose, postingsClose, PostingRow, FILTERS, filterRows, type PostingFilter } from '../../features/postings'
+import ConfirmDialog from '../../shared/ui/confirm-dialog'
+import Icon from '../../shared/ui/icon'
+import StateBlock from '../../shared/ui/state-block'
+import ErrorState from '../../shared/ui/error-state'
 import Toast, { useToast } from '../../shared/ui/toast'
-import PostingRow from './posting-row'
-import { FILTERS, filterRows, type PostingFilter } from './posting-view'
 
 const FILTER_LABEL: Record<PostingFilter, string> = { all: FILTER_ALL, open: STATUS_OPEN, draft: STATUS_DRAFT, closed: STATUS_CLOSED }
 

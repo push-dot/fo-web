@@ -1,58 +1,16 @@
-import { ApiError, type CompanyInvite, type CompanyMember } from '@push/api-client'
+import type { CompanyInvite, CompanyMember } from '@push/api-client'
+import { ApiError, useMyCompany, useCompanyInvites, useCompanyMembers, companiesCancelInvite, companiesRemoveMember, companiesResendInvite, companiesTransferAdmin, inviteHint, SEAT_FULL_TITLE, memberActionError, INVITE_DIALOG_TITLE, INVITE_REVOKE, REMOVE_MEMBER, ROLE_ADMIN, ROLE_MEMBER, seatPlan, VERIFY_LINK, InviteDialog, InviteRow, MemberRow } from '../../features/company'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 
-import { useMyCompany } from '../../entities/company'
-import { useCompanyInvites, useCompanyMembers } from '../../entities/member'
-import {
-  companiesCancelInvite,
-  companiesRemoveMember,
-  companiesResendInvite,
-  companiesTransferAdmin,
-  inviteHint,
-} from '../../features/invite-member'
 import { useSession } from '../../shared/auth/use-session'
 import { PLAN_NAME, canInvite } from '../../shared/model/employer-plan'
-import { ConfirmDialog } from '../../shared/ui/dialog'
-import { Icon } from '../../shared/ui/icon'
+import ConfirmDialog from '../../shared/ui/confirm-dialog'
+import Icon from '../../shared/ui/icon'
 import Toast, { useToast } from '../../shared/ui/toast'
-import MySide from '../my/my-side'
-import {
-  COMPANY_MISSING,
-  INVITE_DIALOG_TITLE,
-  INVITE_RESENT,
-  INVITE_REVOKE,
-  INVITE_REVOKE_BODY,
-  INVITE_REVOKED,
-  INVITE_SENT,
-  MEMBERS_ADMIN_CAN,
-  MEMBERS_FAILED,
-  MEMBERS_LOADING,
-  MEMBERS_MEMBER_CAN,
-  MEMBERS_PERM_TITLE,
-  MEMBERS_TITLE,
-  REMOVE_MEMBER,
-  ROLE_ADMIN,
-  ROLE_MEMBER,
-  SEAT_FULL_PLANS,
-  SEAT_FULL_TITLE,
-  TRANSFER_CONFIRM,
-  VERIFY_LINK,
-  adminOnlyNote,
-  inviteExpiry,
-  memberActionError,
-  removeBody,
-  removeTitle,
-  revokeTitle,
-  seatCount,
-  seatFullBody,
-  seatPlan,
-  transferBody,
-  transferTitle,
-} from './constants'
-import InviteDialog from './invite-dialog'
-import { InviteRow, MemberRow } from './member-row'
+import { MySide } from '../../features/profile'
+import { COMPANY_MISSING, INVITE_RESENT, INVITE_REVOKE_BODY, INVITE_REVOKED, INVITE_SENT, MEMBERS_ADMIN_CAN, MEMBERS_FAILED, MEMBERS_LOADING, MEMBERS_MEMBER_CAN, MEMBERS_PERM_TITLE, MEMBERS_TITLE, SEAT_FULL_PLANS, TRANSFER_CONFIRM, adminOnlyNote, inviteExpiry, removeBody, removeTitle, revokeTitle, seatCount, seatFullBody, transferBody, transferTitle } from './constants'
 
 type Pending = { kind: 'remove' | 'transfer'; member: CompanyMember } | { kind: 'revoke'; invite: CompanyInvite }
 

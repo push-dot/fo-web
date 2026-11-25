@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { PageState } from '../../shared/ui/page-state'
+import PageState from '../../shared/ui/page-state'
 import { NOT_FOUND } from './constants'
 
 const NotFoundPage = () => {

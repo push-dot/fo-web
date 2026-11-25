@@ -1,41 +1,19 @@
-import { ApiError, type EmployerStage } from '@push/api-client'
+import type { EmployerStage } from '@push/api-client'
+import { ApiError, employerStageLabel, postingsApplicantFile, useEmployerApplicant, useEmployerApplicants, ApplicantDocument, applicantProfileLine, applicantSub, docChips, STAGE_APPLIED, STAGE_TITLE, memberInitials, StageMenu, useStageMove } from '../../features/applications'
 import { brandColor } from '@push/shared'
 import { useMutation } from '@tanstack/react-query'
 import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 
 import { NAV } from '../../app/constants'
-import { employerStageLabel, postingsApplicantFile, useEmployerApplicant, useEmployerApplicants } from '../../entities/application'
 import { saveFile } from '../../shared/lib/save-file'
 import { EMPLOYER_STAGE_ACTIONS, stageChangeBlocked } from '../../shared/model/applicant-stage'
-import { AgentMark, Icon } from '../../shared/ui/icon'
-import { ErrorState } from '../../shared/ui/state-block'
+import AgentMark from '../../shared/ui/agent-mark'
+import Icon from '../../shared/ui/icon'
+import ErrorState from '../../shared/ui/error-state'
 import Toast, { useToast } from '../../shared/ui/toast'
-import ApplicantDocument from './applicant-document'
-import { applicantProfileLine, applicantSub, docChips } from './applicant-view'
-import {
-  AI_INTERVIEW,
-  AI_REVIEW,
-  APPLICANT_FAILED,
-  APPLICANT_LOADING,
-  DOCS_NONE,
-  HUB_PROFILE,
-  POSTINGS_TITLE,
-  STAGE_APPLIED,
-  STAGE_ENDED,
-  STAGE_RETRY,
-  STAGE_RETRY_NOTE,
-  STAGE_TITLE,
-  APPLICANTS_TITLE,
-  FILE_FAILED,
-  memberInitials,
-  stageFailed,
-  stageMoved,
-  stageNotice,
-} from './constants'
-import { dateLabel } from './posting-view'
-import StageMenu from './stage-menu'
-import { useStageMove } from './use-stage-move'
+import { AI_INTERVIEW, AI_REVIEW, APPLICANT_FAILED, APPLICANT_LOADING, DOCS_NONE, HUB_PROFILE, POSTINGS_TITLE, STAGE_ENDED, STAGE_RETRY, STAGE_RETRY_NOTE, APPLICANTS_TITLE, FILE_FAILED, stageFailed, stageMoved, stageNotice } from './constants'
+import { dateLabel } from '../../features/postings'
 
 type Failure = { stage: EmployerStage; ended: boolean }
 

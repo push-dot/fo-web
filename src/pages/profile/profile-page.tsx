@@ -1,14 +1,11 @@
-import { CAREER_STATUSES } from '@push/api-client'
+import { CAREER_STATUSES, BrowserProfile, profilesGet, profileStats } from '../../features/profile'
 import { useParams } from 'react-router-dom'
-import { useAuthMe } from '../../entities/session'
+import { useAuthMe } from '../../features/auth'
 import { assetUrl } from '../../shared/api/client'
 import { isWebView, send, webViewFrom } from '../../shared/lib/bridge'
 import { initials, periodLabel, roleLabel } from '../../shared/lib/format'
 import { useDetail } from '../../shared/lib/use-detail'
-import BrowserProfile from './browser-profile'
 import Status from '../../shared/ui/status'
-import { profilesGet } from '../../entities/profile'
-import { profileStats } from './profile-stats'
 
 const ProfilePage = () => {
   const { id = '' } = useParams()

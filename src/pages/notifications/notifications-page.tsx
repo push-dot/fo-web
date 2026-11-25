@@ -1,10 +1,7 @@
-import { useNotifications } from '../../entities/notification'
-import StateBlock, { ErrorState } from '../../shared/ui/state-block'
+import { useNotifications, NOTIFICATION_EMPTY, NOTIFICATION_ERROR, NOTIFICATION_NOTE, NOTIFICATION_READ_ALL, NOTIFICATION_TITLE, NoticeRow, useNoticeActions } from '../../features/notifications'
+import StateBlock from '../../shared/ui/state-block'
+import ErrorState from '../../shared/ui/error-state'
 import Skeleton from '../../shared/ui/skeleton'
-import { NOTIFICATION_EMPTY, NOTIFICATION_ERROR, NOTIFICATION_NOTE, NOTIFICATION_READ_ALL, NOTIFICATION_TITLE } from './constants'
-import NoticeRow from './notice-row'
-import { useNoticeActions } from './use-notice-actions'
-
 
 const NotificationsPage = () => {
   const query = useNotifications()

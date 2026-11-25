@@ -1,6 +1,6 @@
 import tokens from '@push/design-system/tokens.css?raw'
 import { describe, expect, it } from 'vitest'
-import { NOTIFICATION_EMPTY, NOTIFICATION_KIND, NOTIFICATION_NOTE } from './constants'
+import { NOTIFICATION_EMPTY, NOTIFICATION_KIND, NOTIFICATION_NOTE } from '../../features/notifications'
 
 describe('notification note', () => {
   it('says AI-done alerts stay in the app', () => {

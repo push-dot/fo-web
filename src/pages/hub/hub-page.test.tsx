@@ -5,7 +5,7 @@ import HubPage from './hub-page'
 
 const list = vi.hoisted(() => ({ current: {} as Record<string, unknown> }))
 
-vi.mock('../../entities/profile', () => ({ useProfilePages: () => list.current }))
+vi.mock('../../features/profile/api/hooks', () => ({ useProfilePages: () => list.current }))
 
 const render = (next: Record<string, unknown>) => {
   list.current = { isLoading: false, isError: false, isSuccess: false, hasNextPage: false, refetch: () => undefined, ...next }

@@ -74,7 +74,6 @@ describe('paymentsOpen', () => {
   })
 })
 
-
 describe('KRW prices', () => {
   it('lists Basic at 29,000원, Pro at 140,000원, Ultra at 280,000원 and a pack at 14,000원', () => {
     expect(DEFAULT_PLAN_PRICES).toEqual({ BASIC: 29_000, PRO: 140_000, ULTRA: 280_000, pack: 14_000 })

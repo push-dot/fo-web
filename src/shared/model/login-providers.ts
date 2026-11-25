@@ -1,13 +1,7 @@
 import type { EmailSignupInput } from '@push/api-client'
 
 import type { AccountType } from './access'
-import {
-  EMAIL_TAKEN_EMPLOYER_COPY,
-  EMAIL_TAKEN_PERSONAL_COPY,
-  PASSWORD_LENGTH_COPY,
-  PASSWORD_MAX,
-  PASSWORD_MIN,
-} from './constants'
+import { EMAIL_TAKEN_EMPLOYER_COPY, EMAIL_TAKEN_PERSONAL_COPY, PASSWORD_LENGTH_COPY, PASSWORD_MAX, PASSWORD_MIN } from './constants'
 
 export type OAuthProvider = 'google' | 'apple' | 'github'
 export type LoginProvider = OAuthProvider | 'phone' | 'email'

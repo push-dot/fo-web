@@ -1,9 +1,8 @@
-import ApplyPanel from './apply-panel'
-import BookmarkPanel from './bookmark-panel'
-import CalendarPanel from './calendar-panel'
+import { ApplyPanel, CalendarPanel } from '../../features/applications'
+import { BookmarkPanel } from '../../features/postings'
 import { ACTIVITY_CHIP_KEY } from './constants'
-import FollowPanel from './follow-panel'
-import PostsPanel from './posts-panel'
+import { FollowPanel } from '../../features/profile'
+import { PostsPanel } from '../../features/social'
 
 const PANELS = {
   applications: ApplyPanel,

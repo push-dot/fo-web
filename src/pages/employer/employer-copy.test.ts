@@ -1,8 +1,11 @@
+// @vitest-environment happy-dom
 import { ApiError } from '@push/api-client'
 import { describe, expect, it } from 'vitest'
-import { EMPLOYER_POSTING_NOTE } from '../posting/constants'
-import { applicantKicker, draftMeta, lockAdminNote } from './chat-copy'
-import { PAYMENTS_CLOSED, PLAN_ACTION_FAILED, planActionError, AI_POSTING, AI_REVIEW, CHAT_ASSISTANT, CHAT_TITLE, INVITE_PERKS, VERIFY_AI_POSTING, VERIFY_DONE_LEAD, VERIFY_LEAD } from './constants'
+import { EMPLOYER_POSTING_NOTE } from '../../features/postings'
+import { applicantKicker, draftMeta, lockAdminNote } from '../../features/chat'
+import { PAYMENTS_CLOSED, PLAN_ACTION_FAILED, planActionError } from '../../features/billing'
+import { AI_POSTING, AI_REVIEW, CHAT_ASSISTANT, CHAT_TITLE, INVITE_PERKS, VERIFY_LEAD } from './constants'
+import { VERIFY_AI_POSTING, VERIFY_DONE_LEAD } from '../../features/company'
 
 describe('employer copy', () => {
   it('employer agent words', () => {

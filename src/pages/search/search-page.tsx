@@ -4,27 +4,12 @@ import { Link, useSearchParams } from 'react-router-dom'
 
 import { saveReturnTo } from '../../shared/auth/return-path'
 import { useSession } from '../../shared/auth/use-session'
-import { Icon } from '../../shared/ui/icon'
+import Icon from '../../shared/ui/icon'
 import Skeleton from '../../shared/ui/skeleton'
-import StateBlock, { ErrorState } from '../../shared/ui/state-block'
-import {
-  SEARCH_CLEAR,
-  SEARCH_EMPTY_HINT,
-  SEARCH_ERROR,
-  SEARCH_LOGIN_COPY,
-  SEARCH_PEOPLE_TITLE,
-  SEARCH_PREVIEW_PEOPLE,
-  SEARCH_PREVIEW_POSTINGS,
-  SEARCH_TABS,
-  searchAllPostings,
-  searchEmptyTitle,
-  type SearchType,
-} from './constants'
-import { PersonRow, PostRow, PostingRow } from './search-results'
-import SearchSide from './search-side'
-import { clearRecentSearches, readRecentSearches, removeRecentSearch, saveRecentSearch } from '../../features/recent-searches'
-import { useSearchPeople, useSearchPostings, useSearchPosts } from '../../features/search-catalog'
-
+import StateBlock from '../../shared/ui/state-block'
+import ErrorState from '../../shared/ui/error-state'
+import { SEARCH_CLEAR, SEARCH_EMPTY_HINT, SEARCH_ERROR, SEARCH_LOGIN_COPY, SEARCH_PEOPLE_TITLE, SEARCH_PREVIEW_PEOPLE, SEARCH_PREVIEW_POSTINGS, SEARCH_TABS, searchAllPostings, searchEmptyTitle, type SearchType } from './constants'
+import { PersonRow, PostRow, PostingRow, SearchSide, clearRecentSearches, readRecentSearches, removeRecentSearch, saveRecentSearch, useSearchPeople, useSearchPostings, useSearchPosts } from '../../features/search'
 
 const isSearchType = (value: string | null): value is SearchType => SEARCH_TABS.some((tab) => tab.type === value)
 

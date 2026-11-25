@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react'
 import { isWebView } from '../lib/bridge'
-import { Icon } from './icon'
+import Icon from './icon'
+import type { ToastTone, ToastAction } from './types'
 
 const TOAST_MS = 2800
 
-export type ToastTone = 'ok' | 'err'
-export type ToastAction = { label: string; onClick: () => void }
 type ToastState = { message: string; tone: ToastTone; action?: ToastAction }
 
 export const useToast = () => {

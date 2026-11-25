@@ -1,17 +1,15 @@
-import { CAREER_STATUSES, HUB_CATEGORIES, TENURES, type JobCategory } from '@push/api-client'
+import type { JobCategory } from '@push/api-client'
+import { CAREER_STATUSES, HUB_CATEGORIES, TENURES, HubFilterSheet, countApplied, profileFilters, type HubDraft, ProfileCard, useProfilePages } from '../../features/profile'
 import { LegendList } from '@legendapp/list/react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { NARROW, useMedia } from '../../shared/lib/use-media'
-import { Icon } from '../../shared/ui/icon'
+import Icon from '../../shared/ui/icon'
 import Skeleton from '../../shared/ui/skeleton'
-import StateBlock, { ErrorState } from '../../shared/ui/state-block'
+import StateBlock from '../../shared/ui/state-block'
+import ErrorState from '../../shared/ui/error-state'
 import { HUB_ERROR, HUB_PAGE_SIZE } from './constants'
-import HubFilterSheet, { countApplied, profileFilters, type HubDraft } from './hub-filter-sheet'
-import ProfileCard from './profile-card'
-import { useProfilePages } from '../../entities/profile'
-
 
 const HUB_CARD_HEIGHT = 120
 

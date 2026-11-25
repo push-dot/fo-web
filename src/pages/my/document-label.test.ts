@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { DOCUMENT_AI_LABEL } from './constants'
+import { DOCUMENT_AI_LABEL } from '../../features/profile'
 
 describe('document label', () => {
   it('says AI drafts are made by the agent in the app', () => {

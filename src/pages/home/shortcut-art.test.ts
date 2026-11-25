@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
-import { SHORTCUT_ART } from './shortcut-art'
+import { SHORTCUT_ART } from './constants'
 
 describe('shortcut art', () => {
   it('draws the design system 3D icons instead of local hex colours', () => {

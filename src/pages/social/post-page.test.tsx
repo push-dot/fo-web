@@ -7,16 +7,16 @@ import PostPage from './post-page'
 
 const state = vi.hoisted(() => ({ post: {} as Record<string, unknown>, comments: {} as Record<string, unknown> }))
 
-vi.mock('../../entities/post', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('../../entities/post')>()
+vi.mock('../../features/social/utils/author-label', () => ({ authorLabel: () => '김서준' }))
+vi.mock('../../features/social/api/hooks', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../../features/social/api/hooks')>()
   return {
     ...actual,
-    authorLabel: () => '김서준',
     usePost: () => state.post,
     usePostComments: () => state.comments,
   }
 })
-vi.mock('./use-viewer-author', () => ({ useViewerAuthor: () => null }))
+vi.mock('../../features/social/hooks', () => ({ useViewerAuthor: () => null }))
 
 const post = {
   id: 'p1',

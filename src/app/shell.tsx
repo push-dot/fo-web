@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 
-import { AgentMark, Icon } from '../shared/ui/icon'
+import AgentMark from '../shared/ui/agent-mark'
+import Icon from '../shared/ui/icon'
 import { useSession } from '../shared/auth/use-session'
 import { isAuthChrome } from './auth-chrome'
 import { AUTH_BIZ, AUTH_LOGOUT, BRAND, FOOTER_BUSINESS, FOOTER_LINKS, FOOTER_MARK, NAV, SEARCH_PLACEHOLDER } from './constants'
@@ -9,12 +10,9 @@ import AccountMenu from './account-menu'
 import { EMPLOYER_LINKS, topEndLinks } from './shell-links'
 import TabBar from './tab-bar'
 import { tabBarShown } from './tab-items'
-import { useNotifications } from '../entities/notification'
-import { useOffers } from '../entities/offer'
-import { useAuthMe } from '../entities/session'
-import { useSignOut } from '../features/sign-out'
-import NotificationBell from '../pages/notifications/notification-bell'
-
+import { useNotifications, NotificationBell } from '../features/notifications'
+import { useOffers } from '../features/offers'
+import { useAuthMe, useSignOut } from '../features/auth'
 
 const MAIN_NAV = [
   { to: '/', label: NAV.home, end: true, lock: false },

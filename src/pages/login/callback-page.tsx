@@ -1,4 +1,5 @@
-import { ApiError, type Session } from '@push/api-client'
+import type { Session } from '@push/api-client'
+import { ApiError, authExchange, ProviderMark, PROVIDER_NAME, clearPendingLogin, readPendingLogin, PhoneConsent, termsPending } from '../../features/auth'
 import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 
@@ -6,13 +7,8 @@ import { takePkceVerifier } from '../../shared/auth/pkce'
 import { pathAfterAuth, takeReturnTo } from '../../shared/auth/return-path'
 import { sessionStore } from '../../shared/auth/session'
 import { emailTakenCopy } from '../../shared/model/login-providers'
-import { authExchange } from '../../features/sign-in'
-import { ProviderMark } from './auth-provider-button'
-import { EXCHANGE_CANCEL, EXCHANGE_EMPLOYER, EXCHANGE_PERSONAL, EXCHANGE_TAIL, PROVIDER_NAME } from './constants'
-import type { LoginState } from './login-page'
-import { clearPendingLogin, readPendingLogin } from './pending-login'
-import PhoneConsent from './phone-consent'
-import { termsPending } from './terms-gate'
+import { EXCHANGE_CANCEL, EXCHANGE_EMPLOYER, EXCHANGE_PERSONAL, EXCHANGE_TAIL } from './constants'
+import type { LoginState } from '../../features/auth'
 
 const failureDetail = (caught: unknown) => {
   if (caught instanceof ApiError && caught.code === 'EMAIL_TAKEN') return emailTakenCopy(caught.details?.accountType)

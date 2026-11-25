@@ -3,7 +3,7 @@ import { mockFetch, mockPersona, mockSession, setMockPersona } from '../shared/a
 import { createSessionStore, type StorageLike } from '../shared/auth/session'
 import { gateAccount } from '../shared/auth/return-path'
 import { employerGate, needsLogin } from '../shared/model/access'
-import { postingActionMode } from '../entities/posting'
+import { postingActionMode } from '../features/postings'
 import { applyMockSearch } from './mock-bootstrap'
 
 const memory = (): StorageLike => {

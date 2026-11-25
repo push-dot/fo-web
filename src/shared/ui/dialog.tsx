@@ -1,5 +1,4 @@
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
-
 import { openerOf, returnFocus, trapTab } from './focus'
 
 type DialogProps = { label: string; onClose: () => void; wide?: boolean; className?: string; children: ReactNode }
@@ -14,7 +13,7 @@ export const useEscape = (onClose: () => void) => {
   }, [onClose])
 }
 
-export const Dialog = ({ label, onClose, wide = false, className, children }: DialogProps) => {
+const Dialog = ({ label, onClose, wide = false, className, children }: DialogProps) => {
   const ref = useRef<HTMLDivElement>(null)
   const [opener] = useState(() => openerOf(document.activeElement))
   useEscape(onClose)
@@ -43,30 +42,4 @@ export const Dialog = ({ label, onClose, wide = false, className, children }: Di
   )
 }
 
-type ConfirmProps = {
-  title: string
-  body?: ReactNode
-  confirmLabel: string
-  cancelLabel?: string
-  danger?: boolean
-  busy?: boolean
-  onConfirm: () => void
-  onClose: () => void
-}
-
-export const ConfirmDialog = ({ title, body, confirmLabel, cancelLabel = '취소', danger = false, busy = false, onConfirm, onClose }: ConfirmProps) => (
-  <Dialog label={title} onClose={onClose} className="confirm">
-    <div className="confirm-copy">
-      <h2 className="h3">{title}</h2>
-      {body ? <div className="b2 t3">{body}</div> : null}
-    </div>
-    <div className="sheet-actions">
-      <button type="button" className="btn sec" onClick={onClose}>
-        {cancelLabel}
-      </button>
-      <button type="button" className={danger ? 'btn danger' : 'btn pri'} disabled={busy} onClick={onConfirm}>
-        {confirmLabel}
-      </button>
-    </div>
-  </Dialog>
-)
+export default Dialog

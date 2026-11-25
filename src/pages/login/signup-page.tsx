@@ -1,4 +1,5 @@
-import { ApiError, type Session } from '@push/api-client'
+import type { Session } from '@push/api-client'
+import { ApiError, AccountTypeControl, AuthCheck, LOGIN_FAILED_COPY, TERM_VIEW, TERMS_PRIVACY_POLICY, useOAuthStart, PhoneFlow, VerifyMail, authEmailSignup, useVerifyResend } from '../../features/auth'
 import { useState, type FormEvent } from 'react'
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
@@ -7,32 +8,9 @@ import { pathAfterAuth, takeReturnTo } from '../../shared/auth/return-path'
 import { sessionStore } from '../../shared/auth/session'
 import { EMAIL_TAKEN_EMPLOYER_COPY, EMAIL_TAKEN_PERSONAL_COPY } from '../../shared/model/constants'
 import { emailSignupInput, emailTakenCopy } from '../../shared/model/login-providers'
-import { Icon } from '../../shared/ui/icon'
+import Icon from '../../shared/ui/icon'
 import Toast from '../../shared/ui/toast'
-import AccountTypeControl from './account-type-control'
-import AuthCheck from './auth-check'
-import {
-  EMAIL_LABEL,
-  LOGIN_FAILED_COPY,
-  LOGIN_SUBMIT_COPY,
-  NAME_LABEL,
-  SIGNUP_EMPLOYER_TITLE,
-  SIGNUP_HAS_ACCOUNT,
-  SIGNUP_LEAD,
-  SIGNUP_SENDING_COPY,
-  SIGNUP_SUBMIT_COPY,
-  TERM_VIEW,
-  TERMS_COLLECTION_LINK,
-  TERMS_LABEL,
-  TERMS_PRIVACY_POLICY,
-  TERMS_REQUIRED,
-  TERMS_SERVICE_LINK,
-} from './constants'
-import { useOAuthStart } from './oauth-start'
-import PhoneFlow from './phone-flow'
-import VerifyMail from './verify-mail'
-import { authEmailSignup } from '../../features/sign-up'
-import { useVerifyResend } from './verify-resend'
+import { EMAIL_LABEL, LOGIN_SUBMIT_COPY, NAME_LABEL, SIGNUP_EMPLOYER_TITLE, SIGNUP_HAS_ACCOUNT, SIGNUP_LEAD, SIGNUP_SENDING_COPY, SIGNUP_SUBMIT_COPY, TERMS_COLLECTION_LINK, TERMS_LABEL, TERMS_REQUIRED, TERMS_SERVICE_LINK } from './constants'
 
 const SignupPage = () => {
   const [params] = useSearchParams()

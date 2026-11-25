@@ -1,47 +1,13 @@
-import { ApiError, type AccountType, type Session } from '@push/api-client'
+import type { AccountType, Session } from '@push/api-client'
+import { ApiError, AccountTypeControl, AuthAlert, AuthPasswordField, AuthProviderButton, authEmailLogin, LOGIN_FAILED_COPY, PROVIDER_NAME, VERIFY_MAIL_RESEND, useOAuthStart, PhoneConsent, PhoneFlow, termsOutcome, type LoginState } from '../../features/auth'
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
-
 import { withCleanup } from '../../shared/lib/with-cleanup'
 import { pathAfterAuth, takeReturnTo } from '../../shared/auth/return-path'
 import { sessionStore } from '../../shared/auth/session'
-import { loginProviders, type OAuthProvider } from '../../shared/model/login-providers'
-import { GoogleMark } from '../../shared/ui/icon'
-import AccountTypeControl from './account-type-control'
-import AuthAlert from './auth-alert'
-import AuthPasswordField from './auth-password-field'
-import AuthProviderButton from './auth-provider-button'
-import { authEmailLogin } from '../../features/sign-in'
-import {
-  BAD_CREDENTIALS_COPY,
-  EMAIL_OR,
-  EMPLOYER_EMAIL_LABEL,
-  EMPLOYER_INVITE_NOTE,
-  FORGOT_COPY,
-  GOOGLE_CONTINUE,
-  LOGIN_EMPLOYER_LEAD,
-  LOGIN_EMPLOYER_TITLE,
-  LOGIN_FAILED_COPY,
-  LOGIN_PERSONAL_LEAD,
-  LOGIN_PERSONAL_NOTE,
-  LOGIN_PERSONAL_TITLE,
-  LOGIN_SUBMIT_COPY,
-  OTHER_METHOD,
-  PASSWORD_LABEL,
-  PROVIDER_NAME,
-  SIGNUP_LINK_COPY,
-  SOCIAL_FAIL_DETAIL,
-  SOCIAL_FAIL_TAIL,
-  UNVERIFIED_TAIL,
-  UNVERIFIED_TITLE,
-  VERIFY_MAIL_RESEND,
-} from './constants'
-import { useOAuthStart } from './oauth-start'
-import PhoneConsent from './phone-consent'
-import PhoneFlow from './phone-flow'
-import { termsOutcome } from './terms-gate'
-
-export type LoginState = { failed?: OAuthProvider; detail?: string } | null
+import { loginProviders } from '../../shared/model/login-providers'
+import GoogleMark from '../../shared/ui/google-mark'
+import { BAD_CREDENTIALS_COPY, EMAIL_OR, EMPLOYER_EMAIL_LABEL, EMPLOYER_INVITE_NOTE, FORGOT_COPY, GOOGLE_CONTINUE, LOGIN_EMPLOYER_LEAD, LOGIN_EMPLOYER_TITLE, LOGIN_PERSONAL_LEAD, LOGIN_PERSONAL_NOTE, LOGIN_PERSONAL_TITLE, LOGIN_SUBMIT_COPY, OTHER_METHOD, PASSWORD_LABEL, SIGNUP_LINK_COPY, SOCIAL_FAIL_DETAIL, SOCIAL_FAIL_TAIL, UNVERIFIED_TAIL, UNVERIFIED_TITLE } from './constants'
 
 const LoginPage = () => {
   const navigate = useNavigate()

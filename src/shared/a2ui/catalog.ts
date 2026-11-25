@@ -1,17 +1,16 @@
 import { createComponentImplementation, type ReactCatalogComponent } from '@a2ui/react/v0_9'
 import type { Catalog, ComponentApi } from '@a2ui/web_core/v0_9'
 import type { FC } from 'react'
-import { ListView, TextView } from './components/basic'
-import {
-  PushDiffView,
-  PushDocumentView,
-  PushFitView,
-  PushJobCardView,
-  PushPlanView,
-  PushTodoView,
-} from './components/push-cards'
-import { PushChoiceView } from './components/push-choice'
-import type { ViewProps } from './components/view'
+import ListView from './components/list-view'
+import TextView from './components/text-view'
+import PushDiffView from './components/push-diff-view'
+import PushDocumentView from './components/push-document-view'
+import PushFitView from './components/push-fit-view'
+import PushJobCardView from './components/push-job-card-view'
+import PushPlanView from './components/push-plan-view'
+import PushTodoView from './components/push-todo-view'
+import PushChoiceView from './components/push-choice-view'
+import type { ViewProps } from './components/types'
 import { A2UI_PROTOCOL, PUSH_CATALOG_ID, type A2uiProtocol } from './protocol'
 import { pushSchemas } from './schemas'
 

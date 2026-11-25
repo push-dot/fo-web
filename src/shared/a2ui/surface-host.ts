@@ -1,10 +1,5 @@
 import type { ReactCatalogComponent } from '@a2ui/react/v0_9'
-import {
-  MessageProcessor,
-  type ActionListener,
-  type Catalog,
-  type SurfaceModel,
-} from '@a2ui/web_core/v0_9'
+import { MessageProcessor, type ActionListener, type Catalog, type SurfaceModel } from '@a2ui/web_core/v0_9'
 import type { A2uiMessage } from '@push/api-client'
 import { PUSH_CATALOG } from './catalog'
 import { A2UI_PROTOCOL } from './protocol'

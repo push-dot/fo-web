@@ -7,11 +7,13 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import InvitePage from './invite-page'
-import { INVITE_FACT_EXPIRES, INVITE_FACT_INVITER, ledgerDate } from './constants'
+import { INVITE_FACT_EXPIRES, INVITE_FACT_INVITER } from './constants'
+import { ledgerDate } from '../../features/billing'
 
 const expiresAt = '2026-11-08T00:00:00.000Z'
 
-vi.mock('../../features/accept-invite', () => ({
+vi.mock('../../features/company/api/fetchers', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../../features/company/api/fetchers')>()),
   companiesInvitePreview: vi.fn(async () => {
     throw new ApiError('초대가 만료됐어요', 'NOT_FOUND', 404, {
       reason: 'EXPIRED',

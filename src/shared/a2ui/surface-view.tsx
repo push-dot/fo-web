@@ -2,7 +2,7 @@ import { A2uiSurface } from '@a2ui/react/v0_9'
 import type { A2uiMessage } from '@push/api-client'
 import { useLayoutEffect } from 'react'
 import './a2ui.css'
-import { SurfaceAnswerable } from './components/view'
+import { SurfaceAnswerable } from './components/surface-answerable'
 import type { SurfaceHost } from './surface-host'
 
 type SurfaceViewProps = {

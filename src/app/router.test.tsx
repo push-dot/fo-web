@@ -1,16 +1,11 @@
 import { isValidElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
-import {
-  RouterProvider,
-  StaticRouterProvider,
-  createMemoryRouter,
-  createStaticHandler,
-  createStaticRouter,
-} from 'react-router-dom'
+import { RouterProvider, StaticRouterProvider, createMemoryRouter, createStaticHandler, createStaticRouter } from 'react-router-dom'
 import { describe, expect, it, vi } from 'vitest'
 import { isWebView } from '../shared/lib/bridge'
-import { RouteError } from './route-error'
-import { ScrollRoot, appRoutes } from './router'
+import RouteError from './route-error'
+import ScrollRoot from './scroll-root'
+import { appRoutes } from './router'
 
 vi.mock('react-router-dom', async (importOriginal) => ({
   ...(await importOriginal<typeof import('react-router-dom')>()),

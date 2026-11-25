@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { CONSENT_COPY } from '../settings/constants'
-import { SOURCE_AI } from './constants'
+import { SOURCE_AI } from '../../features/postings'
 
 describe('tailored doc label', () => {
   it('tailored doc label', () => {

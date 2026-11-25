@@ -1,11 +1,5 @@
-import {
-  EMPLOYMENT_TYPES,
-  JOB_CATEGORIES,
-  type CreatePostingInput,
-  type EmploymentType,
-  type JobCategory,
-  type PostingDetail,
-} from '@push/api-client'
+import type { CreatePostingInput, EmploymentType, JobCategory, PostingDetail } from '@push/api-client'
+import { EMPLOYMENT_TYPES, JOB_CATEGORIES, BulletField, CAREER_RANGES, POSTING_CLOSE, careerRangeOf, stripBullets, withBullets, SkillEditor, afterPostingClose, afterPostingSave, editorFailure, postingsClose, postingsCreate, postingsUpdate, uploadsImage, conditionsFromText, draftFields, useEmployerPosting } from '../../features/postings'
 import { brandColor } from '@push/shared'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useRef, useState, type FormEvent } from 'react'
@@ -13,16 +7,11 @@ import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import { assetUrl } from '../../shared/api/client'
 import { useSession } from '../../shared/auth/use-session'
-import { Icon } from '../../shared/ui/icon'
-import { ConfirmDialog } from '../../shared/ui/dialog'
-import { ErrorState } from '../../shared/ui/state-block'
-import BulletField from './bullet-field'
-import { CAREER_RANGES, CLOSE_POSTING, CLOSED_STATE, COMPANY_NAME_NOTE, DRAFT_CONFIRM_BODY, DRAFT_CONFIRM_TITLE, EDITOR_LOADING, EDITOR_TITLE, LABEL_CAREER, LABEL_COMPANY, LABEL_DEADLINE, LABEL_DESCRIPTION, LABEL_EMPLOYMENT_TYPE, LABEL_IMAGE, LABEL_JOB_CATEGORY, LABEL_LOCATION, LABEL_PREFERRED, LABEL_REQUIREMENTS, LABEL_SKILLS, LABEL_TITLE, AI_POLISH, IMAGE_CHANGE, IMAGE_FAILED, NEW_POSTING, POSTING_CLOSE, POSTING_CLOSE_BODY, POSTING_CLOSE_TITLE, POSTINGS_FAILED, PREVIEW_POSTING, SAVE_DRAFT, SAVE_POSTING } from './constants'
-import { careerRangeOf, stripBullets, withBullets } from './editor-form'
-import SkillEditor from './skill-editor'
-import { afterPostingClose, afterPostingSave, editorFailure, postingsClose, postingsCreate, postingsUpdate, uploadsImage } from '../../features/edit-posting'
-import { useMyCompany } from '../../entities/company'
-import { conditionsFromText, draftFields, useEmployerPosting } from '../../entities/posting'
+import Icon from '../../shared/ui/icon'
+import ConfirmDialog from '../../shared/ui/confirm-dialog'
+import ErrorState from '../../shared/ui/error-state'
+import { CLOSE_POSTING, CLOSED_STATE, COMPANY_NAME_NOTE, DRAFT_CONFIRM_BODY, DRAFT_CONFIRM_TITLE, EDITOR_LOADING, EDITOR_TITLE, LABEL_CAREER, LABEL_COMPANY, LABEL_DEADLINE, LABEL_DESCRIPTION, LABEL_EMPLOYMENT_TYPE, LABEL_IMAGE, LABEL_JOB_CATEGORY, LABEL_LOCATION, LABEL_PREFERRED, LABEL_REQUIREMENTS, LABEL_SKILLS, LABEL_TITLE, AI_POLISH, IMAGE_CHANGE, IMAGE_FAILED, NEW_POSTING, POSTING_CLOSE_BODY, POSTING_CLOSE_TITLE, POSTINGS_FAILED, PREVIEW_POSTING, SAVE_DRAFT, SAVE_POSTING } from './constants'
+import { useMyCompany } from '../../features/company'
 
 type EditorForm = {
   title: string

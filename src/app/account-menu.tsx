@@ -1,14 +1,15 @@
 import { brandColor } from '@push/shared'
 import { useState } from 'react'
 
-import { useMyCompany } from '../entities/company'
-import { useAuthMe } from '../entities/session'
-import { useSignOut } from '../features/sign-out'
+import { useMyCompany } from '../features/company'
+import { useAuthMe, useSignOut } from '../features/auth'
 import { useSession } from '../shared/auth/use-session'
 import { initials } from '../shared/lib/format'
 import { PLAN_NAME, ROLE_NAME } from '../shared/model/employer-plan'
-import { Icon } from '../shared/ui/icon'
-import { Menu, Popover, type MenuItem } from '../shared/ui/popover'
+import Icon from '../shared/ui/icon'
+import Menu from '../shared/ui/menu'
+import Popover from '../shared/ui/popover'
+import type { MenuItem } from '../shared/ui/types'
 import { ACCOUNT_MENU, NAV } from './constants'
 
 const AccountMenu = () => {

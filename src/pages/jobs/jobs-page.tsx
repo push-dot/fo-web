@@ -1,18 +1,16 @@
-import { CAREER_YEARS, chipLabel, EMPLOYMENT_TYPES, JOB_CATEGORIES, withDeadlineWindow, type CareerYears, type EmploymentType, type JobCategory } from '@push/api-client'
+import type { CareerYears, EmploymentType, JobCategory } from '@push/api-client'
+import { CAREER_YEARS, chipLabel, EMPLOYMENT_TYPES, JOB_CATEGORIES, withDeadlineWindow, FilterPopover, PostingCard, FILTER_CHIPS, type FilterKey, type JobFilters, usePostingCount, usePostingLocations, usePostingPages } from '../../features/postings'
 import { LegendList } from '@legendapp/list/react'
 import { useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 
-import FilterPopover from './filter-popover'
-import PostingCard from './posting-card'
-import { Icon } from '../../shared/ui/icon'
+import Icon from '../../shared/ui/icon'
 import { useMedia } from '../../shared/lib/use-media'
-import { Popover } from '../../shared/ui/popover'
+import Popover from '../../shared/ui/popover'
 import Skeleton from '../../shared/ui/skeleton'
-import StateBlock, { ErrorState } from '../../shared/ui/state-block'
-import { EMPTY_FILTERS, FILTER_CHIPS, FILTER_RESET, FILTERED_EMPTY, FILTERED_EMPTY_HINT, JOB_PAGE_SIZE, JOBS_ERROR, JOB_SORTS, LOADING_MORE, SORT_LABEL, sortFrom, type FilterKey, type JobFilters, type JobSort } from './constants'
-import { usePostingCount, usePostingLocations, usePostingPages } from '../../entities/posting'
-
+import StateBlock from '../../shared/ui/state-block'
+import ErrorState from '../../shared/ui/error-state'
+import { EMPTY_FILTERS, FILTER_RESET, FILTERED_EMPTY, FILTERED_EMPTY_HINT, JOB_PAGE_SIZE, JOBS_ERROR, JOB_SORTS, LOADING_MORE, SORT_LABEL, sortFrom, type JobSort } from './constants'
 
 const WIDE = '(min-width: 1025px)'
 const JOB_CARD_HEIGHT = 280
