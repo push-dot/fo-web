@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { conditionsFromText, draftFields, listFromLines, textFromConditions } from './posting-draft'
+import { conditionsFromText, draftFields, draftOverlay, listFromLines, textFromConditions } from './posting-draft'
 
 describe('posting draft fields', () => {
   it('joins requirement lines and string work conditions into the editor fields', () => {
@@ -24,5 +24,25 @@ describe('posting draft fields', () => {
     expect(listFromLines('Kotlin\n\n Spring \n')).toEqual(['Kotlin', 'Spring'])
     expect(conditionsFromText('주 5일')).toEqual({ 조건: '주 5일' })
     expect(textFromConditions('이미 문장')).toBe('이미 문장')
+  })
+})
+
+describe('draft over a saved posting', () => {
+  it('replaces only the fields the draft filled, as editor bullets', () => {
+    expect(
+      draftOverlay({
+        title: ' 시니어 백엔드 ',
+        description: '',
+        requirements: ['Kotlin', 'Spring'],
+        preferred: [],
+        workConditions: { 근무: '주 5일' },
+      }),
+    ).toEqual({ title: '시니어 백엔드', requirements: '· Kotlin\n· Spring' })
+  })
+
+  it('changes nothing when the page was opened without a draft', () => {
+    expect(draftOverlay(null)).toEqual({})
+    expect(draftOverlay('draft')).toEqual({})
+    expect(draftOverlay({ intent: 'posting' })).toEqual({})
   })
 })

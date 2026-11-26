@@ -5,7 +5,7 @@ import type { PostingDraft } from '../utils/employer-chat'
 import Icon from '../../../shared/ui/icon'
 import { DRAFT_EDIT, DRAFT_HEAD, DRAFT_REDO, draftMeta } from '../utils/chat-copy'
 import { useChatActions } from '../hooks'
-import { DRAFT_BADGE, DRAFT_POSTING } from '../constants'
+import { DRAFT_BADGE, DRAFT_NEW_POSTING, DRAFT_POSTING, DRAFT_SAME_POSTING } from '../constants'
 
 const lines = (value: string) =>
   value
@@ -16,6 +16,7 @@ const lines = (value: string) =>
 const ChatDraftCard = ({ draft, postingId }: { draft: PostingDraft; postingId?: string }) => {
   const actions = useChatActions()
   const meta = draftMeta(draft, useMyCompany().data?.name)
+  const same = postingId ? undefined : actions.posting
   const { employmentType: _, ...conditions } = draft.workConditions
   const groups = [
     ['하는 일', lines(draft.description)],
@@ -63,13 +64,24 @@ const ChatDraftCard = ({ draft, postingId }: { draft: PostingDraft; postingId?: 
           {DRAFT_REDO}
         </button>
         <span className="chat-compose-gap" />
-        <Link
-          className="btn pri sm"
-          to={postingId ? `/employer/postings/${postingId}/edit` : '/employer/postings/new'}
-          state={postingId ? undefined : draft}
-        >
-          {DRAFT_POSTING}
-        </Link>
+        {same ? (
+          <>
+            <Link className="btn sec sm" to="/employer/postings/new" state={draft}>
+              {DRAFT_NEW_POSTING}
+            </Link>
+            <Link className="btn pri sm" to={`/employer/postings/${same.id}/edit`} state={draft}>
+              {DRAFT_SAME_POSTING}
+            </Link>
+          </>
+        ) : (
+          <Link
+            className="btn pri sm"
+            to={postingId ? `/employer/postings/${postingId}/edit` : '/employer/postings/new'}
+            state={postingId ? undefined : draft}
+          >
+            {DRAFT_POSTING}
+          </Link>
+        )}
       </div>
     </div>
   )

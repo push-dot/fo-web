@@ -49,12 +49,13 @@ export const approvalFailureFrom = (error: unknown): ApprovalFailure => {
 export const chatRouteState = (value: unknown) => {
   const record =
     value && typeof value === 'object'
-      ? (value as { intent?: unknown; postingId?: unknown; applicationId?: unknown })
+      ? (value as { intent?: unknown; postingId?: unknown; applicationId?: unknown; text?: unknown })
       : {}
   const text = (field: unknown) => (typeof field === 'string' && field ? field : undefined)
   return {
     intent: isChatIntent(record.intent) ? record.intent : ('general' as const),
     postingId: text(record.postingId),
     applicationId: text(record.applicationId),
+    text: text(record.text),
   }
 }

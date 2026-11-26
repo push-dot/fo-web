@@ -1286,6 +1286,8 @@ button.shortcut{border:0;cursor:pointer;font:inherit}
 .browser .chat-pop-note{padding:6px 12px}
 .browser .chat-mode{height:auto;min-height:44px;padding:8px 12px;align-items:center}
 .browser .chat-mode-copy{flex:1;display:flex;flex-direction:column;align-items:flex-start;gap:2px}
+.browser .chat-pick .chat-mode-copy{min-width:0}
+.browser .chat-pick .chat-mode-copy>span{max-width:100%;overflow:hidden;text-overflow:ellipsis}
 .browser .biz-bar{display:flex;flex-direction:row;align-items:center;justify-content:space-between;gap:16px}
 .browser .biz-actions{display:flex;gap:8px;flex-wrap:wrap}
 .browser .biz-page{gap:24px}

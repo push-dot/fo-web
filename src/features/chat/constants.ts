@@ -33,6 +33,10 @@ export const SEND_MESSAGE = '보내기'
 
 export const DRAFT_POSTING = '공고 편집에서 열기'
 
+export const DRAFT_SAME_POSTING = '이 공고 편집에서 열기'
+
+export const DRAFT_NEW_POSTING = '새 공고로 열기'
+
 export const DRAFT_BADGE = '초안'
 
 export const CHAT_NEW = '새 대화'

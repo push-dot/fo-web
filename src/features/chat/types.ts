@@ -13,13 +13,12 @@ export type ChatActions = {
   surfaces: SurfaceHost | null
   waiting: string | undefined
   people: ChatPerson[]
+  posting?: { id: string; title: string }
   send: (text: string, intent?: ChatIntent) => void
   focus: () => void
   redraft: () => void
   copied: () => void
 }
-
-export type ComposerPerson = { applicationId: string; name: string }
 
 export type ComposerFile = { name: string; size: number }
 

@@ -84,6 +84,34 @@ describe('chat rows', () => {
     expect(html).not.toContain('FULL_TIME')
   })
 
+  it('opens a draft in the posting the thread is about, or as a new posting', () => {
+    const client = new QueryClient()
+    client.setQueryData(['company', 'me'], { name: '모아페이' })
+    const draft = toPostingDraft({ title: '백엔드', description: '결제 API', requirements: [], preferred: [], workConditions: {} })
+    if (!draft) throw new Error('draft did not parse')
+    const card = (posting?: ChatActions['posting'], postingId?: string) =>
+      renderToStaticMarkup(
+        <QueryClientProvider client={client}>
+          <MemoryRouter>
+            <ChatActionsContext.Provider value={{ ...actions([]), posting }}>
+              <ChatDraftCard draft={draft} postingId={postingId} />
+            </ChatActionsContext.Provider>
+          </MemoryRouter>
+        </QueryClientProvider>,
+      )
+    const about = card({ id: 'p1', title: '백엔드' })
+    expect(about).toContain('href="/employer/postings/p1/edit"')
+    expect(about).toContain('이 공고 편집에서 열기')
+    expect(about).toContain('href="/employer/postings/new"')
+    expect(about).toContain('새 공고로 열기')
+    const plain = card()
+    expect(plain).toContain('href="/employer/postings/new"')
+    expect(plain).not.toContain('이 공고 편집에서 열기')
+    const saved = card({ id: 'p1', title: '백엔드' }, 'p2')
+    expect(saved).toContain('href="/employer/postings/p2/edit"')
+    expect(saved).not.toContain('새 공고로 열기')
+  })
+
   it('tells the reader to send the question again after a cut-off answer', () => {
     const turn = (ended: 'failed' | 'stopped') =>
       renderToStaticMarkup(

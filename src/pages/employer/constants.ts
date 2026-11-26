@@ -232,6 +232,11 @@ export const LABEL_COMPANY = '회사명'
 
 export const AI_POLISH = 'AI로 다듬기'
 
+export const polishAsk = (title: string, field: string) =>
+  `${title ? `‘${title}’ 공고` : '이 공고'}의 ${field}을 다듬어 줘`
+
+export const AI_DRAFT_NOTE = 'AI가 쓴 초안을 넣었어요. 저장해야 공고에 반영돼요.'
+
 export const COMPANY_NAME_NOTE = '회사명은 사업자 확인에서 가져와요.'
 
 export const SAVE_POSTING = '공고 올리기'
@@ -255,6 +260,8 @@ export const CHAT_TITLE = '에이전트'
 export const CHAT_CREATING = '대화를 만들고 있어요'
 
 export const REFERENCE_POSTING = '참고 공고'
+
+export const POLISH_POSTING = '공고 다듬기'
 
 export const CHAT_ASSISTANT = '에이전트'
 

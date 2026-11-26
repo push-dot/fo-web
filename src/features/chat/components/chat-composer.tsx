@@ -6,14 +6,15 @@ import Icon from '../../../shared/ui/icon'
 import Popover from '../../../shared/ui/popover'
 import { ATTACH_MENU, AWAITING_PLACEHOLDER, PDF_BADGE, PDF_REMOVE, PDF_UPLOAD, PICK_NONE, STOP_MESSAGE } from '../utils/chat-copy'
 import { ACCESS_MODE_GROUP, ACCESS_MODES, ATTACH_LABEL, COMPOSER_LABEL, COMPOSER_PLACEHOLDER, PDF_LOCK, SEND_MESSAGE } from '../constants'
-import type { ComposerPerson, ComposerFile } from '../types'
+import { severalPostings } from '../utils/chat-people'
+import type { ChatPerson, ComposerFile } from '../types'
 
 type ChatComposerProps = {
   text: string
   sending: boolean
   awaiting: boolean
   applicationId: string
-  people: ComposerPerson[]
+  people: ChatPerson[]
   file: ComposerFile | null
   pdfLocked: boolean
   accessMode: AccessMode
@@ -44,6 +45,7 @@ const ChatComposer = ({
   const [menu, setMenu] = useState<'attach' | 'pick' | null>(null)
   const input = useRef<HTMLInputElement>(null)
   const picked = people.find((person) => person.applicationId === applicationId)
+  const several = severalPostings(people)
   const ready = text.trim().length > 0 && !sending
   const close = () => setMenu(null)
   const submitOnEnter = (event: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -169,13 +171,20 @@ const ChatComposer = ({
                     type="button"
                     role="menuitemradio"
                     aria-checked={person.applicationId === applicationId}
-                    className="mi"
+                    className={several ? 'mi chat-mode chat-pick' : 'mi'}
                     onClick={() => {
                       onApplication(person.applicationId)
                       close()
                     }}
                   >
-                    <span className="w6">{person.name}</span>
+                    {several ? (
+                      <span className="chat-mode-copy">
+                        <span className="w6">{person.name}</span>
+                        <span className="c1 t3">{person.postingTitle}</span>
+                      </span>
+                    ) : (
+                      <span className="w6">{person.name}</span>
+                    )}
                   </button>
                 ))}
                 {picked ? (
