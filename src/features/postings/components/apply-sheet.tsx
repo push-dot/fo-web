@@ -5,6 +5,10 @@ import { Link } from 'react-router-dom'
 import { useMyProfile, useSources } from '../../profile'
 import { applySourceIds } from '../utils/apply-source-ids'
 import { postingsApply } from '../api/fetchers'
+import { CONTACT_KEY, useContact } from '../api/hooks'
+import { contactRequired, missingContact } from '../utils/apply-contact'
+import ApplyContact from './apply-contact'
+import type { ContactMissing } from '@push/api-client'
 import { brandColor } from '@push/shared'
 import { displayName, initials, roleLabel } from '../../../shared/lib/format'
 import Dialog from '../../../shared/ui/dialog'
@@ -33,16 +37,20 @@ const ApplySheet = ({
   title,
   onClose,
   onApplied,
+  onToast,
 }: {
   postingId: string
   company?: string | null
   title?: string | null
   onClose: () => void
   onApplied: () => void
+  onToast?: (message: string) => void
 }) => {
   const queryClient = useQueryClient()
   const sources = useSources()
   const profile = useMyProfile()
+  const contact = useContact()
+  const [required, setRequired] = useState<ContactMissing[] | null>(null)
   const [pickedIds, setPickedIds] = useState<string[] | null>(null)
   const list: ListedSource[] = sources.data ?? []
   const picked = effectivePicks(pickedIds, list, Boolean(profile.data))
@@ -56,10 +64,27 @@ const ApplySheet = ({
       await queryClient.invalidateQueries({ queryKey: ['postings'] })
       onApplied()
     },
+    onError: (error) => setRequired(contactRequired(error)),
   })
   const toggle = (id: string) => {
     setPickedIds(togglePick(picked, id))
     apply.reset()
+  }
+  const missing = missingContact(contact.data, required)
+  if (missing.length > 0) {
+    return (
+      <ApplyContact
+        contact={contact.data}
+        missing={missing}
+        onClose={onClose}
+        onToast={onToast}
+        onDone={async () => {
+          await queryClient.invalidateQueries({ queryKey: CONTACT_KEY })
+          setRequired(null)
+          apply.reset()
+        }}
+      />
+    )
   }
   if (sources.isSuccess && list.length === 0) {
     return (
@@ -156,7 +181,7 @@ const ApplySheet = ({
         <button type="button" className="btn sec" disabled={apply.isPending} onClick={onClose}>
           {APPLY_CANCEL}
         </button>
-        <button type="button" className="btn pri" aria-busy={apply.isPending} disabled={picked.length === 0 || apply.isPending} onClick={() => apply.mutate()}>
+        <button type="button" className="btn pri" aria-busy={apply.isPending} disabled={picked.length === 0 || apply.isPending || contact.isPending} onClick={() => apply.mutate()}>
           {apply.isPending ? (
             <>
               <svg className="apply-spin" viewBox="0 0 24 24" aria-hidden="true">

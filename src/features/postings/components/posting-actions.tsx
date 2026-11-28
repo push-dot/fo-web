@@ -178,6 +178,7 @@ const PostingActions = ({ posting, onToast }: { posting: PostingView; onToast: (
           company={posting.company}
           title={posting.title}
           onClose={() => setApplyOpen(false)}
+          onToast={onToast}
           onApplied={() => {
             setApplyOpen(false)
             onToast(APPLIED_TOAST)

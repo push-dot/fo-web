@@ -112,6 +112,37 @@ export const handlePhone = (method: string, tail: string) => {
   return null
 }
 
+export const CONTACT_LOGIN_EMAIL = 'me@push.app'
+
+export const TAKEN_CONTACT_PHONE = '+821099999999'
+
+export const contact: { phone: string | null; email: string | null; loginEmail: string | null } = { phone: null, email: null, loginEmail: CONTACT_LOGIN_EMAIL }
+
+export const handleContact = async (method: string, tail: string, input: RequestInfo | URL, init?: RequestInit) => {
+  if (method === 'GET' && tail === '/me/contact') return json(200, { data: contact })
+  if (method !== 'POST' || !tail.startsWith('/me/contact/')) return null
+  const body = await readJson(input, init)
+  if (tail === '/me/contact/phone') {
+    const phone = String(body.phone ?? '')
+    if (phone === TAKEN_CONTACT_PHONE && body.moveDocuments !== true) {
+      return failure(409, 'PHONE_TAKEN', '다른 계정이 쓰는 번호예요', { canMoveDocuments: true })
+    }
+    contact.phone = phone
+    return json(200, { data: { phone, ...(body.moveDocuments === true ? { moved: { documents: 2, files: 1 } } : {}) } })
+  }
+  const email = String(body.email ?? '')
+  if (tail === '/me/contact/email/send') {
+    if (email !== contact.loginEmail) return phoneSent(60, 600)
+    contact.email = email
+    return json(200, { data: { email, verified: true } })
+  }
+  if (tail === '/me/contact/email') {
+    contact.email = email
+    return json(200, { data: { email, verified: true } })
+  }
+  return null
+}
+
 export const OAUTH_CODE = 'mock-code'
 
 export const callbackUrl = (accountType: string | null) => {
