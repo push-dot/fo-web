@@ -1,5 +1,5 @@
 import type { ApplicationStage, EmployerStage } from '@push/api-client'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQueries, useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { integrationsGoogle as fetchGoogle } from '../../../shared/api/operations'
 import {
   applicationsList,
@@ -50,6 +50,15 @@ export const useEmployerApplicants = (
         ? postingsApplicants(postingId ?? '', { stage })
         : postingsApplicants(postingId ?? '', {}),
     enabled: options?.enabled ?? Boolean(postingId),
+  })
+
+export const useApplicantsByPosting = (postingIds: string[]) =>
+  useQueries({
+    queries: postingIds.map((postingId) => ({
+      queryKey: ['employer-applicants', postingId, 'chat'],
+      queryFn: () => postingsApplicants(postingId, {}),
+    })),
+    combine: (results) => results.map((result) => result.data?.data ?? []),
   })
 
 export const useApplicantCounts = (postingId: string | undefined) =>

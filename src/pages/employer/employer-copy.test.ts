@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest'
 import { EMPLOYER_POSTING_NOTE } from '../../features/postings'
 import { applicantKicker, draftMeta, lockAdminNote } from '../../features/chat'
 import { PAYMENTS_CLOSED, PLAN_ACTION_FAILED, planActionError } from '../../features/billing'
-import { AI_POSTING, AI_REVIEW, CHAT_ASSISTANT, CHAT_TITLE, INVITE_PERKS, VERIFY_LEAD } from './constants'
+import { AI_POSTING, AI_REVIEW, CHAT_ASSISTANT, CHAT_TITLE, INVITE_PERKS, VERIFY_LEAD, polishAsk } from './constants'
 import { VERIFY_AI_POSTING, VERIFY_DONE_LEAD } from '../../features/company'
 
 describe('employer copy', () => {
@@ -18,6 +18,13 @@ describe('employer copy', () => {
     expect(CHAT_TITLE).toBe('에이전트')
     expect(CHAT_ASSISTANT).toBe('에이전트')
     expect(INVITE_PERKS).toContain('에이전트 대화 (회사가 함께 봐요)')
+  })
+})
+
+describe('polishAsk', () => {
+  it('names the posting and the field the editor link sits on', () => {
+    expect(polishAsk('백엔드 엔지니어', '자격 요건')).toBe('‘백엔드 엔지니어’ 공고의 자격 요건을 다듬어 줘')
+    expect(polishAsk('', '하는 일')).toBe('이 공고의 하는 일을 다듬어 줘')
   })
 })
 

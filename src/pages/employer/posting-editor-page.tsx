@@ -1,5 +1,5 @@
 import type { CreatePostingInput, EmploymentType, JobCategory, PostingDetail } from '@push/api-client'
-import { EMPLOYMENT_TYPES, JOB_CATEGORIES, BulletField, CAREER_RANGES, POSTING_CLOSE, careerRangeOf, stripBullets, withBullets, SkillEditor, afterPostingClose, afterPostingSave, editorFailure, postingsClose, postingsCreate, postingsUpdate, uploadsImage, conditionsFromText, draftFields, useEmployerPosting } from '../../features/postings'
+import { EMPLOYMENT_TYPES, JOB_CATEGORIES, BulletField, CAREER_RANGES, POSTING_CLOSE, careerRangeOf, stripBullets, withBullets, SkillEditor, afterPostingClose, afterPostingSave, editorFailure, postingsClose, postingsCreate, postingsUpdate, uploadsImage, conditionsFromText, draftFields, draftOverlay, useEmployerPosting } from '../../features/postings'
 import { brandColor } from '@push/shared'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useRef, useState, type FormEvent } from 'react'
@@ -10,7 +10,7 @@ import { useSession } from '../../shared/auth/use-session'
 import Icon from '../../shared/ui/icon'
 import ConfirmDialog from '../../shared/ui/confirm-dialog'
 import ErrorState from '../../shared/ui/error-state'
-import { CLOSE_POSTING, CLOSED_STATE, COMPANY_NAME_NOTE, DRAFT_CONFIRM_BODY, DRAFT_CONFIRM_TITLE, EDITOR_LOADING, EDITOR_TITLE, LABEL_CAREER, LABEL_COMPANY, LABEL_DEADLINE, LABEL_DESCRIPTION, LABEL_EMPLOYMENT_TYPE, LABEL_IMAGE, LABEL_JOB_CATEGORY, LABEL_LOCATION, LABEL_PREFERRED, LABEL_REQUIREMENTS, LABEL_SKILLS, LABEL_TITLE, AI_POLISH, IMAGE_CHANGE, IMAGE_FAILED, NEW_POSTING, POSTING_CLOSE_BODY, POSTING_CLOSE_TITLE, POSTINGS_FAILED, PREVIEW_POSTING, SAVE_DRAFT, SAVE_POSTING } from './constants'
+import { CLOSE_POSTING, CLOSED_STATE, COMPANY_NAME_NOTE, DRAFT_CONFIRM_BODY, DRAFT_CONFIRM_TITLE, EDITOR_LOADING, EDITOR_TITLE, LABEL_CAREER, LABEL_COMPANY, LABEL_DEADLINE, LABEL_DESCRIPTION, LABEL_EMPLOYMENT_TYPE, LABEL_IMAGE, LABEL_JOB_CATEGORY, LABEL_LOCATION, LABEL_PREFERRED, LABEL_REQUIREMENTS, LABEL_SKILLS, LABEL_TITLE, AI_DRAFT_NOTE, AI_POLISH, IMAGE_CHANGE, IMAGE_FAILED, NEW_POSTING, POSTING_CLOSE_BODY, POSTING_CLOSE_TITLE, POSTINGS_FAILED, PREVIEW_POSTING, SAVE_DRAFT, SAVE_POSTING, polishAsk } from './constants'
 import { useMyCompany } from '../../features/company'
 
 type EditorForm = {
@@ -105,6 +105,7 @@ const PostingEditorPage = () => {
   const [closedAt, setClosedAt] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [confirm, setConfirm] = useState<'draft' | 'close' | null>(null)
+  const [drafted, setDrafted] = useState(false)
   const revisionRef = useRef(0)
   const formRef = useRef(form)
   useEffect(() => {
@@ -115,11 +116,15 @@ const PostingEditorPage = () => {
   const detail = useEmployerPosting(id)
   useEffect(() => {
     if (!id || !detail.data || detail.data.id !== id || readyFor === id) return
-    setForm(formFromDetail(detail.data))
+    const overlay = draftOverlay(location.state)
+    setForm({ ...formFromDetail(detail.data), ...overlay })
     revisionRef.current = detail.data.revision ?? 0
     setClosedAt(detail.data.closedAt ?? null)
     setReadyFor(id)
-  }, [detail.data, id, readyFor])
+    if (Object.keys(overlay).length === 0) return
+    setDrafted(true)
+    navigate(`${location.pathname}${location.search}`, { replace: true, state: null })
+  }, [detail.data, id, location.pathname, location.search, location.state, navigate, readyFor])
   const save = useMutation({
     mutationFn: (status: 'OPEN' | 'DRAFT') => {
       const body = toInput(formRef.current, !id)
@@ -182,7 +187,7 @@ const PostingEditorPage = () => {
       <span className="editor-label">
         {label}
         {polish ? (
-          <Link className="c1 w7 ac editor-polish" to={polish}>
+          <Link className="c1 w7 ac editor-polish" to={polish} state={{ text: polishAsk(detail.data?.title ?? '', label) }}>
             <Icon name="spark" size={14} filled />
             {AI_POLISH}
           </Link>
@@ -214,6 +219,7 @@ const PostingEditorPage = () => {
         ) : null}
       </header>
       {closedAt ? <p className="b1 stack">{CLOSED_STATE}</p> : null}
+      {drafted ? <p className="b1 stack">{AI_DRAFT_NOTE}</p> : null}
       <div className="editor">
         <form
           id="posting-form"

@@ -58,4 +58,10 @@ describe('chatRouteState', () => {
     })
     expect(chatRouteState(null)).toEqual({ intent: 'general', applicationId: undefined, postingId: undefined })
   })
+
+  it('carries the request a posting editor hands to the agent', () => {
+    expect(chatRouteState({ intent: 'general', postingId: 'p-1', text: '자격 요건을 다듬어 줘' }).text).toBe('자격 요건을 다듬어 줘')
+    expect(chatRouteState({ text: '' }).text).toBeUndefined()
+    expect(chatRouteState({ text: 3 }).text).toBeUndefined()
+  })
 })

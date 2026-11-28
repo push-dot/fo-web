@@ -2,13 +2,14 @@ import { ApiError } from '../api'
 import { useEffect, useRef, useState, useSyncExternalStore, type FormEvent } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 
-import { useEmployerApplicants } from '../../applications'
+import { useApplicantsByPosting } from '../../applications'
 import { usePaymentsOpen } from '../../billing'
 import { useEmployerPlan, useMyCompany, VERIFY_LINK } from '../../company'
 import { useEmployerConversations, useEmployerMessages, useEmployerTurns, useAccessMode } from '../api/hooks'
 import { useMyPostings } from '../../postings'
 import { applicationTrail, threadItems, type LiveTurn } from '../utils/chat-thread'
 import { chatRouteState } from '../utils/chat-gate'
+import { applicantPostings, chatPeople } from '../utils/chat-people'
 import { EMPTY_TURN, turnRunning, waitingSurface } from '../utils/chat-turn'
 import { routeSurfaceAction } from '../utils/surface-action'
 import { useChatSession, type Outgoing, ChatActionsContext } from '../hooks'
@@ -40,7 +41,7 @@ const ChatRoom = ({ id, screen }: { id?: string; screen: 'list' | 'new' | 'threa
   const payable = usePaymentsOpen()
   const mode = useAccessMode()
   const [intent, setIntent] = useState<ChatIntent>(routed.intent)
-  const [text, setText] = useState('')
+  const [text, setText] = useState(routed.text ?? '')
   const [applicationId, setApplicationId] = useState(routed.applicationId ?? '')
   const [file, setFile] = useState<File | null>(null)
   const conversations = useEmployerConversations()
@@ -50,19 +51,9 @@ const ChatRoom = ({ id, screen }: { id?: string; screen: 'list' | 'new' | 'threa
   const storedTurns = turns.data?.pages.flatMap((page) => page.data) ?? []
   const running = storedTurns.find(turnRunning)
   const postings = useMyPostings()
-  const openPosting =
-    postings.data?.data.find((item) => item.id === routed.postingId) ??
-    postings.data?.data.find((item) => !item.closedAt)
-  const applicants = useEmployerApplicants(openPosting?.id, undefined, {
-    queryKey: ['employer-applicants', openPosting?.id, 'chat'],
-    enabled: Boolean(openPosting?.id),
-  })
-  const people: ChatPerson[] = (applicants.data?.data ?? []).map((item) => ({
-    applicationId: item.applicationId,
-    name: item.applicant.displayName,
-    postingId: openPosting?.id ?? '',
-    postingTitle: openPosting?.title ?? '',
-  }))
+  const peoplePostings = applicantPostings(postings.data?.data ?? [], routed.postingId)
+  const applicants = useApplicantsByPosting(peoplePostings.map((item) => item.id))
+  const people: ChatPerson[] = chatPeople(peoplePostings, applicants)
   const session = useChatSession({
     id,
     people,
@@ -96,13 +87,22 @@ const ChatRoom = ({ id, screen }: { id?: string; screen: 'list' | 'new' | 'threa
   const awaiting = useSyncExternalStore(surfaces.subscribe, () =>
     waiting ? surfaces.read(waiting, 'open') === true : false,
   )
-  const title = conversations.data?.data.find((item) => item.id === id)?.title
+  const thread = conversations.data?.data.find((item) => item.id === id)
+  const title = thread?.title
+  const posting = postings.data?.data.find((item) => item.id === thread?.postingId)
   const pdfDisabled = !settled || pdfLocked(plan)
   const planName = plan ? PLAN_NAME[plan] : null
 
   const current = useRef({ sending, intent, applicationId, last: trail.last, toast })
   useEffect(() => {
     current.current = { sending, intent, applicationId, last: trail.last, toast }
+  })
+  useEffect(() => {
+    if (!routed.text) return
+    navigate(`${location.pathname}${location.search}`, {
+      replace: true,
+      state: { intent: routed.intent, postingId: routed.postingId, applicationId: routed.applicationId },
+    })
   })
   const { send, answer, stop } = session
   const closes = waiting && awaiting ? waiting : undefined
@@ -124,6 +124,7 @@ const ChatRoom = ({ id, screen }: { id?: string; screen: 'list' | 'new' | 'threa
     surfaces,
     waiting,
     people,
+    posting: posting && { id: posting.id, title: posting.title },
     send: (value, nextIntent) => {
       const now = current.current
       if (now.sending) return
@@ -217,7 +218,7 @@ const ChatRoom = ({ id, screen }: { id?: string; screen: 'list' | 'new' | 'threa
               <ChatSay text={PDF_NOTE} soft />
             ) : (
               <ChatStarter
-                applicant={people[0]?.name}
+                applicant={(people.find((person) => person.applicationId === applicationId) ?? people[0])?.name}
                 onPick={(card) => {
                   setIntent(card.intent)
                   setText(card.example)

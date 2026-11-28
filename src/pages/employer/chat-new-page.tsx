@@ -1,10 +1,10 @@
 import type { Conversation } from '@push/api-client'
 import { useQueryClient } from '@tanstack/react-query'
 import { useEffect, useRef, useState } from 'react'
-import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
-import { ChatApp, ChatRoom, chatGateFrom, conversationsCreateEmployer, type ChatBlock, CHAT_FAILED, PDF_LOCK } from '../../features/chat'
-import { CHAT_CREATING, REFERENCE_POSTING } from './constants'
+import { ChatApp, ChatRoom, chatGateFrom, chatRouteState, conversationsCreateEmployer, type ChatBlock, CHAT_FAILED, PDF_LOCK } from '../../features/chat'
+import { CHAT_CREATING, POLISH_POSTING, REFERENCE_POSTING } from './constants'
 import { VERIFY_LINK } from '../../features/company'
 
 const flights = new Map<string, Promise<Conversation>>()
@@ -12,10 +12,11 @@ const flights = new Map<string, Promise<Conversation>>()
 const ChatNewPage = () => {
   const [params] = useSearchParams()
   const postingId = params.get('postingId') || undefined
-  return postingId ? <ReferenceStart postingId={postingId} /> : <ChatRoom screen="new" />
+  const ask = chatRouteState(useLocation().state).text
+  return postingId ? <ReferenceStart postingId={postingId} ask={ask} /> : <ChatRoom screen="new" />
 }
 
-const ReferenceStart = ({ postingId }: { postingId: string }) => {
+const ReferenceStart = ({ postingId, ask }: { postingId: string; ask?: string }) => {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const [gate, setGate] = useState<ChatBlock | null>(null)
@@ -23,12 +24,12 @@ const ReferenceStart = ({ postingId }: { postingId: string }) => {
   useEffect(() => {
     if (started.current) return
     started.current = true
-    const key = postingId
+    const key = `${postingId}:${ask ?? ''}`
     const existing = flights.get(key)
     const flight =
       existing ??
       conversationsCreateEmployer({
-        title: REFERENCE_POSTING,
+        title: ask ? POLISH_POSTING : REFERENCE_POSTING,
         postingId,
       })
     if (!existing) flights.set(key, flight)
@@ -38,7 +39,7 @@ const ReferenceStart = ({ postingId }: { postingId: string }) => {
         await queryClient.invalidateQueries({ queryKey: ['employer-conversations'] })
         navigate(`/employer/chat/${created.id}`, {
           replace: true,
-          state: { postingId, intent: 'posting' },
+          state: ask ? { postingId, intent: 'general', text: ask } : { postingId, intent: 'posting' },
         })
       },
       (error: unknown) => {
@@ -46,7 +47,7 @@ const ReferenceStart = ({ postingId }: { postingId: string }) => {
         setGate(chatGateFrom(error))
       },
     )
-  }, [navigate, postingId, queryClient])
+  }, [ask, navigate, postingId, queryClient])
   return (
     <ChatApp screen="new">
       {gate === 'verify' ? (

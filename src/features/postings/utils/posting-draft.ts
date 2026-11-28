@@ -1,3 +1,5 @@
+import { withBullets } from './editor-form'
+
 const textOf = (value: unknown) => (typeof value === 'string' ? value : '')
 
 export const listFromLines = (text: string) =>
@@ -31,3 +33,15 @@ export const draftFields = (state: {
   preferred: linesFromList(state.preferred),
   workConditions: textFromConditions(state.workConditions),
 })
+
+export const draftOverlay = (state: unknown) => {
+  if (!state || typeof state !== 'object') return {}
+  const { title, description, requirements, preferred } = draftFields(state as Record<string, unknown>)
+  const fields = {
+    title: title.trim(),
+    description: withBullets(description),
+    requirements: withBullets(requirements),
+    preferred: withBullets(preferred),
+  }
+  return Object.fromEntries(Object.entries(fields).filter(([, value]) => value)) as Partial<typeof fields>
+}
