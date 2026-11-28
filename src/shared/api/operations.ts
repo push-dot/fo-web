@@ -108,6 +108,14 @@ export const meBlocks = (...args: Parameters<Api['me']['blocks']>) => api.me.blo
 
 export const meCommentedPosts = (...args: Parameters<Api['me']['commentedPosts']>) => api.me.commentedPosts(...args)
 
+export const meContact = (...args: Parameters<Api['me']['contact']>) => api.me.contact(...args)
+
+export const meVerifyContactPhone = (...args: Parameters<Api['me']['verifyContactPhone']>) => api.me.verifyContactPhone(...args)
+
+export const meSendContactEmail = (...args: Parameters<Api['me']['sendContactEmail']>) => api.me.sendContactEmail(...args)
+
+export const meVerifyContactEmail = (...args: Parameters<Api['me']['verifyContactEmail']>) => api.me.verifyContactEmail(...args)
+
 export const meConsents = (...args: Parameters<Api['me']['consents']>) => api.me.consents(...args)
 
 export const meDeclineOffer = (...args: Parameters<Api['me']['declineOffer']>) => api.me.declineOffer(...args)

@@ -581,6 +581,15 @@ button.shortcut{border:0;cursor:pointer;font:inherit}
 .browser .apply-actions .btn.pri[aria-busy="true"]{opacity:.8}
 .browser .apply-spin{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;animation:auth-spin .8s linear infinite}
 .browser .sheet.apply-empty{align-items:center;gap:8px;text-align:center}
+.browser .contact-parts{display:flex;flex-direction:column;gap:16px}
+.browser .contact-part{display:flex;flex-direction:column;gap:8px}
+.browser .contact-row{display:flex;align-items:flex-end;gap:8px}
+.browser .contact-row .field{flex:1;min-width:0}
+.browser .contact-row .btn{flex:none;height:48px}
+.browser .contact-parts .red{color:var(--red)}
+.browser .contact-done{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border-radius:12px;background:var(--bg2)}
+.browser .contact-copy{display:flex;flex-direction:column;gap:2px;min-width:0}
+.browser .contact-done .badge{display:inline-flex;align-items:center;gap:4px}
 .browser .apply-empty-tile{display:flex;align-items:center;justify-content:center;width:64px;height:64px;margin-bottom:8px;border-radius:32px;background:var(--fill);color:var(--t3)}
 .browser .apply-empty .apply-actions{width:100%;margin-top:16px}
 .browser .side{display:flex;flex-direction:column;gap:2px}

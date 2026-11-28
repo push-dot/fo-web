@@ -11,6 +11,11 @@ import {
   postingsUpdate as postingsUpdateOp,
   postingsClose as postingsCloseOp,
   uploadsImage as uploadsImageOp,
+  authPhoneSend as authPhoneSendOp,
+  meContact as meContactOp,
+  meVerifyContactPhone as meVerifyContactPhoneOp,
+  meSendContactEmail as meSendContactEmailOp,
+  meVerifyContactEmail as meVerifyContactEmailOp,
 } from '../../../shared/api/operations'
 
 export const postingsGet = (...args: Parameters<typeof fetchPosting>) => fetchPosting(...args)
@@ -44,3 +49,16 @@ export const postingsClose = (...args: Parameters<typeof postingsCloseOp>) =>
   postingsCloseOp(...args)
 
 export const uploadsImage = (...args: Parameters<typeof uploadsImageOp>) => uploadsImageOp(...args)
+
+export const contactPhoneSend = (...args: Parameters<typeof authPhoneSendOp>) => authPhoneSendOp(...args)
+
+export const meContact = (...args: Parameters<typeof meContactOp>) => meContactOp(...args)
+
+export const meVerifyContactPhone = (...args: Parameters<typeof meVerifyContactPhoneOp>) =>
+  meVerifyContactPhoneOp(...args)
+
+export const meSendContactEmail = (...args: Parameters<typeof meSendContactEmailOp>) =>
+  meSendContactEmailOp(...args)
+
+export const meVerifyContactEmail = (...args: Parameters<typeof meVerifyContactEmailOp>) =>
+  meVerifyContactEmailOp(...args)

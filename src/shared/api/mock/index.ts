@@ -2,7 +2,7 @@ import { searchHangul } from '@push/shared'
 import { sessionStore } from '../../auth/session'
 import { isWebView } from '../../lib/bridge'
 import { APP_PROFILES, HUB_PROFILES, LISTINGS, SEARCH_BOARDS } from './fixtures'
-import { handleBilling, handleInvite, handleOAuth, handlePhone, setFlag, switchResponse, tokenExpired } from './account'
+import { handleBilling, handleContact, handleInvite, handleOAuth, handlePhone, setFlag, switchResponse, tokenExpired } from './account'
 import { handleEmployerChat } from './chat'
 import { handleCommunity } from './community'
 import { APP_VIEWER_ID, MEMBER_EMAIL, MEMBER_USER, REPEAT_MARK, TAKEN_EMAILS, allSources, catalogPage, companyRecord, detailFor, feed, filteredPostings, hubProfiles, json, libraryItem, listings, loginPersona, matches, mockSession, mockSwitch, ownedPostingResponse, persona, present, profileById, readJson, routeTail, signedOf, withFlags } from './core'
@@ -26,6 +26,8 @@ export const mockFetch: typeof fetch = async (input, init) => {
   if (switched) return switched
   const auth = (await handleOAuth(method, tail, url)) ?? (await handleInvite(method, tail))
   if (auth) return auth
+  const contactResponse = await handleContact(method, tail, input, init)
+  if (contactResponse) return contactResponse
   const billing = await handleBilling(method, pathname, input, init)
   if (billing) return billing
   const employerChat = await handleEmployerChat(method, url, pathname, input, init)
